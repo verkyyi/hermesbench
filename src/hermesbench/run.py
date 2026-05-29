@@ -264,7 +264,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--high-rate",
         action="store_true",
-        help="fast preset: suite concurrency 4 and case concurrency 8 unless explicitly set",
+        help="fast preset: suite concurrency 6 and case concurrency 6 unless explicitly set",
     )
     ap.add_argument(
         "--suite-path",
@@ -278,8 +278,8 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     if args.high_rate:
-        os.environ.setdefault("HERMES_BENCH_SUITE_CONCURRENCY", "4")
-        os.environ.setdefault("HERMES_BENCH_CONCURRENCY", "8")
+        os.environ.setdefault("HERMES_BENCH_SUITE_CONCURRENCY", "6")
+        os.environ.setdefault("HERMES_BENCH_CONCURRENCY", "6")
         os.environ["HERMES_BENCH_HIGH_RATE"] = "1"
     if args.trials is not None:
         os.environ["HERMES_BENCH_TRIALS"] = str(max(1, args.trials))

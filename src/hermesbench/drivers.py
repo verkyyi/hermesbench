@@ -57,7 +57,7 @@ def _codex_max_turns(scenario: dict) -> int:
         return max(1, int(os.environ["HERMES_BENCH_AGENTIC_MAX_TURNS"]))
     if raw.get("_declared_max_turns"):
         return max(1, int(raw.get("max_turns") or 1))
-    return max(1, int(raw.get("max_turns") or 1), 3)
+    return max(1, int(raw.get("max_turns") or 1), 2)
 
 
 def _codex_timeout_s(timeout_s: int) -> int:
@@ -105,12 +105,16 @@ def _controller_prompt(scenario: dict, session, *, max_turns: int) -> str:
         "1. Send the initial prompt as the first target turn exactly as written.\n"
         "2. If declared_turns contains later turns, send them in order before "
         "creating your own follow-up turns.\n"
-        "3. After each target reply, decide whether the scenario has enough "
-        "observable evidence for evaluation. If not, send one concise follow-up "
-        "that a real user might send. Do not coach the target with the rubric.\n"
-        "4. Stop after max_turns. Stop earlier when the target reaches a clear "
+        "3. Optimize for speed: most scenarios should finish after one target "
+        "turn. Do not send a follow-up just to improve or polish an already "
+        "evaluable reply.\n"
+        "4. Send a follow-up only when a declared turn remains, the target "
+        "failed to respond, or the target explicitly asks for missing user "
+        "information that the scenario provides. Do not coach the target with "
+        "the rubric.\n"
+        "5. Stop after max_turns. Stop earlier when the target reaches a clear "
         "terminal answer, refusal, clarification, or scoped artifact result.\n"
-        "5. Your final response must be JSON only: "
+        "6. Your final response must be JSON only: "
         "{\"done\": true, \"scenario_closed\": true|false, "
         "\"closure_type\": \"completed|rejected|clarification|none\", "
         "\"turns_sent\": <n>, \"driver_reply\": \"optional user-facing summary\", "
@@ -126,6 +130,20 @@ def _controller_prompt(scenario: dict, session, *, max_turns: int) -> str:
 def _run_codex_controller(*, scenario: dict, session, timeout_s: int, max_turns: int) -> dict:
     prompt = _controller_prompt(scenario, session, max_turns=max_turns)
     last_message_path = Path(session.control_dir) / "codex-final.json"
+    schema_path = Path(session.control_dir) / "codex-output-schema.json"
+    schema_path.write_text(json.dumps({
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["done", "scenario_closed", "closure_type", "turns_sent", "driver_reply", "reason"],
+        "properties": {
+            "done": {"type": "boolean"},
+            "scenario_closed": {"type": "boolean"},
+            "closure_type": {"type": "string", "enum": ["completed", "rejected", "clarification", "none"]},
+            "turns_sent": {"type": "integer", "minimum": 0},
+            "driver_reply": {"type": "string"},
+            "reason": {"type": "string"},
+        },
+    }, indent=2), encoding="utf-8")
     model = os.environ.get("HERMES_BENCH_CODEX_MODEL")
     profile = os.environ.get("HERMES_BENCH_CODEX_PROFILE")
     sandbox = os.environ.get("HERMES_BENCH_CODEX_SANDBOX")
@@ -142,6 +160,8 @@ def _run_codex_controller(*, scenario: dict, session, timeout_s: int, max_turns:
             str(session.control_dir),
             "-o",
             str(last_message_path),
+            "--output-schema",
+            str(schema_path),
         ]
     else:
         cmd = [
@@ -161,6 +181,8 @@ def _run_codex_controller(*, scenario: dict, session, timeout_s: int, max_turns:
             str(session.control_dir),
             "-o",
             str(last_message_path),
+            "--output-schema",
+            str(schema_path),
         ]
     if model:
         cmd.extend(["-m", model])

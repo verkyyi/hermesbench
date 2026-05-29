@@ -139,18 +139,19 @@ Concurrency controls:
 - `--trials N` or `HERMES_BENCH_TRIALS`
 - `--case-concurrency N` or `HERMES_BENCH_CONCURRENCY`
 - `--suite-concurrency N` or `HERMES_BENCH_SUITE_CONCURRENCY`
-- `--high-rate`, which defaults to suite concurrency 4 and case concurrency 8
+- `--high-rate`, which defaults to suite concurrency 6 and case concurrency 6
   unless the explicit flags above are supplied
 
-High-rate mode can create many simultaneous Hermes and judge calls. Use it only
-with provider credentials that can tolerate the burst.
+High-rate mode can create up to roughly 24 simultaneous prompt-case controllers
+because each bundled suite has 4 cases. Use it only with provider credentials
+that can tolerate the burst.
 
 The default `codex` evaluator driver uses `codex exec` and may send follow-up
 turns until it decides the scenario is closed or reaches its turn budget. Useful
 driver controls:
 
 - `HERMES_BENCH_AGENTIC_MAX_TURNS`: default dynamic budget for cases without an
-  explicit `driver.max_turns` is 3
+  explicit `driver.max_turns` is 2
 - `HERMES_BENCH_CODEX_MODEL` / `HERMES_BENCH_CODEX_PROFILE`: pin the evaluator
   controller model/profile
 - `HERMES_BENCH_CODEX_TIMEOUT_S`: cap the controller wall time

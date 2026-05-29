@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -208,6 +209,19 @@ def test_run_benchmark_weights_scores(monkeypatch):
     assert report["suites_ran"] == 1
 
 
+def test_high_rate_sets_agentic_concurrency(monkeypatch):
+    monkeypatch.delenv("HERMES_BENCH_SUITE_CONCURRENCY", raising=False)
+    monkeypatch.delenv("HERMES_BENCH_CONCURRENCY", raising=False)
+
+    def fake_run_benchmark(*, ids=None):
+        return {"run_id": "fake", "overall_score": 100.0, "suites_ran": 0, "suites": []}
+
+    monkeypatch.setattr(run_mod, "run_benchmark", fake_run_benchmark)
+    assert run_mod.main(["--high-rate", "--json", "--no-store"]) == 0
+    assert os.environ["HERMES_BENCH_SUITE_CONCURRENCY"] == "6"
+    assert os.environ["HERMES_BENCH_CONCURRENCY"] == "6"
+
+
 def test_execution_surface_classification():
     assert run_mod._execution_surface({"toolsets": ["hermes-cli"]})["id"] == "direct"
     assert run_mod._execution_surface({"toolsets": ["hermes-cli", "kanban"]})["id"] == "kanban_delegation"
@@ -256,7 +270,7 @@ def test_codex_driver_records_agentic_closure(monkeypatch, tmp_path: Path):
 
     class FakeTarget:
         def start_agentic_session(self, *, timeout_s, max_turns):
-            assert max_turns == 3
+            assert max_turns == 2
             return FakeSession()
 
     def fake_controller(**kwargs):
@@ -315,6 +329,7 @@ def test_codex_controller_defaults_to_bypass_mode(monkeypatch, tmp_path: Path):
     )
     cmd = seen["cmd"]
     assert cmd[:3] == ["codex", "--dangerously-bypass-approvals-and-sandbox", "exec"]
+    assert "--output-schema" in cmd
     assert out["decision"]["scenario_closed"] is True
 
 

@@ -221,7 +221,7 @@ expectation: task_done
 initial_prompt: Help me verify status.
 driver:
   kind: codex
-  max_turns: 3
+  max_turns: 2
 checks:
   - type: artifact_exists
     path: hb_note.txt
@@ -383,7 +383,7 @@ default. Set `HERMESBENCH_INCLUDE_PATHS=1` only for private debugging.
 Trials default to 2 per case (`HERMES_BENCH_TRIALS`); concurrency
 `HERMES_BENCH_CONCURRENCY` (default 4) controls prompt cases within a suite, and
 `HERMES_BENCH_SUITE_CONCURRENCY` (default 1) controls suites across the run.
-`--high-rate` sets suite concurrency 4 and case concurrency 8 unless explicit
+`--high-rate` sets suite concurrency 6 and case concurrency 6 unless explicit
 flags override it. More trials = a steadier estimate on a
 non-deterministic system, at more tokens/time.
 
