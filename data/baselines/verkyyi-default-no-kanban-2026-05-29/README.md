@@ -1,7 +1,6 @@
 # verkyyi default no-kanban baseline, 2026-05-29
 
-This baseline uses the same local Hermes default profile family as the kanban
-baseline, but with the kanban execution surface disabled for the run. See
+This is the direct/no-kanban surface for the same profile family. See
 `../verkyyi-default-2026-05-29` for the paired baseline.
 
 It is published as a **redacted distribution-style baseline**. It follows the
@@ -17,40 +16,42 @@ repository and link it from the benchmark result.
 
 | field | value |
 |---|---:|
-| Run ID | `hb-20260529T095156Z` |
-| Overall score | `92.34` |
-| Observed runtime | `~3m 46s` |
+| Run ID | `hb-20260529T111210Z` |
+| Overall score | `78.15` |
+| Observed runtime | `~6m 57s` |
 | Evaluator driver | `codex` |
 | Agentic max turns default | `2` |
 | Profile hash | `aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599` |
-| HermesBench git SHA | `3a3893f36d7b7dc4aa172fe29b7b864bf4c34891` |
+| HermesBench git SHA | `081c15983d45e82e5caead4e19e49e1652fba2c0+dirty` |
 | Prompt cases | `48` |
 | Suites ran | `13` |
 | Trials per case | `1` |
-| Suite concurrency | `6` |
-| Case concurrency | `6` |
+| Suite concurrency | `3` |
+| Case concurrency | `3` |
 
 Command:
 
 ```bash
-HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --suite-concurrency 3 --case-concurrency 3 --trials 1
 ```
 
 ## Score Breakdown
 
 | metric | score |
 |---|---:|
-| Closure | 100.0 |
-| Stability | 100.0 |
-| Scope discipline | 100.0 |
-| Responsiveness | 92.5 |
-| Appropriateness | 73.0 |
-| Coherence | 82.6 |
+| Capability / truthfulness | 70.9 |
+| Reliability / safety | 96.2 |
+| Efficiency / UX | 86.6 |
+| Task fulfillment | 71.6 |
+| Evidence / truthfulness | 69.9 |
+| Outcome reached | 94.2 |
+| Runtime / scope safety | 98.1 |
+| Responsiveness | 92.2 |
+| Communication quality | 80.9 |
 
-Closure, stability, scope discipline, and responsiveness are deterministic
-execution metrics. Appropriateness and coherence are LLM-judged semantic
-metrics. Artifact correctness is retained in the machine-readable score file
-and omitted from this compact table because it is currently saturated.
+HermesBench uses a balanced 3x2 score model: capability/truthfulness 40%,
+reliability/safety 30%, and efficiency/UX 30%. Each top axis has two sub-axes,
+and a balance factor rewards configurations that stay strong across all three.
 
 ## Runtime Shape
 
@@ -62,36 +63,30 @@ and omitted from this compact table because it is currently saturated.
 | Execution surface | Direct/no-kanban |
 | Toolsets | `hermes-cli` |
 | Enabled plugins | `agentfeeds`, `break-glass-cli`, `observability/langfuse` |
-| Kanban | disabled for this run |
+| Kanban | disabled |
 | Gateway | recent-file trust enabled for 600 seconds |
 
-## Why This Baseline Exists
+## Worker Profile Coverage
 
-Hermes with kanban and Hermes without kanban expose meaningfully different
-shared configuration surfaces. The benchmark keeps one leaderboard because the
-bundled use cases are framework-agnostic and should run on either surface, but
-the leaderboard should make the surface visible next to the score.
-
-The `delegated_closure` suite was skipped because
-`HERMES_BENCH_DELEGATED_CLOSURE` was not set. That suite is kanban/multi-profile
-specific and should be reported separately when included.
+Kanban was disabled for this runtime configuration. No worker profile path was
+part of the measured baseline.
 
 ## Suite Scores
 
 | suite | score |
 |---|---:|
-| `runtime_config` | 94.45 |
-| `code_workflow` | 68.58 |
-| `ops_monitoring` | 70.94 |
-| `tool_discipline` | 97.88 |
-| `benchmark_design` | 96.24 |
-| `delegation_boundary` | 98.04 |
-| `gateway_messaging` | 96.54 |
-| `research_synthesis` | 95.75 |
-| `memory_hygiene` | 93.83 |
-| `truthfulness` | 99.05 |
-| `daily_assistant` | 92.50 |
-| `ambiguous_followup` | 96.56 |
+| `runtime_config` | 78.64 |
+| `code_workflow` | 45.89 |
+| `ops_monitoring` | 52.96 |
+| `tool_discipline` | 89.09 |
+| `benchmark_design` | 81.75 |
+| `delegation_boundary` | 90.17 |
+| `gateway_messaging` | 87.57 |
+| `research_synthesis` | 80.29 |
+| `memory_hygiene` | 69.19 |
+| `truthfulness` | 88.27 |
+| `daily_assistant` | 73.83 |
+| `ambiguous_followup` | 78.31 |
 | `gateway_ack_policy` | 100.00 |
 
 `delegated_closure` was skipped because `HERMES_BENCH_DELEGATED_CLOSURE` was not set.
@@ -117,8 +112,8 @@ See `distribution-baseline.yaml` for the machine-readable profile snapshot and
 | file | purpose |
 |---|---|
 | `run-manifest.json` | Run identity, command, environment knobs, skipped suites, redaction policy, and file hashes. |
-| `suite-results.json` | Per-suite scores, axes, latency summaries, turns, judge errors, sampled failures, and side-effect samples. |
-| `case-results.jsonl` | Case catalogue with prompt hashes/excerpts, suite-level observed metrics, and sampled failures/side effects. Historical per-trial observations were not retained for this run. |
+| `suite-results.json` | Per-suite scores, top axes, sub-axes, latency summaries, turns, judge errors, sampled failures, and side-effect samples. |
+| `case-results.jsonl` | Redacted per-trial case observations; raw transcripts and target replies are omitted. |
 | `judge-decisions.jsonl` | Aggregated LLM-judged metrics and sampled rationales; raw judge prompts/responses are omitted. |
 | `artifact-manifest.json` | Benchmark-created side-effect files by relative path, size, and short hash; contents are not published. |
 | `cost-usage.json` | Runtime and estimated call counts; token/cost accounting was not captured by this run. |

@@ -1,21 +1,11 @@
 {
-  "schema_version": 1,
-  "run_id": "hb-20260529T094614Z",
-  "status": "estimated_usage_only",
-  "observed_runtime_s": 312,
-  "cost_target_usd": "<10",
-  "tokens": {
-    "available": false,
-    "reason": "provider token accounting was not captured by this run"
-  },
-  "estimated_call_counts": {
-    "target_turns_sent": 47,
-    "judge_trials": 48,
-    "codex_controller_sessions": 48
-  },
-  "models": {
-    "target_model": "gpt-5.5",
-    "target_provider": "openai-codex",
-    "evaluator_driver": "codex"
-  }
+  "schema_version": 2,
+  "run_id": "hb-20260529T111322Z",
+  "observed_runtime_s": 435,
+  "estimated_target_turns": 48,
+  "estimated_prompt_trials": 48,
+  "estimated_judge_calls": 48,
+  "token_usage_captured": false,
+  "dollar_cost_captured": false,
+  "budget_policy": "Default run should remain below $10; this artifact records call counts only because provider token accounting was not captured."
 }

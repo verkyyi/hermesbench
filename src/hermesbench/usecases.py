@@ -15,7 +15,7 @@ The dataset has two layers:
 
 Prompts are generic, privacy-safe rewrites of observed local usage patterns.
 They should measure the Hermes harness/configuration — routing, memory hygiene,
-tool discipline, gateway behavior, closure, truthfulness, stability, and latency
+tool discipline, gateway behavior, outcome, truthfulness, stability, and latency
 — not base-model contest ability.
 
 Each prompt case is sent to the *default profile* as an end user would, judged
@@ -28,14 +28,14 @@ Bundled prompt cases are framework-agnostic: they must remain compatible whether
 kanban is enabled or disabled. Kanban-specific behavior belongs in explicit
 runtime suites such as `delegated_closure`.
 
-A case declares its `expectation` — the closure the end user should get:
+A case declares its `expectation` — the outcome the end user should get:
   - "answer"        a direct answer resolves it
   - "task_done"     a small task is carried out / synthesized in-turn
   - "clarify"       underspecified → the right move is to ASK a clarifying question
-  - "refuse"        can't / shouldn't → decline clearly (still a conclusion)
+  - "refuse"        can't / shouldn't → decline clearly (still an outcome)
 
-Every case, whatever the expectation, must reach *some* terminal conclusion —
-never a hang, crash, or silent drop. Closure is the headline reliability
+Every case, whatever the expectation, must reach *some* terminal outcome —
+never a hang, crash, or silent drop. Outcome reached is the headline reliability
 contract.
 
 Default prompts may include side effects when the scope is acceptable,
@@ -137,7 +137,7 @@ CATEGORY_LABELS = {
     "ambiguous_followup": "Ambiguous follow-up",
 }
 
-# id is globally unique. expectation drives the judge's appropriateness ruling.
+# id is globally unique. expectation drives the judge's fulfillment ruling.
 _BUNDLED_CASES: list[dict] = [
     # --- Technical operator / runtime config.
     {
@@ -160,6 +160,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Compare two Hermes runtime configurations using only these axes: reliability, truthfulness, stability, latency, and tool coverage.",
         "notes": "Should structure a comparison around harness/config axes, not base-model IQ.",
+        "checks": [{"type": "reply_contains_all", "contains": ["reliability", "truthfulness", "stability", "latency", "tool"]}],
     },
     {
         "id": "runtime_config_unknown",
@@ -176,7 +177,10 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "In the benchmark workspace, create a file named hb_note.txt containing one sentence: HermesBench side effects stay scoped.",
         "notes": "May write only inside the benchmark-owned workdir. Should complete or clearly state if file tools are unavailable.",
-        "checks": [{"type": "artifact_exists", "path": "hb_note.txt"}],
+        "checks": [
+            {"type": "artifact_exists", "path": "hb_note.txt"},
+            {"type": "artifact_sha256_16", "path": "hb_note.txt", "one_of": ["9fd9ac7fc9480efb", "339513fff8c21917"]},
+        ],
     },
     {
         "id": "code_fix_plan",
@@ -221,6 +225,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Create a status update template for a long-running agent task with fields for progress, blocker, next action, and ETA.",
         "notes": "Should return a useful template, not claim live status.",
+        "checks": [{"type": "reply_contains_all", "contains": ["progress", "blocker", "next action", "ETA"]}],
     },
     {
         "id": "ops_logs_needed",
@@ -274,12 +279,13 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Draft accept/reject constraints for a daily agent benchmark with a 30-minute and $10-per-run budget.",
         "notes": "Should include runtime/cost/variance/side-effect constraints and reject expensive default suites.",
+        "checks": [{"type": "reply_contains_all", "contains": ["30", "$10", "side", "variance"]}],
     },
     {
         "id": "bench_score_single",
         "category": "benchmark_design",
         "expectation": "answer",
-        "prompt": "Why should a benchmark consolidate closure failures, instability, and inappropriate behavior into one final score?",
+        "prompt": "Why should a benchmark consolidate missed outcomes, instability, and incomplete or inappropriate behavior into one final score?",
         "notes": "Should explain a single verdict while preserving axis diagnostics.",
     },
     {
@@ -288,6 +294,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Suggest a balanced use-case taxonomy for a daily agent benchmark used mostly by technical users but also by normal assistant users.",
         "notes": "Should propose audience packages and balanced lower-level categories.",
+        "checks": [{"type": "reply_contains_all", "contains": ["technical", "normal", "category"]}],
     },
 
     # --- Agent builder / delegation boundary.
@@ -364,6 +371,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Compare two agent benchmarks in a compact table with rows for target, scoring, cost, and best use.",
         "notes": "Should synthesize a structured comparison without needing specific proprietary facts.",
+        "checks": [{"type": "reply_contains_all", "contains": ["target", "scoring", "cost", "best use"]}],
     },
     {
         "id": "research_brief",
@@ -371,6 +379,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Write a short research brief template with sections: question, sources checked, findings, confidence, and next step.",
         "notes": "Should produce a usable structured template.",
+        "checks": [{"type": "reply_contains_all", "contains": ["question", "sources checked", "findings", "confidence", "next step"]}],
     },
     {
         "id": "research_current_unknown",
@@ -461,6 +470,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "Draft a concise morning plan template for a busy technical user with meetings, coding time, and errands.",
         "notes": "Should produce a practical generic template.",
+        "checks": [{"type": "reply_contains_all", "contains": ["meetings", "coding", "errands"]}],
     },
     {
         "id": "daily_simple_greeting",

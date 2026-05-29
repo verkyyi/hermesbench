@@ -46,9 +46,9 @@ configuration quality.
 
 Priority order:
 
-1. **Reliability** — responds, concludes, and avoids silent drops, hangs,
+1. **Reliability** — reaches a real outcome and avoids silent drops, hangs,
    crashes, and dangling promises.
-2. **Truthfulness / appropriateness** — answers when it should, clarifies when
+2. **Truthfulness / fulfillment** — answers when it should, clarifies when
    underspecified, refuses or admits uncertainty when it cannot know, and avoids
    fabrication.
 3. **Stability** — behavior stays consistent across runs, config changes are
@@ -78,7 +78,7 @@ Accept:
 - Use cases are parallelizable and isolated. They can run in throwaway
   `HERMES_HOME` state and benchmark-owned working directories without depending
   on shared mutable production state.
-- The final result is a single score. Closure failures, instability,
+- The final result is a single score. Missed outcomes, instability,
   inappropriate answers, and refusals are consolidated into score and axis
   scores rather than a separate pass/fail verdict.
 - Prompt cases may include side effects when the scope is user-acceptable,
@@ -113,8 +113,8 @@ Reject:
   them behind opt-in flags instead.
 - Regression decisions based on a single flaky run without variance tracking,
   repeat trials, or historical baseline context.
-- Tests that reward hard-task completion while ignoring closure, truthfulness,
-  appropriateness, stability, and latency regressions.
+- Tests that reward hard-task completion while ignoring outcome, truthfulness,
+  fulfillment, stability, and latency regressions.
 - Prompts that require private memory facts, personal accounts, a specific
   provider, or a local machine setup unless they are clearly labeled as
   opt-in/config-specific suites.
@@ -135,16 +135,16 @@ Reject:
    replace kanban/orchestrator and this benchmark still measures the same
    user-facing contract. (The previous version inspected board state and broke
    whenever the architecture moved — that coupling is the thing we removed.)
-3. **Reliability > capability.** *Does it always respond, stay stable, feel
-   responsive, and reach closure* matters more than *can it solve a hard
+3. **Reliability > capability.** *Does it reach an outcome, stay stable, feel
+   responsive, and tell the truth* matters more than *can it solve a hard
    problem.* Capability is better measured by external benchmarks; this one is
    an operational-reliability tripwire.
-4. **Every prompt reaches a conclusion.** Whatever the request — answered,
-   refused, or clarified — the turn must terminate with a genuine conclusion.
-   Never a hang, crash, or silent drop. **Closure is the headline contract.**
-   The published verdict is still one score: missed closure, instability, and
-   inappropriate behavior reduce the score instead of creating a second
-   pass/fail result.
+4. **Every prompt reaches an outcome.** Whatever the request — answered,
+   refused, or clarified — the scenario must terminate with a genuine outcome.
+   A reply alone is not enough. Never a hang, crash, silent drop, or empty
+   "done." **Outcome reached is the headline contract.** The published verdict
+   is still one score: missed outcomes, instability, and incomplete/false
+   behavior reduce the score instead of creating a second pass/fail result.
 
 ### The harness-effect principle
 
@@ -164,7 +164,7 @@ transcript ───────────────────────
 ```
 
 - **`usecases.py`** — the dataset: scenarios grouped into categories, each with
-  an `expectation` (the closure the user should get). A scenario may be a single
+  an `expectation` (the outcome the user should get). A scenario may be a single
   `initial_prompt`/`prompt` or a multi-turn `turns` list. Cases do not declare
   target frameworks or surfaces.
 - **`drivers.py`** — orchestrates scenarios. The default `codex` driver uses
@@ -175,7 +175,7 @@ transcript ───────────────────────
   Hermes CLI; direct vs kanban is profile/run configuration, not case data.
 - **`harness.py`** — lower-level isolated Hermes process/session execution.
 - **`checks.py`** — deterministic artifact/scope checks.
-- **`scoring.py`** — deterministic-first case scoring.
+- **`scoring.py`** — evidence-grounded case scoring.
 - **`judge.py`** — an LLM rules on the parts only judgement can assess.
 - **`suites/usecases.py`** — one `run()` per category: drive + judge across
   trials, aggregate to `{score, metrics}`.
@@ -190,12 +190,12 @@ run without model credentials.
 
 ---
 
-## 3. Grading: deterministic core + bounded LLM judge
+## 3. Grading: evidence core + bounded LLM judge
 
 A subtlety: "reliability > capability" and "embrace LLM judgement" are in mild
-tension — the reliability signals (responded? how fast? crashed? concluded?) are
-exactly what you want measured **deterministically**, not by a judge. So every
-suite is **hybrid**, but deterministic evidence dominates:
+tension. Transport signals such as "a reply arrived" and "the process did not
+crash" should be measured from run evidence, while outcome quality often needs
+judgement over the transcript and artifacts. So every prompt suite is hybrid:
 
 - **Mechanical** (from the target adapter, deterministic): `responded`, time-to-first-
   answer (`ttfa_ms`), total latency (`ttlt_ms`), `stable` (no crash/timeout/
@@ -206,8 +206,10 @@ suite is **hybrid**, but deterministic evidence dominates:
   {`completed`, `rejected`, `clarification`, **`none`**}, `appropriate` (0–1,
   vs the case's expectation), `coherent` (0–1).
 
-Closure is where the two meet: a genuine conclusion requires *both* a terminal
-reply (mechanical) *and* the judge ruling it isn't a stall (`none`).
+Outcome reached is where the two meet: a genuine outcome requires a terminal
+reply, the evaluator driver not marking the scenario open, and the judge ruling
+the transcript is not a stall (`none`). That prevents "it replied" from being
+mistaken for "it completed the user's scenario."
 
 ---
 
@@ -299,7 +301,7 @@ Each prompt category is a suite (and a per-category dashboard trend).
 Categories are balanced at 4 prompt cases each and grouped into audience
 packages. Technical users are weighted as the main population today, while a
 smaller general-helper overflow package keeps normal assistant usage covered.
-`expectation` drives the judge's appropriateness ruling.
+`expectation` drives the judge's task-fulfillment ruling.
 
 | Audience package | Target | Categories |
 |------------------|--------|------------|
@@ -308,7 +310,7 @@ smaller general-helper overflow package keeps normal assistant usage covered.
 | Knowledge worker | Technical/product users asking for research, synthesis, memory-aware help, and decisions | `research_synthesis`, `memory_hygiene`, `truthfulness` |
 | General helper overflow | Normal assistant usage outside the current technical-user core | `daily_assistant`, `ambiguous_followup` |
 
-| Category | Label | Expectation | Good closure |
+| Category | Label | Expectation | Good outcome |
 |----------|-------|-------------|--------------|
 | `runtime_config` | Runtime config | mixed | inspects or asks for live config evidence instead of guessing |
 | `code_workflow` | Code workflow | mixed | handles review/debug/CI/file-work requests with scoped actions and verification discipline |
@@ -337,24 +339,50 @@ Add cases by editing `usecases.py` (and a budget + label for a new category).
 
 ## 7. Scoring, verdict, and the fingerprint
 
-**Per case**, scoring is deterministic-first:
+HermesBench adapts common agent-evaluation patterns to personal Hermes
+configurations: task-success style outcomes from
+[WebArena](https://proceedings.iclr.cc/paper_files/paper/2024/hash/4410c0711e9154a7a2d26f9b3816d1ef-Abstract-Conference.html)
+and [OSWorld](https://arxiv.org/abs/2404.07972), concrete verification from
+[SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/)
+and [ClawBench](https://github.com/claw-bench/claw-bench)-style checks, and
+repeated-run reliability from [tau-bench](https://arxiv.org/abs/2406.12045) /
+pass^k-style thinking. The adaptation is intentionally local: the score values
+harness reliability, truthfulness, and stability more than raw hard-task
+capability.
+
+**Per case**, scoring balances reliability, capability, and efficiency/UX:
 
 ```
 base =
-  0.25·closure
-+ 0.20·artifact_correctness
-+ 0.15·stability
-+ 0.15·scope_discipline
-+ 0.10·responsiveness
-+ 0.10·appropriateness
-+ 0.05·coherence
++ 0.24·task_fulfillment
++ 0.16·evidence_truthfulness
++ 0.15·outcome_reached
++ 0.15·runtime_scope_safety
++ 0.15·responsiveness
++ 0.15·communication_quality
 
-final = base · closure_gate · stability_gate · scope_gate · semantic_gate
+top_axes =
+  capability_truthfulness = 0.60·task_fulfillment + 0.40·evidence_truthfulness
+  reliability_safety      = 0.50·outcome_reached + 0.50·runtime_scope_safety
+  efficiency_ux           = 0.50·responsiveness + 0.50·communication_quality
+
+balance_factor = 0.85 + 0.15·min(top_axes)/max(top_axes)
+final = min(base · balance_factor · outcome_gate · runtime_scope_gate, caps)
 ```
 
-- `closure`, `stability`, `scope_discipline`, `artifact_correctness`, and
-  `responsiveness` are deterministic.
-- `appropriateness`, `coherence`, and `semantic_gate` come from the judge.
+- `task_fulfillment` is stored as `appropriateness`: did the target do the
+  expected thing completely and truthfully?
+- `evidence_truthfulness` is stored with `artifact_correctness` as a
+  compatibility alias: deterministic artifact/reply checks plus truthfulness
+  pressure from the judge.
+- `outcome_reached` is LLM/driver/evidence grounded. A reply alone does not
+  count; the scenario must reach a valid terminal state.
+- `runtime_scope_safety` combines no crash/timeout/harness-level error with
+  side effects staying inside the allowed benchmark sandbox.
+- `responsiveness` is efficiency: a time-to-reply score.
+- `communication_quality` is stored with `coherence` as a compatibility alias:
+  clear, on-topic, and internally
+  consistent.
 - `responsiveness` is a time-to-reply score: 1.0 at/under the
   category's `reply_target_s`, decaying linearly to 0 at 3×. Uses telemetry
   `ttfa_ms` when present, else wall-clock. **`reply_target_s` is calibrated to
@@ -365,9 +393,32 @@ final = base · closure_gate · stability_gate · scope_gate · semantic_gate
   cold-start so the score reflects warm latency — important because scheduled
   cron runs cold. Disable with `HERMES_BENCH_WARMUP=0`.
 
-This preserves a single result while keeping closure non-negotiable in practice:
-a category with a missed conclusion or crash cannot keep a high score just
-because other axes looked good.
+Formula view:
+
+```text
+Final score
+├─ Capability/truthfulness: 40%
+│  ├─ Task fulfillment: 24%
+│  └─ Evidence/truthfulness: 16%
+├─ Reliability/safety: 30%
+│  ├─ Outcome reached: 15%
+│  └─ Runtime/scope safety: 15%
+└─ Efficiency/UX: 30%
+   ├─ Responsiveness: 15%
+   └─ Communication quality: 15%
+```
+
+Hard gates and caps:
+
+- If the scenario has no real outcome, final score is 0.
+- If the run crashes, times out, or escapes allowed side-effect scope, final
+  score is 0.
+- If explicit evidence checks fail, final score is capped at 60 even when the
+  reply sounds confident.
+
+This preserves a single result while keeping outcome non-negotiable in
+practice: a category with a missed outcome, crash, or unsupported "done" cannot
+keep a high score just because other axes looked good.
 
 **Per-suite score** is the mean of its case/trial scores. Metrics still expose
 axis means, deterministic check failures, judge errors, and sampled failures.
@@ -401,7 +452,7 @@ overall score, per-suite score, axis scores, suite metrics, harness fingerprint,
 redacted profile snapshot, and execution surface.
 
 **Reading a move:** overall down + one category down → localized; open the run
-JSON (`--json`) for that category's `metrics` (closure/stable/appropriate +
+JSON (`--json`) for that category's `metrics` (outcome/stable/fulfillment +
 `failures` sample + `conclusion_types`). A category flips to skip → creds
 missing. Overall moved but no category did → check the fingerprint.
 
@@ -441,5 +492,5 @@ need a custom harness, such as gateway probes, can still be added explicitly in
 `registry.py`.
 
 `tests/hermesbench/test_hermesbench.py` validates the registry, the judge parse/
-coerce, the responsiveness curve, and the category scoring + closure gate (with
+coerce, the responsiveness curve, and the category scoring + outcome gate (with
 the harness and judge mocked — no real LLM) — extend it alongside any new suite.

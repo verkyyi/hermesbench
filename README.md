@@ -25,8 +25,9 @@ small general-helper overflow package for normal assistant requests.
   scoring intent; run configuration chooses the driver and target agent adapter.
 - **4 audience packages**: technical operator, agent builder, knowledge worker,
   and general helper overflow.
-- **Score-only verdict**: closure failures, instability, inappropriate answers,
-  and latency regressions are folded into one score plus axis diagnostics.
+- **Score-only verdict**: missed outcomes, instability, incomplete/false
+  answers, and latency regressions are folded into one score plus axis
+  diagnostics.
 - **Scoped side effects**: default prompt suites can write only inside a
   benchmark-owned working directory; live user data and external actions are
   opt-in only.
@@ -51,8 +52,9 @@ case spec -> driver adapter -> target adapter -> deterministic checks -> judge -
 - **Target adapter**: talks to the agent under test. The current public adapter
   is Hermes CLI; direct/no-kanban vs kanban delegation is run/profile config,
   not case data.
-- **Scorer**: uses deterministic evidence first and LLM judgement only for
-  semantic appropriateness/coherence.
+- **Scorer**: uses deterministic evidence plus bounded LLM judgement to decide
+  whether the scenario reached a real outcome and whether the final result was
+  complete, truthful, scoped, responsive, and clear.
 
 ## Published Baselines
 
@@ -60,15 +62,15 @@ The first public baselines are redacted distribution-style snapshots of the same
 local Hermes default profile family. The leaderboard focuses on score-related
 diagnostics and keeps reproducibility metadata in the linked baseline files.
 
-| configuration | score | closure | stability | scope | responsiveness | appropriateness | coherence | coverage | profile snapshot |
-|---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| `verkyyi/default-no-kanban` | `92.34` | `100.0` | `100.0` | `100.0` | `92.5` | `73.0` | `82.6` | `13/14` | `direct`, `gpt-5.5`, `honcho`, `3 plugins` |
-| `verkyyi/default` | `88.82` | `96.2` | `96.2` | `100.0` | `88.0` | `72.1` | `81.2` | `13/14` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins` |
+| configuration | score | cap/truth | rel/safety | eff/ux | fulfillment | evidence | outcome | safety | response | comms | coverage | profile snapshot |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
+| `verkyyi/default-no-kanban` | `78.15` | `70.9` | `96.2` | `86.6` | `71.6` | `69.9` | `94.2` | `98.1` | `92.2` | `80.9` | `13/14` | `direct`, `gpt-5.5`, `honcho`, `3 plugins` |
+| `verkyyi/default` | `77.23` | `68.9` | `94.2` | `86.5` | `69.8` | `67.5` | `92.3` | `96.2` | `94.6` | `78.4` | `13/14` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins` |
 
-Closure, stability, scope discipline, and responsiveness are deterministic
-execution metrics. Appropriateness and coherence are LLM-judged semantic
-metrics. The opt-in `delegated_closure` suite is not included in either
-baseline score.
+Outcome reached is evidence-grounded: a transport-level reply is not enough; the
+driver/judge must see a valid terminal state. The opt-in `delegated_closure`
+suite is not included in either baseline score. These baselines use the balanced
+3x2 scoring model and were run in parallel with bounded high-rate concurrency.
 
 Each baseline directory includes a human summary plus public-safe observability
 artifacts: `run-manifest.json`, `suite-results.json`, `case-results.jsonl`,
@@ -259,20 +261,34 @@ Profile snapshots redact secrets and local paths by default. Set
 
 ## Scoring
 
-Per suite, HermesBench combines deterministic and judged signals:
+Per suite, HermesBench combines evidence-backed and judged signals:
 
-- closure
-- artifact correctness
+- outcome reached
+- evidence / truthfulness
 - stability
-- scope discipline
+- runtime / scope safety
 - responsiveness
-- appropriateness
-- coherence
+- task fulfillment
+- communication quality
 
-Closure, stability, artifact checks, scope discipline, and responsiveness are
-deterministic. Appropriateness and coherence come from the LLM judge. The final
-score is the only product-facing verdict; axis scores explain why the score
-moved.
+The default case formula is:
+
+```text
+score = 0.40 capability/truthfulness
+      + 0.30 reliability/safety
+      + 0.30 efficiency/UX
+
+capability/truthfulness = 0.60 fulfillment + 0.40 evidence_truthfulness
+reliability/safety      = 0.50 outcome     + 0.50 runtime_scope_safety
+efficiency/UX           = 0.50 response    + 0.50 communication
+```
+
+HermesBench applies a balance factor across the three top axes, so a run with
+similar capability, reliability, and UX scores ranks better than a lopsided run
+with the same raw weighted average. Outcome and runtime/scope safety remain hard
+gates: fast or polished replies score 0 if the scenario did not actually close,
+crashed, or escaped the allowed side-effect scope. The final score is the only
+product-facing verdict; axis scores explain why the score moved.
 
 ## Documentation
 

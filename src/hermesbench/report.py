@@ -12,6 +12,39 @@ def _fmt_delta(cur, prev) -> str:
     return f"  ({'+' if d >= 0 else ''}{d:.1f})"
 
 
+_AXIS_LABELS = {
+    "task_fulfillment": "ful",
+    "evidence_truthfulness": "evd",
+    "outcome_reached": "out",
+    "runtime_scope_safety": "safe",
+    "communication_quality": "com",
+    "closure": "out",
+    "artifact_correctness": "evd",
+    "stability": "stb",
+    "scope_discipline": "scp",
+    "responsiveness": "rsp",
+    "appropriateness": "ful",
+    "coherence": "clr",
+}
+
+
+def _axis_items(axes: dict):
+    seen = set()
+    for key in (
+        "task_fulfillment", "evidence_truthfulness", "outcome_reached",
+        "runtime_scope_safety", "responsiveness", "communication_quality",
+        "closure", "artifact_correctness", "stability", "scope_discipline",
+        "appropriateness", "coherence",
+    ):
+        if key not in axes or not isinstance(axes[key], (int, float)):
+            continue
+        label = _AXIS_LABELS[key]
+        if label in seen:
+            continue
+        seen.add(label)
+        yield label, axes[key]
+
+
 def render(report: dict, previous: dict | None = None) -> str:
     prev_suites = {s["id"]: s for s in (previous or {}).get("suites", [])}
     h = report["harness"]
@@ -44,9 +77,8 @@ def render(report: dict, previous: dict | None = None) -> str:
         delta = _fmt_delta(score, (prev or {}).get("score")) if prev else ""
         axes = (s.get("metrics") or {}).get("axis_scores") or {}
         axis_str = " ".join(
-            f"{name[:4]}={val:.0f}"
-            for name, val in axes.items()
-            if isinstance(val, (int, float))
+            f"{name}={val:.0f}"
+            for name, val in _axis_items(axes)
         )
         lines.append(
             f"  {s['id']:<22}{s.get('mode',''):<10}"

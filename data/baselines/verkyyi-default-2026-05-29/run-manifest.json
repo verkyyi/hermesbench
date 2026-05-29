@@ -1,24 +1,25 @@
 {
-  "schema_version": 1,
-  "run_id": "hb-20260529T094614Z",
-  "timestamp_utc": "2026-05-29T09:46:14.022879+00:00",
-  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
-  "overall_score": 88.82,
-  "observed_runtime_s": 312,
+  "schema_version": 2,
+  "run_id": "hb-20260529T111322Z",
+  "timestamp_utc": "2026-05-29T11:13:22.874055+00:00",
+  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --suite-concurrency 3 --case-concurrency 3 --trials 1",
+  "overall_score": 77.23,
+  "observed_runtime_s": 435,
+  "runtime_note": "Approximate wall-clock from concurrent suite durations; runner does not emit command wall time.",
   "profile_fingerprint": {
-    "hermesbench_git_sha": "3a3893f36d7b7dc4aa172fe29b7b864bf4c34891",
+    "hermesbench_git_sha": "081c15983d45e82e5caead4e19e49e1652fba2c0+dirty",
     "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
   },
   "environment": {
     "trials_per_case": 1,
-    "case_concurrency": 6,
-    "suite_concurrency": 6,
+    "case_concurrency": 3,
+    "suite_concurrency": 3,
     "high_rate": true,
     "evaluator_driver": "codex",
     "agentic_max_turns_default": 2,
-    "controller_timeout_s": 180,
-    "driver_scenario_closed_rate": 0.9792,
-    "turns_sent": 47,
+    "controller_timeout_s": 240,
+    "driver_scenario_closed_rate": 0.9583,
+    "turns_sent": 48,
     "turn_budget": 96
   },
   "skipped_suites": [
@@ -45,53 +46,53 @@
   "artifact_files": [
     {
       "path": "README.md",
-      "bytes": 4935,
-      "sha256": "5b4a389f912a8b34122b54c11e5f9f60209b5f4b117df74cb64da85401343647"
+      "bytes": 4942,
+      "sha256": "6cb4cba2c1dc3810694ea8a2a3d47cd1acd044182edbb85edb9ab22498f0136f"
     },
     {
       "path": "artifact-manifest.json",
-      "bytes": 2402,
-      "sha256": "0c0ca51da9b3a341bfa2e970fa30a1c26862e9f6bffeff1dc36b2dc5bda38e70"
+      "bytes": 2299,
+      "sha256": "8c703fef95a6465801275587c88955bfbdd602e8840ea39bbc52a67a65482828"
     },
     {
       "path": "case-results.jsonl",
-      "bytes": 41942,
-      "sha256": "ebcb6af84208040662fe7d7ad3ad50ead2611fea6a4de9d5e45c5f0b6dab97e8"
+      "bytes": 76687,
+      "sha256": "70775179e69a42dfc23cdb43fa619fe5830e266aa60300ae703e5b18c4c7ef43"
     },
     {
       "path": "cost-usage.json",
-      "bytes": 512,
-      "sha256": "161bac28c764cd4ba5225a6a0374482d6a9b9f1f241bbda4ac95894060a28ca2"
+      "bytes": 402,
+      "sha256": "89211a8776f54a2a16e38d8ee6820c919c6ffe526e160595e30d420155b8cff6"
     },
     {
       "path": "distribution-baseline.yaml",
-      "bytes": 3446,
-      "sha256": "dc7399d594a13036910c394fefb65c2f68d2df562c11a84a0cb81282a5caeaaf"
+      "bytes": 4105,
+      "sha256": "6455b8f4a58769168a9a0dd947c0827fedb24193dd16673bda7c05b390713ab8"
     },
     {
       "path": "judge-decisions.jsonl",
-      "bytes": 5396,
-      "sha256": "1206bc451cb190bee4f09396781d60dc2c926369749a09014c4091f297e662d0"
+      "bytes": 7956,
+      "sha256": "7ce7ba1964ae39160f4e87252578f9ae8256f71f728d5fd74372f22b05f6cf16"
     },
     {
       "path": "profile-snapshot.redacted.yaml",
-      "bytes": 2023,
-      "sha256": "ed52e3927cd840408407ae40bd4b81ed8392577bcd48d72ce57ed82157f6e840"
+      "bytes": 4838,
+      "sha256": "f82e0b5ee43cbaf862102134ec0667b8db16ea464d2a85775236be78cb7db670"
     },
     {
       "path": "score.json",
-      "bytes": 3494,
-      "sha256": "002396a5ce85933942d784dddce14f207b75b2b96f57d30b41087a635b5e1d7a"
+      "bytes": 4041,
+      "sha256": "307f145e7799f1036d210f19dd3e712ac590dba42660d53d52a8c8c35dddc799"
     },
     {
       "path": "suite-results.json",
-      "bytes": 18207,
-      "sha256": "9c6af7ec134e0b6377d1754100b47017713832c3488ea7a52d71bc609b0f317b"
+      "bytes": 30596,
+      "sha256": "61d0c72f0624977a14d9a33d888cb807eb196f29bccdf6b773f597ea371ac704"
     },
     {
       "path": "variance.json",
-      "bytes": 284,
-      "sha256": "1ef2bfbeafe828c8b74e160386722b9da462e9d50a38abead5e1f80144b2e3ea"
+      "bytes": 229,
+      "sha256": "b2461560b37e2746ace611a1038e9fa2e4b902fe3fb8849dcb9f3a3773bb0c52"
     }
   ]
 }

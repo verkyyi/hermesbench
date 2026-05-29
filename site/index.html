@@ -62,45 +62,47 @@
           <p>
             Published runs should identify the Hermes profile distribution or a
             redacted distribution-style baseline. The main table keeps the
-            comparison score-focused: deterministic reliability signals are
-            separated from LLM-judged semantic signals, while exact run IDs,
-            hashes, commands, raw env vars, suite summaries, case catalogues,
-            judge summaries, side-effect manifests, and cost/variance notes
-            live in the linked baseline files.
+            comparison score-focused: the three top axes and their six sub-axes
+            are shown directly, while
+            exact run IDs, hashes, commands, raw env vars, suite summaries, case
+            catalogues, judge summaries, side-effect manifests, and
+            cost/variance notes live in the linked baseline files.
           </p>
         </div>
         <div class="table-wrap">
           <table class="leaderboard">
             <thead>
               <tr>
-                <th rowspan="2">Rank</th>
-                <th rowspan="2">Configuration</th>
-                <th rowspan="2">Score</th>
-                <th colspan="4">Deterministic metrics</th>
-                <th colspan="2">LLM-judged metrics</th>
-                <th rowspan="2">Coverage</th>
-                <th rowspan="2">Profile snapshot</th>
-              </tr>
-              <tr>
-                <th>Closure</th>
-                <th>Stability</th>
-                <th>Scope</th>
+                <th>Rank</th>
+                <th>Configuration</th>
+                <th>Score</th>
+                <th>Cap.</th>
+                <th>Rel.</th>
+                <th>UX</th>
+                <th>Fulfill.</th>
+                <th>Evidence</th>
+                <th>Outcome</th>
+                <th>Safety</th>
                 <th>Resp.</th>
-                <th>Appr.</th>
-                <th>Coh.</th>
+                <th>Comm.</th>
+                <th>Coverage</th>
+                <th>Profile snapshot</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>1</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
-                <td>92.34</td>
-                <td>100.0</td>
-                <td>100.0</td>
-                <td>100.0</td>
-                <td>92.5</td>
-                <td>73.0</td>
-                <td>82.6</td>
+                <td>78.15</td>
+                <td>70.9</td>
+                <td>96.2</td>
+                <td>86.6</td>
+                <td>71.6</td>
+                <td>69.9</td>
+                <td>94.2</td>
+                <td>98.1</td>
+                <td>92.2</td>
+                <td>80.9</td>
                 <td>13/14</td>
                 <td>
                   <span class="tag-list">
@@ -114,13 +116,16 @@
               <tr>
                 <td>2</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
-                <td>88.82</td>
+                <td>77.23</td>
+                <td>68.9</td>
+                <td>94.2</td>
+                <td>86.5</td>
+                <td>69.8</td>
+                <td>67.5</td>
+                <td>92.3</td>
                 <td>96.2</td>
-                <td>96.2</td>
-                <td>100.0</td>
-                <td>88.0</td>
-                <td>72.1</td>
-                <td>81.2</td>
+                <td>94.6</td>
+                <td>78.4</td>
                 <td>13/14</td>
                 <td>
                   <span class="tag-list">
@@ -135,11 +140,12 @@
           </table>
         </div>
         <p class="note">
-          Deterministic metrics are measured from execution evidence: closure,
-          stability, scope discipline, and responsiveness. LLM-judged metrics
-          are semantic appropriateness and coherence. The linked baseline files
-          retain run IDs, hashes, commands, runtime, and raw profile
-          fingerprints for reproducibility.
+          Outcome reached is evidence-grounded: a reply alone does not count.
+          Capability/truthfulness, reliability/safety, and efficiency/UX each
+          expose two sub-axes so lopsided results are visible. The linked baseline files
+          retain run IDs, hashes, commands, runtime, and raw profile fingerprints
+          for reproducibility. These baselines were run in parallel with bounded
+          high-rate concurrency to avoid saturating the target harness.
         </p>
       </section>
 
@@ -288,22 +294,26 @@ HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store</code></pre>
           <h2>Reliability before capability</h2>
         </div>
         <div class="pill-row">
-          <span>Closure</span>
-          <span>Artifact correctness</span>
-          <span>Stability</span>
-          <span>Scope discipline</span>
+          <span>Outcome reached</span>
+          <span>Evidence / truthfulness</span>
+          <span>Runtime / scope safety</span>
           <span>Responsiveness</span>
-          <span>Appropriateness</span>
-          <span>Coherence</span>
+          <span>Task fulfillment</span>
+          <span>Communication quality</span>
         </div>
         <p>
-          HermesBench scores deterministic evidence first: terminal outcome,
-          artifact checks, stability, scoped side effects, and latency. The LLM
-          judge is bounded to semantic appropriateness and coherence. Hard
-          external-agent capability benchmarks remain useful, but HermesBench
-          asks whether this runtime configuration is reliable enough to use
-          every day.
+          HermesBench balances reliability with capability and daily usability:
+          capability/truthfulness 40%, reliability/safety 30%, and
+          efficiency/UX 30%. Each top axis has two sub-axes, and a balance
+          factor rewards configurations that stay strong across all three
+          areas instead of over-optimizing one.
         </p>
+        <pre><code>base = .24*fulfillment + .16*evidence_truthfulness
+     + .15*outcome     + .15*runtime_scope_safety
+     + .15*response    + .15*communication
+
+balance = .85 + .15 * min(capability, reliability, ux) / max(...)
+final = min(base * balance * outcome_gate * safety_gate, caps)</code></pre>
       </section>
     </main>
 

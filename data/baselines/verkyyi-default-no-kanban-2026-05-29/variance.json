@@ -1,9 +1,7 @@
 {
-  "schema_version": 1,
-  "run_id": "hb-20260529T095156Z",
-  "status": "single_run_only",
-  "repeated_runs": 1,
-  "overall_score_stddev": null,
-  "suite_score_stddev": {},
-  "note": "Variance requires repeated runs of the same profile/configuration; this baseline stores one run."
+  "schema_version": 2,
+  "run_id": "hb-20260529T111210Z",
+  "trials_per_case": 1,
+  "repeated_run_statistics_available": false,
+  "note": "Single baseline run only. Use repeated runs for variance-aware regression decisions."
 }

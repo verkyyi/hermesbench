@@ -388,6 +388,16 @@ def test_agentic_bridge_records_target_turn(monkeypatch, tmp_path: Path):
 
 
 def test_deterministic_checks_and_scoring_dominate():
+    assert abs(sum(scoring.AXIS_WEIGHTS.values()) - 1.0) < 0.001
+    assert scoring.TOP_AXIS_WEIGHTS == {
+        "capability_truthfulness": 0.40,
+        "reliability_safety": 0.30,
+        "efficiency_ux": 0.30,
+    }
+    assert abs(
+        scoring.AXIS_WEIGHTS["responsiveness"] + scoring.AXIS_WEIGHTS["communication_quality"] - 0.30
+    ) < 0.001
+
     execution = {
         "concluded": True,
         "stable": True,
@@ -403,11 +413,15 @@ def test_deterministic_checks_and_scoring_dominate():
     scored = scoring.score_case(
         execution=execution,
         check_result=check_result,
-        judge={"conclusion_type": "completed", "appropriate": 0.5, "coherent": 0.5},
+        judge={"conclusion_type": "completed", "appropriate": 0.8, "coherent": 0.8},
         responsiveness=1.0,
     )
-    assert scored["deterministic_weight_share"] == 0.85
-    assert scored["score"] > 80
+    assert scored["efficiency_ux_weight_share"] == 0.30
+    assert scored["axes"]["task_fulfillment"] == 0.8
+    assert scored["axes"]["evidence_truthfulness"] == 0.8
+    assert scored["axes"]["outcome_reached"] == 1.0
+    assert scored["axes"]["closure"] == 1.0
+    assert scored["score"] >= 60
 
     failed = checks.run_checks({"checks": [{"type": "artifact_exists", "path": "missing.txt"}]}, execution)
     failed_score = scoring.score_case(
@@ -417,4 +431,41 @@ def test_deterministic_checks_and_scoring_dominate():
         responsiveness=1.0,
     )
     assert failed_score["axes"]["artifact_correctness"] == 0.0
+    assert failed_score["score_cap"] == 60.0
     assert failed_score["score"] < scored["score"]
+
+    no_outcome = scoring.score_case(
+        execution={**execution, "driver_decision": {"scenario_closed": False}},
+        check_result=check_result,
+        judge={"conclusion_type": "completed", "appropriate": 1.0, "coherent": 1.0},
+        responsiveness=1.0,
+    )
+    assert no_outcome["axes"]["outcome_reached"] == 0.0
+    assert no_outcome["score"] == 0.0
+
+
+def test_reply_and_hash_checks():
+    execution = {
+        "reply": "Progress: done. Blocker: none. Next action: verify. ETA: now.",
+        "concluded": True,
+        "stable": True,
+        "side_effects": {
+            "scope": "benchmark_workdir",
+            "files": [{"path": "hb_note.txt", "sha256_16": "9fd9ac7fc9480efb"}],
+        },
+    }
+
+    result = checks.run_checks(
+        {
+            "checks": [
+                {"type": "reply_contains_all", "contains": ["progress", "blocker", "next action", "ETA"]},
+                {"type": "reply_contains_any", "contains": ["verify", "missing"]},
+                {"type": "reply_not_contains_any", "contains": ["secret-token"]},
+                {"type": "artifact_sha256_16", "path": "hb_note.txt", "sha256_16": "9fd9ac7fc9480efb"},
+            ],
+        },
+        execution,
+    )
+
+    assert result["score"] == 1.0
+    assert all(c["ok"] for c in result["checks"])

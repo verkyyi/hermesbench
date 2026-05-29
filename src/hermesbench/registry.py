@@ -6,8 +6,8 @@ observable result, and returns a normalized
 ``{score: 0..100, metrics: {...}}`` (or ``{skipped: True, skip_reason}``).
 Prompt suites evaluate from the user's perspective and runtime suites may add
 auditable internal/runtime checks for behavior that is otherwise invisible, such
-as delegated kanban closure across profiles. All suites weight reliability,
-responsiveness, and closure above capability.
+as delegated kanban closure across profiles. All suites weight outcome,
+stability, truthfulness, and responsiveness above raw capability.
 
 Most suites drive real agents, so model-backed suites self-skip when
 HERMES_RUN_LLM_EVALS is unset. Deterministic runtime-policy suites can still
@@ -24,7 +24,7 @@ from hermesbench import usecases
 
 # Grading modes, mirroring ClawBench Core v1. Every v2 suite is ``hybrid``:
 # mechanical reliability signals (responded / latency / stable / concluded) plus
-# an LLM judge for conclusion-type, appropriateness, and coherence.
+# an LLM judge for outcome type, fulfillment, and communication quality.
 AUTOMATED = "automated"
 LLM_JUDGE = "llm_judge"
 HYBRID = "hybrid"
@@ -73,7 +73,7 @@ def _prompt_suites() -> list[Suite]:
             weight=1.0,
             runner=_RUNNER.format(cat),
             summary=f"Black-box {label} use cases ({package}) — "
-                    "closure, stability, responsiveness, appropriateness.",
+                    "outcome, stability, responsiveness, fulfillment.",
             interaction=MULTI_TURN,
         ))
     return suites

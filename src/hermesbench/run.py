@@ -30,12 +30,21 @@ from hermesbench import registry, report as report_mod, store, usecases
 
 def _git_sha() -> str | None:
     try:
+        repo = Path(__file__).resolve().parents[2]
         out = subprocess.run(
             ["git", "rev-parse", "HEAD"],
-            cwd=str(Path(__file__).resolve().parents[2]),
+            cwd=str(repo),
             capture_output=True, text=True, timeout=10,
         )
-        return out.stdout.strip() or None
+        sha = out.stdout.strip()
+        if not sha:
+            return None
+        dirty = subprocess.run(
+            ["git", "diff", "--quiet"],
+            cwd=str(repo),
+            capture_output=True, text=True, timeout=10,
+        )
+        return f"{sha}+dirty" if dirty.returncode else sha
     except Exception:
         return None
 

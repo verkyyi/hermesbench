@@ -70,7 +70,8 @@ Recommended:
 - `notes`: judge-facing rubric notes
 - `category`: optional inside each case; defaults to the category id
 - `driver`: Codex evaluator policy knobs such as `max_turns`
-- `checks`: deterministic checks such as `artifact_exists`
+- `checks`: evidence checks such as `artifact_exists`, `artifact_sha256_16`,
+  `reply_contains_all`, `reply_contains_any`, or `reply_not_contains_any`
 
 Cases are driver- and target-agnostic. Do not put target surfaces such as
 direct/kanban, profile names, or model/provider details in a case. Those belong
@@ -102,12 +103,12 @@ cases:
     driver:
       kind: codex
       max_turns: 3
-    notes: Codex may ask natural follow-up turns, then reports whether the scenario closed.
+    notes: Codex may ask natural follow-up turns, then reports whether the scenario reached an outcome.
 ```
 
 `codex` is the default evaluator-side driver. It uses Codex headless mode as a
 bounded controller, sends turns through the target adapter bridge, and returns a
-driver-side scenario-closure judgement. Prompt suites are agent-driven only.
+driver-side scenario-outcome judgement. Prompt suites are agent-driven only.
 
 Simple deterministic check:
 

@@ -2,13 +2,14 @@
 
 For each case in a category, a Codex evaluator driver orchestrates a target
 adapter against a driver/target-agnostic scenario. Target selection is run
-configuration. Scoring is deterministic-first: mechanical signals, artifact
-checks, scope checks, and latency dominate; LLM judgement is used only for
-semantic appropriateness and coherence.
+configuration. Scoring is evidence-grounded: mechanical signals, artifact
+checks, scope checks, latency, and bounded LLM judgement determine whether the
+scenario reached a real outcome and whether that outcome fulfilled the request.
 
-The final score is the only verdict. Closure, stability, scope, deterministic
-checks, and judged semantics are folded into the score, so a correct-looking but
-non-concluding or artifact-wrong turn cannot hide behind a high average.
+The final score is the only verdict. Outcome, stability, scope, evidence checks,
+responsiveness, and judged fulfillment are folded into the score, so a
+correct-looking but non-closing or artifact-wrong turn cannot hide behind a high
+average.
 
 All suites self-skip without HERMES_RUN_LLM_EVALS (they drive real agents).
 """
@@ -111,10 +112,16 @@ def _redacted_case_result(r: dict) -> dict:
         "scenario": r.get("scenario") or {},
         "score": round(float(scored.get("score") or 0.0), 2),
         "base_score": round(float(scored.get("base_score") or 0.0), 2),
+        "balanced_score": round(float(scored.get("balanced_score") or 0.0), 2),
         "axes": {
             k: round(100.0 * float(v), 1)
             for k, v in (scored.get("axes") or {}).items()
         },
+        "top_axes": {
+            k: round(100.0 * float(v), 1)
+            for k, v in (scored.get("top_axes") or {}).items()
+        },
+        "balance_factor": round(float(scored.get("balance_factor") or 0.0), 3),
         "mechanical": {
             "responded": bool(mech.get("responded")),
             "concluded": bool(mech.get("concluded")),
@@ -180,8 +187,8 @@ def _run_category(category: str) -> dict:
             results.append(f.result())
 
     n = len(results) or 1
-    closure_rate = sum(1 for r in results if r["mech"]["concluded"]) / n
-    semantic_closure_rate = sum(1 for r in results if r["genuine_conclusion"]) / n
+    mechanical_closure_rate = sum(1 for r in results if r["mech"]["concluded"]) / n
+    outcome_mean = sum(r["score"]["axes"]["outcome_reached"] for r in results) / n
     stable_rate = sum(1 for r in results if r["mech"]["stable"]) / n
     responded_rate = sum(1 for r in results if r["mech"]["responded"]) / n
     driver_decisions = [r["driver_decision"] for r in results if r["driver_decision"]]
@@ -190,14 +197,28 @@ def _run_category(category: str) -> dict:
         if driver_decisions else None
     )
     resp_mean = sum(r["responsiveness"] for r in results) / n
-    artifact_mean = sum(r["score"]["axes"]["artifact_correctness"] for r in results) / n
+    evidence_mean = sum(r["score"]["axes"]["evidence_truthfulness"] for r in results) / n
+    runtime_scope_mean = sum(r["score"]["axes"]["runtime_scope_safety"] for r in results) / n
     scope_mean = sum(r["score"]["axes"]["scope_discipline"] for r in results) / n
 
     judged = [r for r in results if not r["judge"]["judge_error"]]
-    appropriate_mean = (sum(r["judge"]["appropriate"] for r in judged) / len(judged)) if judged else 0.0
-    coherent_mean = (sum(r["judge"]["coherent"] for r in judged) / len(judged)) if judged else 0.0
+    fulfillment_mean = (
+        sum(r["score"]["axes"]["task_fulfillment"] for r in judged) / len(judged)
+    ) if judged else 0.0
+    communication_mean = (
+        sum(r["score"]["axes"]["communication_quality"] for r in judged) / len(judged)
+    ) if judged else 0.0
+    top_axis_means = {
+        "capability_truthfulness": sum(
+            r["score"]["top_axes"]["capability_truthfulness"] for r in results
+        ) / n,
+        "reliability_safety": sum(r["score"]["top_axes"]["reliability_safety"] for r in results) / n,
+        "efficiency_ux": sum(r["score"]["top_axes"]["efficiency_ux"] for r in results) / n,
+    }
     score = sum(r["score"]["score"] for r in results) / n
     base_score = sum(r["score"]["base_score"] for r in results) / n
+    balanced_score = sum(r["score"]["balanced_score"] for r in results) / n
+    balance_factor_mean = sum(r["score"]["balance_factor"] for r in results) / n
 
     ctypes: dict = {}
     for r in results:
@@ -245,31 +266,48 @@ def _run_category(category: str) -> dict:
             "driver_scenario_closed_rate": (
                 round(driver_closed_rate, 3) if driver_closed_rate is not None else None
             ),
-            "deterministic_weight_share": scoring.score_case(
-                execution={"concluded": True, "stable": True},
+            "efficiency_ux_weight_share": scoring.score_case(
+                execution={"concluded": True, "stable": True, "driver_decision": {"scenario_closed": True}},
                 check_result={"score": 1.0, "scope_ok": True},
                 judge={"appropriate": 1.0, "coherent": 1.0, "conclusion_type": "completed"},
                 responsiveness=1.0,
-            )["deterministic_weight_share"],
+            )["efficiency_ux_weight_share"],
             "base_score": round(base_score, 2),
+            "balanced_score": round(balanced_score, 2),
+            "balance_factor_mean": round(balance_factor_mean, 3),
+            "top_axis_scores": {
+                k: round(100.0 * v, 1)
+                for k, v in top_axis_means.items()
+            },
             "axis_scores": {
-                "closure": round(100.0 * closure_rate, 1),
-                "artifact_correctness": round(100.0 * artifact_mean, 1),
+                "task_fulfillment": round(100.0 * fulfillment_mean, 1),
+                "evidence_truthfulness": round(100.0 * evidence_mean, 1),
+                "outcome_reached": round(100.0 * outcome_mean, 1),
+                "runtime_scope_safety": round(100.0 * runtime_scope_mean, 1),
+                "responsiveness": round(100.0 * resp_mean, 1),
+                "communication_quality": round(100.0 * communication_mean, 1),
+                "closure": round(100.0 * outcome_mean, 1),
+                "artifact_correctness": round(100.0 * evidence_mean, 1),
                 "stability": round(100.0 * stable_rate, 1),
                 "scope_discipline": round(100.0 * scope_mean, 1),
-                "responsiveness": round(100.0 * resp_mean, 1),
-                "appropriateness": round(100.0 * appropriate_mean, 1),
-                "coherence": round(100.0 * coherent_mean, 1),
+                "appropriateness": round(100.0 * fulfillment_mean, 1),
+                "coherence": round(100.0 * communication_mean, 1),
             },
-            "closure_rate": round(closure_rate, 3),
-            "semantic_closure_rate": round(semantic_closure_rate, 3),
+            "outcome_reached_mean": round(outcome_mean, 3),
+            "mechanical_closure_rate": round(mechanical_closure_rate, 3),
+            "closure_rate": round(outcome_mean, 3),
+            "semantic_closure_rate": round(outcome_mean, 3),
             "stable_rate": round(stable_rate, 3),
             "responded_rate": round(responded_rate, 3),
-            "artifact_correctness_mean": round(artifact_mean, 3),
+            "task_fulfillment_mean": round(fulfillment_mean, 3),
+            "evidence_truthfulness_mean": round(evidence_mean, 3),
+            "artifact_correctness_mean": round(evidence_mean, 3),
+            "runtime_scope_safety_mean": round(runtime_scope_mean, 3),
             "scope_discipline_mean": round(scope_mean, 3),
             "responsiveness_mean": round(resp_mean, 3),
-            "appropriate_mean": round(appropriate_mean, 3),
-            "coherent_mean": round(coherent_mean, 3),
+            "communication_quality_mean": round(communication_mean, 3),
+            "appropriate_mean": round(fulfillment_mean, 3),
+            "coherent_mean": round(communication_mean, 3),
             "ttfa_p50_ms": _p50([r["mech"].get("ttfa_ms") for r in results]),
             "ttlt_p50_ms": _p50([r["mech"].get("ttlt_ms") for r in results]),
             "wall_p50_ms": _p50([r["mech"].get("wall_ms") for r in results]),

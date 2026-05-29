@@ -1,10 +1,10 @@
 """HermesBench v2 — LLM judge.
 
-Given the user prompt, its expected closure, and the assistant's reply, an LLM
-rules on the parts only judgement can assess: what *kind* of conclusion the reply
-is, whether that's appropriate for the request, and whether it's coherent. The
-mechanical reliability signals (responded / latency / stable / a reply arrived)
-come from the harness, not from here.
+Given the user prompt, its expected outcome, and the assistant's reply, an LLM
+rules on the parts only judgement can assess: what *kind* of terminal state the
+scenario reached, whether that's appropriate for the request, and whether it's
+coherent. The mechanical reliability signals (responded / latency / stable / a
+reply arrived) come from the harness, not from here.
 
 Uses agent.auxiliary_client.call_llm, which auto-resolves the default profile's
 configured provider/model — so the judge runs on the same model family the user
@@ -22,10 +22,14 @@ CONCLUSION_TYPES = ("completed", "rejected", "clarification", "none")
 
 # What each declared expectation should look like when handled well.
 _EXPECTATION_GUIDE = {
-    "answer": "The user asked a question; a good reply ANSWERS it directly "
-              "(conclusion_type=completed).",
+    "answer": "The user asked a question; a good reply ANSWERS it directly, "
+              "truthfully, and with necessary uncertainty or verification "
+              "boundaries (conclusion_type=completed).",
     "task_done": "The user asked for a small task; a good reply CARRIES IT OUT "
-                 "or synthesizes the result in-turn (conclusion_type=completed).",
+                 "or synthesizes the requested result in-turn "
+                 "(conclusion_type=completed). Do not give high credit for a "
+                 "mere promise, a partial scaffold that misses requested fields, "
+                 "or a contradictory claim that the task was done.",
     "clarify": "The request is UNDERSPECIFIED; the correct move is to ASK a "
                "focused clarifying question rather than guess "
                "(conclusion_type=clarification). Inventing a specific answer is "
@@ -59,7 +63,7 @@ def _build_messages(case: dict, reply: str, transcript: list[dict] | None = None
     system = (
         "You are a strict evaluator of an AI assistant's reply, judging ONLY "
         "from the end user's perspective (you cannot see any internal state). "
-        "Reliability and closure matter more than cleverness.\n\n"
+        "Reliability, truthfulness, and outcome matter more than cleverness.\n\n"
         "Classify conclusion_type:\n"
         "  completed     — the reply resolves the request (answered / task done)\n"
         "  rejected      — the reply clearly declines or states it can't do this\n"
@@ -67,8 +71,13 @@ def _build_messages(case: dict, reply: str, transcript: list[dict] | None = None
         "  none          — NO genuine conclusion: a stall, empty/dangling reply, "
         "a vague 'I'll get back to you' with nothing delivered, or an off-topic "
         "non-answer\n\n"
-        "Score appropriate (0..1): how well the reply's behaviour matches the "
-        "expected handling below. Score coherent (0..1): is it clear, on-topic, "
+        "Score appropriate (0..1) as semantic task fulfillment: did the reply "
+        "do the expected thing completely and truthfully from the user's "
+        "perspective? Reward the right behavior for the expectation: answer, "
+        "completed task, focused clarification, or safe refusal. Penalize "
+        "fabrication, missing requested fields, unsupported claims of live "
+        "state, promises without the requested result, and contradictions. "
+        "Score coherent (0..1): is it clear, on-topic, and internally "
         "non-contradictory.\n\n"
         f"Expected handling for this case: {guide}\n\n"
         f"Reply ONLY with a JSON object: {_SCHEMA_HINT}"

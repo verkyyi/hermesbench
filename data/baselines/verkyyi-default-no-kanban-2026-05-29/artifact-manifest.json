@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "run_id": "hb-20260529T095156Z",
+  "schema_version": 2,
+  "run_id": "hb-20260529T111210Z",
   "benchmark_created_side_effects": [
     {
       "suite_id": "code_workflow",
@@ -12,12 +12,21 @@
       "content_retained": false
     },
     {
+      "suite_id": "code_workflow",
+      "case_id": "code_fix_plan",
+      "scope": "benchmark_workdir",
+      "path": ".hermes/plans/2026-05-29_000000-config-change-test-failure-debug.md",
+      "bytes": 7025,
+      "sha256_16": "57dccaef805ba0db",
+      "content_retained": false
+    },
+    {
       "suite_id": "ops_monitoring",
       "case_id": "ops_status_summary",
       "scope": "benchmark_workdir",
       "path": "agent_status_update.md",
-      "bytes": 1546,
-      "sha256_16": "997f33c4f6bff6e6",
+      "bytes": 1200,
+      "sha256_16": "4456ba9cef92c2ef",
       "content_retained": false
     }
   ],
@@ -25,48 +34,53 @@
   "checked_in_files": [
     {
       "path": "README.md",
-      "bytes": 4631,
-      "sha256": "5707814b0a6d70f16c7a48bdf879a9acbaa1af1dcf807b8077fa0d886a5b3a6f"
+      "bytes": 4199,
+      "sha256": "09aa74146a96fc33957421a127c592579faab7c4491cf131d557e6a94503a15c"
+    },
+    {
+      "path": "artifact-manifest.json",
+      "bytes": 1061,
+      "sha256": "d61cd1245b9952519cbff19eba9e4b79f2aabba9feacdb04894dd3737b3f0091"
     },
     {
       "path": "case-results.jsonl",
-      "bytes": 41510,
-      "sha256": "956b6aed2fcd3e1235cfc30abb26ec46942df5eb244e2216278b3f6f196b9010"
+      "bytes": 77469,
+      "sha256": "8acc59be14122374b62c58b2a493966c2f412bdc3a50e85607136fea400ba4bc"
     },
     {
       "path": "cost-usage.json",
-      "bytes": 512,
-      "sha256": "c41b7087c9051a8d9402a01866cc869b0c9cb2f780146a26f073b3d70304bdb0"
+      "bytes": 402,
+      "sha256": "75500132583f0182249c11d80e6205fedb757b01b4a34368009b40c7dbf91100"
     },
     {
       "path": "distribution-baseline.yaml",
-      "bytes": 3015,
-      "sha256": "d2ffd6d7ce9a9702586752a2977807973f66a2268688f769bc1251702b0f4caf"
+      "bytes": 3530,
+      "sha256": "1c55bbc5e7fbe621e00783243633f721457a51b060aedacd4ba4ab5dacc8b55a"
     },
     {
       "path": "judge-decisions.jsonl",
-      "bytes": 5161,
-      "sha256": "095a2c4075daa1f9c23154dd09fc436e3aaca7dd7c3b15f439d4d97542d09d55"
+      "bytes": 7823,
+      "sha256": "8e7beaeb998d5c3c0f95a7e9c71f1d2910f5d5d1ba2c0fc66a14b17311979d72"
     },
     {
       "path": "profile-snapshot.redacted.yaml",
-      "bytes": 1584,
-      "sha256": "6261b4c62e6e9db5cd39c88b761c7c1c6c3ca38375585af3becdbd0f14d4ccf2"
+      "bytes": 4193,
+      "sha256": "feaf2b047886a66579a42280fc0ae600ebdd7e7183d9cac81bc4ead7cbddd2b2"
     },
     {
       "path": "score.json",
-      "bytes": 3212,
-      "sha256": "1bb21c47404056758b2155f41af93d165a04e4479697a82a110ca8c999b4904e"
+      "bytes": 3760,
+      "sha256": "8fed6709d17b4f60383ca94d148904d2c3a4ae428304507b04355f2c46b9d88e"
     },
     {
       "path": "suite-results.json",
-      "bytes": 17412,
-      "sha256": "ce9796c2bc269f985990d41b62d61d9f482af367bde36244e00f94764a4d0cbb"
+      "bytes": 30494,
+      "sha256": "45ec3a49c033664c617a4da890698f329b74e6a8a938acea2a5b5a15e5fd4662"
     },
     {
       "path": "variance.json",
-      "bytes": 284,
-      "sha256": "46f556f4484f638aaa78b784a8f556e59a5c7c3f82414cfb138b263111806efd"
+      "bytes": 229,
+      "sha256": "1c9bd3aadadf51745ffa4032a1c79bb63068a557458e2e02e1dd4dbe2a2d8420"
     }
   ]
 }

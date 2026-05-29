@@ -5,47 +5,57 @@ description: Redacted distribution-style baseline for a local Hermes default pro
 author: verkyyi
 license: MIT
 benchmark:
-  run_id: hb-20260529T095156Z
-  score: 92.34
-  observed_runtime_s: 226
+  run_id: hb-20260529T111210Z
+  score: 78.15
+  observed_runtime_s: 417
+  runtime_note: Approximate wall-clock from concurrent suite durations; runner does
+    not emit command wall time.
   suite_count: 13
   prompt_cases: 48
   trials_per_case: 1
-  suite_concurrency: 6
-  case_concurrency: 6
+  case_concurrency: 3
+  suite_concurrency: 3
   high_rate: true
   evaluator_driver: codex
   agentic_max_turns_default: 2
-  controller_timeout_s: 180
+  controller_timeout_s: 240
   driver_scenario_closed_rate: 1.0
-  turns_sent: 48
+  turns_sent: 50
   turn_budget: 96
-  command: HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+  command: HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --suite-concurrency 3 --case-concurrency
+    3 --trials 1
   score_breakdown:
+    top_axes:
+      capability_truthfulness: 70.9
+      reliability_safety: 96.2
+      efficiency_ux: 86.6
     axes:
-      closure: 100.0
-      artifact_correctness: 100.0
-      stability: 100.0
-      scope_discipline: 100.0
-      responsiveness: 92.5
-      appropriateness: 73.0
-      coherence: 82.6
+      task_fulfillment: 71.6
+      evidence_truthfulness: 69.9
+      outcome_reached: 94.2
+      runtime_scope_safety: 98.1
+      responsiveness: 92.2
+      communication_quality: 80.9
+      closure: 94.2
+      artifact_correctness: 69.9
+      appropriateness: 71.6
+      coherence: 80.9
     coverage:
       scored_suites: 13
       registered_suites: 14
       label: 13/14
     categories:
-      deterministic:
-      - closure
-      - artifact_correctness
-      - stability
-      - scope_discipline
+      capability_truthfulness:
+      - task_fulfillment
+      - evidence_truthfulness
+      reliability_safety:
+      - outcome_reached
+      - runtime_scope_safety
+      efficiency_ux:
       - responsiveness
-      llm_judged:
-      - appropriateness
-      - coherence
+      - communication_quality
 profile_fingerprint:
-  hermesbench_git_sha: 3a3893f36d7b7dc4aa172fe29b7b864bf4c34891
+  hermesbench_git_sha: 081c15983d45e82e5caead4e19e49e1652fba2c0+dirty
   profile_hash: aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599
 runtime_config:
   execution_surface:
@@ -54,12 +64,16 @@ runtime_config:
     kanban_enabled: false
     prompt_case_contract: framework_agnostic
   model:
-    provider: openai-codex
     default: gpt-5.5
+    provider: openai-codex
   memory:
-    enabled: true
-    provider: honcho
+    memory_enabled: true
     user_profile_enabled: true
+    memory_char_limit: 5000
+    user_char_limit: 2000
+    provider: honcho
+    nudge_interval: 10
+    flush_min_turns: 6
   toolsets:
   - hermes-cli
   plugins_enabled:
@@ -71,12 +85,6 @@ runtime_config:
     media_delivery_allow_dirs: []
     trust_recent_files: true
     trust_recent_files_seconds: 600
-  kanban:
-    enabled: false
-    removed_for_run:
-    - toolsets.kanban
-    - config.kanban
-    - plugins.enabled.kanban-orchestrator-routing
 worker_profile_coverage:
   kanban_enabled: false
   multi_worker_execution_exercised: false
@@ -105,3 +113,5 @@ notes:
 - Bundled prompt use cases are framework-agnostic and should run with or without kanban.
 - Prompt suites are agent-driven with the Codex evaluator driver; legacy static driver
   baselines are superseded.
+- 'This run used the balanced 3x2 scoring model: capability/truthfulness 40%, reliability/safety
+  30%, efficiency/UX 30%.'

@@ -87,9 +87,21 @@ def run_gateway_ack_policy() -> dict:
     return {
         "score": round(score, 2),
         "metrics": {
+            "top_axis_scores": {
+                "capability_truthfulness": round(100.0 * ((ack_accuracy + false_ack_score) / 2.0), 1),
+                "reliability_safety": 100.0,
+                "efficiency_ux": round(100.0 * ((responsiveness + cadence) / 2.0), 1),
+            },
             "axis_scores": {
+                "task_fulfillment": round(100.0 * ack_accuracy, 1),
+                "evidence_truthfulness": round(100.0 * false_ack_score, 1),
+                "outcome_reached": 100.0,
+                "runtime_scope_safety": 100.0,
+                "communication_quality": round(100.0 * cadence, 1),
                 "closure": 100.0,
+                "artifact_correctness": round(100.0 * false_ack_score, 1),
                 "stability": 100.0,
+                "scope_discipline": 100.0,
                 "responsiveness": round(100.0 * responsiveness, 1),
                 "appropriateness": round(100.0 * ack_accuracy, 1),
                 "coherence": round(100.0 * cadence, 1),
@@ -156,9 +168,21 @@ def run_delegated_closure() -> dict:
     return {
         "score": round(score, 2),
         "metrics": {
+            "top_axis_scores": {
+                "capability_truthfulness": round(100.0 * ((1.0 if ok_a else 0.0) + (1.0 if ok_b else 0.0)) / 2.0, 1),
+                "reliability_safety": round(100.0 * ((1.0 if ok_b else 0.0) + profile_score) / 2.0, 1),
+                "efficiency_ux": 100.0,
+            },
             "axis_scores": {
+                "task_fulfillment": round(100.0 * ((1.0 if ok_a else 0.0) + (1.0 if ok_b else 0.0)) / 2.0, 1),
+                "evidence_truthfulness": round(100.0 * profile_score, 1),
+                "outcome_reached": round(100.0 * (1.0 if ok_b else 0.0), 1),
+                "runtime_scope_safety": round(100.0 * profile_score, 1),
+                "communication_quality": 100.0,
                 "closure": round(100.0 * (1.0 if ok_b else 0.0), 1),
+                "artifact_correctness": round(100.0 * profile_score, 1),
                 "stability": round(100.0 * profile_score, 1),
+                "scope_discipline": 100.0,
                 "responsiveness": 100.0,
                 "appropriateness": round(100.0 * ((1.0 if ok_a else 0.0) + (1.0 if ok_b else 0.0)) / 2.0, 1),
                 "coherence": 100.0,

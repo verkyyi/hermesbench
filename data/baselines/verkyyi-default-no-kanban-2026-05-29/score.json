@@ -1,25 +1,26 @@
 {
-  "run_id": "hb-20260529T095156Z",
-  "timestamp_utc": "2026-05-29T09:51:56.603205+00:00",
-  "overall_score": 92.34,
-  "observed_runtime_s": 226,
+  "run_id": "hb-20260529T111210Z",
+  "timestamp_utc": "2026-05-29T11:12:10.032769+00:00",
+  "overall_score": 78.15,
+  "observed_runtime_s": 417,
+  "runtime_note": "Approximate wall-clock from concurrent suite durations; runner does not emit command wall time.",
   "suites_ran": 13,
   "delegated_closure": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
-  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
+  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --suite-concurrency 3 --case-concurrency 3 --trials 1",
   "environment": {
     "trials_per_case": 1,
-    "case_concurrency": 6,
-    "suite_concurrency": 6,
+    "case_concurrency": 3,
+    "suite_concurrency": 3,
     "high_rate": true,
     "evaluator_driver": "codex",
     "agentic_max_turns_default": 2,
-    "controller_timeout_s": 180,
+    "controller_timeout_s": 240,
     "driver_scenario_closed_rate": 1.0,
-    "turns_sent": 48,
+    "turns_sent": 50,
     "turn_budget": 96
   },
   "profile_fingerprint": {
-    "hermesbench_git_sha": "3a3893f36d7b7dc4aa172fe29b7b864bf4c34891",
+    "hermesbench_git_sha": "081c15983d45e82e5caead4e19e49e1652fba2c0+dirty",
     "profile_hash": "aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599"
   },
   "profile": {
@@ -51,40 +52,49 @@
     }
   },
   "suite_scores": {
-    "runtime_config": 94.45,
-    "code_workflow": 68.58,
-    "ops_monitoring": 70.94,
-    "tool_discipline": 97.88,
-    "benchmark_design": 96.24,
-    "delegation_boundary": 98.04,
-    "gateway_messaging": 96.54,
-    "research_synthesis": 95.75,
-    "memory_hygiene": 93.83,
-    "truthfulness": 99.05,
-    "daily_assistant": 92.5,
-    "ambiguous_followup": 96.56,
+    "runtime_config": 78.64,
+    "code_workflow": 45.89,
+    "ops_monitoring": 52.96,
+    "tool_discipline": 89.09,
+    "benchmark_design": 81.75,
+    "delegation_boundary": 90.17,
+    "gateway_messaging": 87.57,
+    "research_synthesis": 80.29,
+    "memory_hygiene": 69.19,
+    "truthfulness": 88.27,
+    "daily_assistant": 73.83,
+    "ambiguous_followup": 78.31,
     "gateway_ack_policy": 100.0
   },
   "axis_highlights": {
     "lowest_suite": "code_workflow",
-    "lowest_suite_score": 68.58,
+    "lowest_suite_score": 45.89,
     "best_prompt_suites": [
-      "truthfulness",
       "delegation_boundary",
-      "tool_discipline"
+      "tool_discipline",
+      "truthfulness"
     ],
     "framework_agnostic_surface": "direct",
-    "scoring_model": "deterministic_first_agentic_driver_target"
+    "scoring_model": "balanced_3x2_agentic_driver_target",
+    "balance_strategy": "top-axis balance factor: 0.85 + 0.15 * min(top_axis)/max(top_axis)"
   },
   "score_breakdown": {
+    "top_axes": {
+      "capability_truthfulness": 70.9,
+      "reliability_safety": 96.2,
+      "efficiency_ux": 86.6
+    },
     "axes": {
-      "closure": 100.0,
-      "artifact_correctness": 100.0,
-      "stability": 100.0,
-      "scope_discipline": 100.0,
-      "responsiveness": 92.5,
-      "appropriateness": 73.0,
-      "coherence": 82.6
+      "task_fulfillment": 71.6,
+      "evidence_truthfulness": 69.9,
+      "outcome_reached": 94.2,
+      "runtime_scope_safety": 98.1,
+      "responsiveness": 92.2,
+      "communication_quality": 80.9,
+      "closure": 94.2,
+      "artifact_correctness": 69.9,
+      "appropriateness": 71.6,
+      "coherence": 80.9
     },
     "coverage": {
       "scored_suites": 13,
@@ -92,16 +102,17 @@
       "label": "13/14"
     },
     "categories": {
-      "deterministic": [
-        "closure",
-        "artifact_correctness",
-        "stability",
-        "scope_discipline",
-        "responsiveness"
+      "capability_truthfulness": [
+        "task_fulfillment",
+        "evidence_truthfulness"
       ],
-      "llm_judged": [
-        "appropriateness",
-        "coherence"
+      "reliability_safety": [
+        "outcome_reached",
+        "runtime_scope_safety"
+      ],
+      "efficiency_ux": [
+        "responsiveness",
+        "communication_quality"
       ]
     }
   }
