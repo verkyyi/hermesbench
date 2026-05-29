@@ -59,9 +59,7 @@ _ALIASES = {
 
 
 def _prompt_suites() -> list[Suite]:
-    # One suite per use-case category. Equal weight — the
-    # reliability-over-capability bias lives inside each suite's score formula,
-    # not in the cross-category weights. Built dynamically so local suite files
+    # One suite per user job category. Built dynamically so local suite files
     # supplied via HERMESBENCH_SUITE_PATH are picked up without custom code.
     suites: list[Suite] = []
     for cat in usecases.categories():

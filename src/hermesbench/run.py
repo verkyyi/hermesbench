@@ -1,7 +1,7 @@
 """HermesBench — single consolidated benchmark runner.
 
     HERMES_RUN_LLM_EVALS=1 venv/bin/python -m hermesbench.run   # default single recipe
-    venv/bin/python -m hermesbench.run --suite generic_context,mail_assistant
+    venv/bin/python -m hermesbench.run --suite general_assistant,mail_assistant
     venv/bin/python -m hermesbench.run --scenario calendar_daily_brief
     venv/bin/python -m hermesbench.run --full-bundle              # all use cases
     venv/bin/python -m hermesbench.run --json          # machine-readable

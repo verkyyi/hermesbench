@@ -203,6 +203,14 @@ run path. A user should run one recipe for a focused pairwise comparison first,
 then opt into a suite or the full bundle only after the single-scenario behavior
 is understood.
 
+Recipes are authored as realistic personal-agent jobs. They should not encode
+the benchmark's reliability focus as trap wording in the user prompt. The
+quality contract lives in success criteria, safety criteria, mechanical
+evidence, LLM judgement, and the scoring weights. A well-configured Hermes setup
+may complete a recipe using tools, memory, files, accounts, or skills; a setup
+without the needed source should be rewarded for saying what is missing instead
+of fabricating.
+
 ---
 
 ## 3. Grading: evidence core + bounded LLM judge
@@ -388,29 +396,27 @@ blamed on the agent.
 
 ## 6. Suites and use-case categories
 
-Each prompt category is a suite. Categories are balanced at 4 prompt cases each
-and exposed as the single public grouping layer. The public suite mix now
-targets generic personal-agent users: people who customize Hermes for calendar,
-mail, messaging, web lookup, ambient context, travel, finance, reporting, and
-optional technical integrations. The goal is pairwise comparison: does this
+Each prompt category is a suite. Categories are use-case job areas, not
+capability or safety perspectives, and are exposed as the single public grouping
+layer. The public suite mix now targets generic personal-agent users: people who
+customize Hermes for calendar, mail, messaging, web lookup, local context,
+travel, finance, reporting, and optional technical integrations. The goal is
+pairwise comparison: does this
 customization make the same personal-agent workload more useful, truthful,
 reliable, and responsive? Success and safety criteria drive the judge's
 task-fulfillment ruling.
 
 | Category | Label | Good outcome |
 |----------|-------|--------------|
-| `generic_context` | Generic context | verifies current time, location, weather, calendar, and web facts instead of guessing |
-| `calendar_assistant` | Calendar assistant | handles schedule summaries, timezone details, and create-event boundaries safely |
+| `general_assistant` | General assistant | handles everyday questions, short follow-ups, weather/location context, and personal memory lookup truthfully |
+| `calendar_schedule` | Calendar and scheduling | handles schedule summaries, availability, timezone details, and create-event boundaries safely |
 | `web_research` | Web research | checks current sources, synthesizes clearly, and states confidence/caveats |
-| `daily_reporting` | Daily reporting | produces useful morning/evening reports without overclaiming unavailable data |
+| `daily_planning_reporting` | Daily planning and reporting | produces useful reports, progress summaries, and daily recall without overclaiming unavailable data |
 | `mail_assistant` | Mail assistant | searches/summarizes/drafts mail while respecting send/account boundaries |
-| `messaging_assistant` | Messaging assistant | drafts SMS/chat replies and preserves quote/channel context without sending blindly |
-| `ambient_context` | Ambient context | uses location context only when available and avoids exposing private history |
+| `messaging_assistant` | Messaging assistant | drafts SMS/chat replies, message cleanup plans, and preserves quote/channel context without sending blindly |
 | `travel_places` | Travel and places | compares places, plans lightweight trips, and asks for missing constraints |
 | `personal_finance` | Personal finance | summarizes financial data only with access and refuses unsafe advice/action overreach |
-| `personal_data_safety` | Personal data safety | mixed | protects secrets, destructive actions, and private facts behind explicit permission |
-| `dev_power_user` | Power-user integrations | mixed | handles GitHub/AWS/generic alert integrations with evidence and side-effect discipline |
-| `ambiguous_followup` | Ambiguous follow-up | `clarify` | asks a focused question (`clarification`), doesn't guess missing context |
+| `developer_ops` | Developer and ops | handles GitHub/AWS/secrets/repo/alert integrations with evidence and side-effect discipline |
 
 HermesBench also includes runtime suites that are not ordinary prompt
 categories:
@@ -567,8 +573,8 @@ missing. Overall moved but no category did → check the fingerprint.
 HermesBench is also meant to be a reusable evaluation harness, not just a fixed
 benchmark. Ordinary prompt-suite extension should be data-only:
 
-1. Add or edit cases in `usecases.py`, keeping each category at the balanced
-   `CASES_PER_CATEGORY` count.
+1. Add or edit cases in `usecases.py`, keeping categories use-case based and
+   broad enough to contain at least `MIN_CASES_PER_CATEGORY` bundled cases.
 2. For a new category, add a `BUDGETS` entry, a `CATEGORY_LABELS` entry, and put
    the category in an `AUDIENCE_PACKAGES` list.
 3. Run the focused HermesBench tests.

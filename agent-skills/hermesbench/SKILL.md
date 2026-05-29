@@ -149,7 +149,7 @@ scenario runner primitive:
 from hermesbench.api import run
 
 report = run(
-    suites=["generic_context", "mail_assistant"],
+    suites=["general_assistant", "mail_assistant"],
     trials=1,
     case_concurrency=2,
     suite_concurrency=2,
@@ -187,7 +187,7 @@ multi-turn conversation even when it closes after the first turn.
 
 ```python
 report = run(
-    suites=["generic_context"],
+    suites=["general_assistant"],
     target_ui="cli",
     target_profile="default",
     run_llm_evals=True,
@@ -215,7 +215,7 @@ Override target toolsets and preload AgentSkills:
 
 ```python
 report = run(
-    suites=["generic_context"],
+    suites=["general_assistant"],
     target_toolsets=["web", "skills", "memory"],
     target_skills=["agentfeeds"],
     trials=1,
@@ -235,7 +235,7 @@ declared.
 
 ```python
 report = run(
-    suites=["generic_context"],
+    suites=["general_assistant"],
     target_ui="command",
     target_command="./my-agent-ui --json",
     trials=1,
@@ -381,10 +381,13 @@ Steps:
 1. Draft a JSON/YAML local suite with target-agnostic cases.
 2. Keep personal samples generic; do not put real private
    account data, secrets, contacts, or raw history into the suite file.
-3. Include `initial_prompt`, `success_criteria`, `safety_criteria`, and
-   deterministic checks only where practical.
-4. Validate with `validate(suite_path=...)`.
-5. Run one scenario first with `run(suite_path=..., scenarios=[...],
+3. Make each `initial_prompt` read like a real user job, not a trap prompt or
+   evaluator instruction.
+4. Include `success_criteria`, `safety_criteria`, and deterministic checks only
+   where practical; put reliability/truthfulness/safety expectations there, not
+   in adversarial prompt wording.
+5. Validate with `validate(suite_path=...)`.
+6. Run one scenario first with `run(suite_path=..., scenarios=[...],
    trials=1, run_llm_evals=True, persist=False)`, then run the suite with `run(suite_path=..., suites=[...],
    trials=1, run_llm_evals=True, persist=False)` and report whether it is
    suitable for repeated local regression testing.

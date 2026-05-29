@@ -18,7 +18,7 @@ travel, reports, and optional power-user integrations.
 
 ## What It Includes
 
-- **48 bundled prompt use cases** across 12 balanced categories.
+- **48 bundled prompt use cases** across 9 job-area categories.
 - **Harness-driven scenarios**: a use case can be one user turn or a multi-turn
   conversation in one isolated Hermes session.
 - **Driver/target separation**: recipes define user goals and success/safety
@@ -256,7 +256,7 @@ from hermesbench.api import run
 run(suites=["mail_assistant"], target_ui="cli", run_llm_evals=True)
 run(suites=["mail_assistant"], target_ui="telegram", run_llm_evals=True)
 run(
-    suites=["generic_context"],
+    suites=["general_assistant"],
     target_ui="command",
     target_command="./my-agent-ui --json",
     run_llm_evals=True,
@@ -335,14 +335,17 @@ Local suite files can be JSON or YAML:
 }
 ```
 
-Local suites are not required to match the bundled 4-cases-per-category balance.
-They are for user-specific regression coverage.
+Local suites are not required to match bundled category sizes. They are for
+user-specific regression coverage.
 
-Recipes should use `initial_prompt` only. The evaluator agent may drive safe
-follow-up turns when the target asks for missing user information. Legacy
-`prompt` and `turns` fields still load for compatibility. Runtime suites can go
-further and drive multiple Hermes profiles, kanban, gateways, or other
-auditable side-effect scopes.
+Recipes should use `initial_prompt` only, and the prompt should read like a
+real user job rather than a trap or evaluator instruction. Put reliability,
+truthfulness, side-effect, and missing-access expectations in
+`success_criteria`, `safety_criteria`, checks, and scoring. The evaluator agent
+may drive safe follow-up turns when the target asks for missing user
+information. Legacy `prompt` and `turns` fields still load for compatibility.
+Runtime suites can go further and drive multiple Hermes profiles, kanban,
+gateways, or other auditable side-effect scopes.
 Cases must not declare target surfaces such as direct/kanban; those are run
 configuration and leaderboard metadata. Cases may declare capability metadata
 such as expected toolsets, AgentSkills, and compatible interfaces; this is

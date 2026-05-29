@@ -11,36 +11,58 @@ from hermesbench.suites import gateway as gateway_mod
 from hermesbench.suites import usecases as suite_mod
 
 
-def test_bundled_dataset_is_balanced(monkeypatch):
+def test_bundled_dataset_uses_real_use_case_categories(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
     monkeypatch.delenv("HERMES_BENCH_SUITE_PATH", raising=False)
     usecases.validate_dataset()
     categories = usecases.categories()
-    assert len(categories) == 12
+    assert len(categories) == 9
     assert len(usecases.all_cases()) == 48
-    assert all(len(usecases.cases_for(c)) == usecases.CASES_PER_CATEGORY for c in categories)
+    assert all(len(usecases.cases_for(c)) >= usecases.MIN_CASES_PER_CATEGORY for c in categories)
     assert usecases.case_by_id("dev_alert_inbox_triage") is not None
     assert not any("ainbox" in json.dumps(case).lower() for case in usecases.all_cases())
     assert sum(1 for case in usecases.all_cases() if case.get("checks")) == 48
     assert all(len(usecases.case_turns(case)) == 1 for case in usecases.all_cases())
+    prompts = {case["id"]: case["prompt"] for case in usecases.all_cases()}
+    forbidden_prompt_fragments = [
+        "even though you have not",
+        "from your memory",
+        "print the api keys",
+        "operate aws",
+        "if you cannot browse",
+        "if you cannot verify",
+    ]
+    assert not any(
+        fragment in prompt.lower()
+        for prompt in prompts.values()
+        for fragment in forbidden_prompt_fragments
+    )
+    assert "web_official_process" in prompts
+    assert "message_thread_reply" in prompts
+    assert "safety_secret_check" in prompts
+    assert "dev_repo_diff_review" in prompts
+    assert "ambient_context" not in categories
+    assert "ambiguous_followup" not in categories
+    assert "personal_data_safety" not in categories
+    assert usecases.category_label("general_assistant") == "General assistant"
 
 
 def test_registry_includes_runtime_and_prompt_suites(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
     monkeypatch.delenv("HERMES_BENCH_SUITE_PATH", raising=False)
     ids = {s.id for s in registry.all_suites()}
-    assert "generic_context" in ids
+    assert "general_assistant" in ids
     assert "gateway_ack_policy" in ids
     assert "delegated_closure" in ids
     assert "origin_return" not in ids
-    assert registry.by_id("generic_context").interaction == registry.MULTI_TURN
+    assert registry.by_id("general_assistant").interaction == registry.MULTI_TURN
     assert registry.by_id("delegated_closure").interaction == registry.MULTI_PROFILE
     assert registry.by_id("origin_return").id == "delegated_closure"
 
 
 def test_prompt_suite_skips_without_llm_flag(monkeypatch):
     monkeypatch.delenv("HERMES_RUN_LLM_EVALS", raising=False)
-    out = suite_mod._run_category("generic_context")
+    out = suite_mod._run_category("general_assistant")
     assert out["skipped"] is True
 
 
@@ -246,7 +268,7 @@ def test_cli_full_bundle_is_explicit(monkeypatch):
 def test_programmatic_api_lists_and_validates(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
     listed = api.list_suites()
-    assert any(s["id"] == "generic_context" for s in listed)
+    assert any(s["id"] == "general_assistant" for s in listed)
     scenarios_list = api.list_scenarios()
     assert any(s["id"] == "calendar_daily_brief" for s in scenarios_list)
     summary = api.validate()
@@ -281,7 +303,7 @@ def test_programmatic_api_run_sets_env_and_skips_persist(monkeypatch, tmp_path: 
     monkeypatch.setattr(api.store, "save_run", fail_save)
     out_path = tmp_path / "report.json"
     report = api.run(
-        suites=["generic_context"],
+        suites=["general_assistant"],
         target_ui="telegram",
         target_profile="orchestrator",
         target_skills=["agentfeeds"],
@@ -291,7 +313,7 @@ def test_programmatic_api_run_sets_env_and_skips_persist(monkeypatch, tmp_path: 
     )
     assert report["overall_score"] == 91.0
     assert captured == {
-        "ids": ["generic_context"],
+        "ids": ["general_assistant"],
         "target_ui": "telegram",
         "target_profile": "orchestrator",
         "target_skills": "agentfeeds",
@@ -447,10 +469,10 @@ def test_public_task_catalog_exposes_scenario_details(monkeypatch):
     catalog = public_artifacts.build_task_catalog()
     assert catalog["task_count"] == 48
     task = next(t for t in catalog["tasks"] if t["id"] == "generic_current_time")
-    assert catalog["category_count"] == 12
-    assert task["category_id"] == "generic_context"
-    assert task["category_label"] == "Generic context"
-    assert task["suite_id"] == "generic_context"
+    assert catalog["category_count"] == 9
+    assert task["category_id"] == "general_assistant"
+    assert task["category_label"] == "General assistant"
+    assert task["suite_id"] == "general_assistant"
     assert task["title"] == "Generic Current Time"
     assert task["initial_prompt"]
     assert task["success_criteria"]
@@ -472,7 +494,7 @@ def test_public_trace_builder_joins_case_results_with_tasks(monkeypatch, tmp_pat
     }), encoding="utf-8")
     (baseline / "case-results.jsonl").write_text(json.dumps({
         "case": "generic_current_time",
-        "suite_id": "generic_context",
+        "suite_id": "general_assistant",
         "expectation": "answer",
         "score": 91.0,
         "mechanical": {"responded": True, "concluded": True, "stable": True},
@@ -576,7 +598,7 @@ def test_case_normalizes_to_driver_target_agnostic_scenario(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
     case = {
         "id": "demo",
-        "category": "dev_power_user",
+        "category": "developer_ops",
         "expectation": "task_done",
         "initial_prompt": "Fix the fixture.",
         "checks": [{"type": "artifact_exists", "path": "done.txt"}],
@@ -630,7 +652,7 @@ def test_codex_driver_records_agentic_closure(monkeypatch, tmp_path: Path):
 
     monkeypatch.delenv("HERMES_BENCH_AGENTIC_MAX_TURNS", raising=False)
     monkeypatch.setattr(drivers, "_run_codex_controller", fake_controller)
-    scenario = scenarios.from_case({"id": "demo", "category": "dev_power_user", "prompt": "first"})
+    scenario = scenarios.from_case({"id": "demo", "category": "developer_ops", "prompt": "first"})
     out = drivers.run(scenario, FakeTarget(), timeout_s=30)
     assert out["driver"]["kind"] == "codex"
     assert out["driver"]["turns_sent"] == 2
@@ -664,7 +686,7 @@ def test_codex_controller_defaults_to_bypass_mode(monkeypatch, tmp_path: Path):
     monkeypatch.delenv("HERMES_BENCH_CODEX_SANDBOX", raising=False)
     monkeypatch.delenv("HERMES_BENCH_CODEX_BYPASS_SANDBOX", raising=False)
     out = drivers._run_codex_controller(
-        scenario=scenarios.from_case({"id": "demo", "category": "dev_power_user", "prompt": "first"}),
+        scenario=scenarios.from_case({"id": "demo", "category": "developer_ops", "prompt": "first"}),
         session=FakeSession(),
         timeout_s=10,
         max_turns=3,
@@ -693,7 +715,7 @@ def test_codex_controller_can_use_explicit_sandbox(monkeypatch, tmp_path: Path):
     monkeypatch.setenv("HERMES_BENCH_CODEX_SANDBOX", "workspace-write")
     monkeypatch.setattr(drivers.subprocess, "run", fake_run)
     drivers._run_codex_controller(
-        scenario=scenarios.from_case({"id": "demo", "category": "dev_power_user", "prompt": "first"}),
+        scenario=scenarios.from_case({"id": "demo", "category": "developer_ops", "prompt": "first"}),
         session=FakeSession(),
         timeout_s=10,
         max_turns=3,

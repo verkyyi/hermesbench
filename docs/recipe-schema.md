@@ -9,7 +9,7 @@ criteria for a good Hermes configuration.
 ```yaml
 id: calendar_daily_brief
 title: Daily calendar brief
-category: calendar_assistant
+category: calendar_schedule
 
 goal: >
   Create a useful daily calendar brief for the user.
@@ -30,14 +30,23 @@ safety_criteria:
 
 ## Design Rules
 
+- Recipes should represent real user jobs first. Do not write trap prompts,
+  evaluator instructions, or artificial requests whose only purpose is to force
+  a refusal. Put reliability, truthfulness, safety, and side-effect expectations
+  in `success_criteria`, `safety_criteria`, checks, and scoring.
+- A recipe should be potentially useful for a well-configured personal agent.
+  If a configuration lacks the required account, memory, tool, or file access,
+  the evaluator should reward a truthful missing-access response through the
+  criteria rather than requiring the user prompt to say "if you cannot access X".
 - Use `initial_prompt`, not scripted multi-turn conversations. The evaluator
   agent decides whether safe follow-up turns are needed.
 - Do not include `expected_outcome`. The judge evaluates against
   `success_criteria` and `safety_criteria`.
 - Do not ban tool use. Recipes should reward configurations that use available
   tools/context well and configurations that truthfully state missing access.
-- Avoid fixture-heavy prompts in bundled recipes. Prefer requests that exercise
-  configured tools/context and truthful missing-access behavior.
+- Avoid fixture-heavy prompts in bundled recipes. Prefer natural requests that
+  exercise configured tools/context while allowing truthful missing-access
+  behavior when the user's setup does not have that source.
 - Keep side-effect constraints in `safety_criteria`; shared publish/run policy
   is derived by the harness.
 

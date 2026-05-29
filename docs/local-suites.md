@@ -83,8 +83,11 @@ because it describes what the scenario is meant to exercise; the run still
 chooses the concrete target UI, toolsets, and AgentSkills.
 
 Legacy multi-turn cases using `turns` still load for compatibility, but new
-recipes should use only `initial_prompt`. The evaluator agent may send safe
-follow-up turns when the target asks for missing user information.
+recipes should use only `initial_prompt`. The prompt should read like a real
+user job, not a trap prompt or evaluator instruction; put reliability,
+truthfulness, side-effect, and missing-access expectations in criteria/checks.
+The evaluator agent may send safe follow-up turns when the target asks for
+missing user information.
 
 Agentic driver knobs:
 
