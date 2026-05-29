@@ -77,8 +77,6 @@
     "scoring_model": "deterministic_first_agentic_driver_target"
   },
   "score_breakdown": {
-    "deterministic": 99.1,
-    "llm_judged": 76.2,
     "axes": {
       "closure": 100.0,
       "artifact_correctness": 100.0,
@@ -93,19 +91,18 @@
       "registered_suites": 14,
       "label": "13/14"
     },
-    "groups": {
-      "deterministic_axes": [
+    "categories": {
+      "deterministic": [
         "closure",
         "artifact_correctness",
         "stability",
         "scope_discipline",
         "responsiveness"
       ],
-      "llm_judged_axes": [
+      "llm_judged": [
         "appropriateness",
         "coherence"
-      ],
-      "aggregation": "weighted by HermesBench scoring weights, normalized within each group"
+      ]
     }
   }
 }

@@ -75,18 +75,16 @@
                 <th rowspan="2">Rank</th>
                 <th rowspan="2">Configuration</th>
                 <th rowspan="2">Score</th>
-                <th colspan="5">Deterministic metrics</th>
-                <th colspan="3">LLM-judged metrics</th>
+                <th colspan="4">Deterministic metrics</th>
+                <th colspan="2">LLM-judged metrics</th>
                 <th rowspan="2">Coverage</th>
                 <th rowspan="2">Profile snapshot</th>
               </tr>
               <tr>
-                <th>Det.</th>
                 <th>Closure</th>
                 <th>Stability</th>
                 <th>Scope</th>
                 <th>Resp.</th>
-                <th>LLM</th>
                 <th>Appr.</th>
                 <th>Coh.</th>
               </tr>
@@ -96,12 +94,10 @@
                 <td>1</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
                 <td>92.34</td>
-                <td>99.1</td>
                 <td>100.0</td>
                 <td>100.0</td>
                 <td>100.0</td>
                 <td>92.5</td>
-                <td>76.2</td>
                 <td>73.0</td>
                 <td>82.6</td>
                 <td>13/14</td>
@@ -118,12 +114,10 @@
                 <td>2</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
                 <td>88.82</td>
-                <td>96.8</td>
                 <td>96.2</td>
                 <td>96.2</td>
                 <td>100.0</td>
                 <td>88.0</td>
-                <td>75.1</td>
                 <td>72.1</td>
                 <td>81.2</td>
                 <td>13/14</td>
@@ -140,11 +134,11 @@
           </table>
         </div>
         <p class="note">
-          Deterministic aggregates closure, artifact correctness, stability,
-          scope discipline, and responsiveness using HermesBench scoring
-          weights. LLM-judged aggregates appropriateness and coherence. The
-          linked baseline files retain run IDs, hashes, commands, runtime, and
-          raw profile fingerprints for reproducibility.
+          Deterministic metrics are measured from execution evidence: closure,
+          stability, scope discipline, and responsiveness. LLM-judged metrics
+          are semantic appropriateness and coherence. The linked baseline files
+          retain run IDs, hashes, commands, runtime, and raw profile
+          fingerprints for reproducibility.
         </p>
       </section>
 

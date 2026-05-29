@@ -214,7 +214,7 @@ li {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1180px;
+  min-width: 1060px;
 }
 
 th,
@@ -240,7 +240,7 @@ th {
   color: var(--text);
 }
 
-.leaderboard td:nth-child(n + 3):nth-child(-n + 12) {
+.leaderboard td:nth-child(n + 3):nth-child(-n + 10) {
   font-variant-numeric: tabular-nums;
 }
 

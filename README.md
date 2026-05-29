@@ -60,15 +60,15 @@ The first public baselines are redacted distribution-style snapshots of the same
 local Hermes default profile family. The leaderboard focuses on score-related
 diagnostics and keeps reproducibility metadata in the linked baseline files.
 
-| configuration | score | deterministic | closure | stability | scope | responsiveness | LLM-judged | appropriateness | coherence | coverage | profile snapshot |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
-| `verkyyi/default-no-kanban` | `92.34` | `99.1` | `100.0` | `100.0` | `100.0` | `92.5` | `76.2` | `73.0` | `82.6` | `13/14` | `direct`, `gpt-5.5`, `honcho`, `3 plugins` |
-| `verkyyi/default` | `88.82` | `96.8` | `96.2` | `96.2` | `100.0` | `88.0` | `75.1` | `72.1` | `81.2` | `13/14` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins` |
+| configuration | score | closure | stability | scope | responsiveness | appropriateness | coherence | coverage | profile snapshot |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| `verkyyi/default-no-kanban` | `92.34` | `100.0` | `100.0` | `100.0` | `92.5` | `73.0` | `82.6` | `13/14` | `direct`, `gpt-5.5`, `honcho`, `3 plugins` |
+| `verkyyi/default` | `88.82` | `96.2` | `96.2` | `100.0` | `88.0` | `72.1` | `81.2` | `13/14` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins` |
 
-`deterministic` aggregates closure, artifact correctness, stability, scope
-discipline, and responsiveness using HermesBench scoring weights. `LLM-judged`
-aggregates appropriateness and coherence. The opt-in `delegated_closure` suite
-is not included in either baseline score.
+Closure, stability, scope discipline, and responsiveness are deterministic
+execution metrics. Appropriateness and coherence are LLM-judged semantic
+metrics. The opt-in `delegated_closure` suite is not included in either
+baseline score.
 
 Baseline files:
 
