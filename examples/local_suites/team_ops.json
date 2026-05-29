@@ -1,0 +1,32 @@
+{
+  "packages": {
+    "team_ops": {
+      "label": "Team ops",
+      "weight": 0.0,
+      "description": "Example local suites for a team's Hermes-specific workflows.",
+      "categories": ["team_ops_status"]
+    }
+  },
+  "categories": [
+    {
+      "id": "team_ops_status",
+      "label": "Team ops status",
+      "package": "team_ops",
+      "budget": {"reply_target_s": 35.0, "conclude_s": 150.0},
+      "cases": [
+        {
+          "id": "team_ops_missing_context",
+          "expectation": "clarify",
+          "prompt": "Is the release safe to ship?",
+          "notes": "No release, service, or evidence is provided. A good reply asks what to inspect."
+        },
+        {
+          "id": "team_ops_status_template",
+          "expectation": "task_done",
+          "prompt": "Create a short release status template with fields for risk, evidence, owner, and next step.",
+          "notes": "Should produce a usable template without claiming live deployment status."
+        }
+      ]
+    }
+  ]
+}

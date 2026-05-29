@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HermesBench</title>
+    <meta name="description" content="Reliability-first benchmark and evaluation harness for Hermes Agent runtime configurations." />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#home">HermesBench</a>
+      <nav>
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="#suites">Suites</a>
+        <a href="#local">Local suites</a>
+        <a href="#quickstart">Quick start</a>
+        <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Hermes Agent runtime evaluation</p>
+          <h1>Benchmark the whole Hermes configuration, not just the model.</h1>
+          <p class="lede">
+            HermesBench measures whether a Hermes Agent setup reliably reaches
+            useful, truthful, stable conclusions across daily technical-user
+            workflows. It is a public benchmark and a reusable local evaluation
+            harness.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#quickstart">Run it</a>
+            <a class="button" href="https://github.com/verkyyi/hermesbench">Star on GitHub</a>
+          </div>
+        </div>
+        <div class="scorecard" aria-label="Benchmark summary">
+          <div>
+            <span class="metric">48</span>
+            <span class="label">bundled prompt cases</span>
+          </div>
+          <div>
+            <span class="metric">12</span>
+            <span class="label">balanced prompt suites</span>
+          </div>
+          <div>
+            <span class="metric">4</span>
+            <span class="label">audience packages</span>
+          </div>
+          <div>
+            <span class="metric">1</span>
+            <span class="label">final score</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="leaderboard" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Public score surface</p>
+          <h2>Leaderboard</h2>
+          <p>
+            The public repo ships the harness first. Add published runs here as
+            the community starts submitting comparable Hermes configurations.
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Configuration</th>
+                <th>Hermes profile</th>
+                <th>Score</th>
+                <th>Closure</th>
+                <th>Stability</th>
+                <th>Cost/run</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Example baseline</td>
+                <td>default</td>
+                <td>pending</td>
+                <td>pending</td>
+                <td>pending</td>
+                <td>&lt;$10 target</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          HermesBench is score-first. Axis scores explain movement; pass/fail is
+          consolidated into score.
+        </p>
+      </section>
+
+      <section id="suites" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Coverage model</p>
+          <h2>Audience packages and suites</h2>
+          <p>
+            Technical users are the current main population. General assistant
+            use remains covered as overflow, so the benchmark does not become
+            tech-only.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3>Technical operator</h3>
+            <p>Developers/operators using Hermes for code, config, and system work.</p>
+            <ul>
+              <li>runtime_config</li>
+              <li>code_workflow</li>
+              <li>ops_monitoring</li>
+              <li>tool_discipline</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Agent builder</h3>
+            <p>Users shaping Hermes itself: benchmark, delegation, routing, gateway behavior.</p>
+            <ul>
+              <li>benchmark_design</li>
+              <li>delegation_boundary</li>
+              <li>gateway_messaging</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Knowledge worker</h3>
+            <p>Technical/product users asking for research, synthesis, memory-aware help.</p>
+            <ul>
+              <li>research_synthesis</li>
+              <li>memory_hygiene</li>
+              <li>truthfulness</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>General helper overflow</h3>
+            <p>Normal assistant usage outside the current technical-user core.</p>
+            <ul>
+              <li>daily_assistant</li>
+              <li>ambiguous_followup</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="local" class="section split">
+        <div>
+          <p class="eyebrow">Reusable harness</p>
+          <h2>Bring your own local suites</h2>
+          <p>
+            Public suites make scores comparable. Local suites make the
+            framework useful for your own Hermes deployment. Load private JSON
+            or YAML suites without changing the runner, store, report, or
+            dashboard code.
+          </p>
+        </div>
+        <pre><code>hermesbench --suite-path ./my-suites --list-suites
+HERMES_RUN_LLM_EVALS=1 hermesbench \
+  --suite-path ./my-suites \
+  --suite team_ops_status</code></pre>
+      </section>
+
+      <section id="quickstart" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Install and run</p>
+          <h2>Quick start</h2>
+        </div>
+        <pre><code>pip install git+https://github.com/verkyyi/hermesbench.git
+
+hermesbench --list-suites
+hermesbench --validate
+HERMES_RUN_LLM_EVALS=1 hermesbench
+HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store</code></pre>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <p class="eyebrow">Scoring</p>
+          <h2>Reliability before capability</h2>
+        </div>
+        <div class="pill-row">
+          <span>Closure</span>
+          <span>Stability</span>
+          <span>Responsiveness</span>
+          <span>Appropriateness</span>
+          <span>Coherence</span>
+        </div>
+        <p>
+          HermesBench prefers truthful, stable, bounded behavior over raw task
+          capability. Hard external-agent capability benchmarks remain useful,
+          but HermesBench asks a different question: is this Hermes runtime
+          configuration reliable enough to use every day?
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span>HermesBench</span>
+      <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
+      <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">Methodology</a>
+      <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/local-suites.md">Local suites</a>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hermesbench"
+version = "0.1.0"
+description = "A reliability-first benchmark and evaluation harness for Hermes Agent runtime configurations."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "HermesBench maintainers" }
+]
+keywords = ["hermes-agent", "agent-evaluation", "benchmark", "ai-agents", "evals"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.urls]
+Homepage = "https://verkyyi.github.io/hermesbench/"
+Repository = "https://github.com/verkyyi/hermesbench"
+Issues = "https://github.com/verkyyi/hermesbench/issues"
+
+[project.scripts]
+hermesbench = "hermesbench.run:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hermesbench"]

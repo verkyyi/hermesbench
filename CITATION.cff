@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: HermesBench
+message: If you use HermesBench, please cite the repository.
+type: software
+authors:
+  - name: HermesBench contributors
+repository-code: https://github.com/verkyyi/hermesbench
+url: https://verkyyi.github.io/hermesbench/
+license: MIT
+version: 0.1.0
+date-released: 2026-05-29
