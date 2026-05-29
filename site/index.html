@@ -60,8 +60,9 @@
           <p class="eyebrow">Public score surface</p>
           <h2>Leaderboard</h2>
           <p>
-            The public repo ships the harness first. Add published runs here as
-            the community starts submitting comparable Hermes configurations.
+            Published runs should identify the Hermes profile distribution or a
+            redacted distribution-style baseline, plus the exact command and
+            runtime.
           </p>
         </div>
         <div class="table-wrap">
@@ -72,27 +73,28 @@
                 <th>Configuration</th>
                 <th>Hermes profile</th>
                 <th>Score</th>
-                <th>Closure</th>
-                <th>Stability</th>
+                <th>Runtime</th>
+                <th>Model</th>
                 <th>Cost/run</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>1</td>
-                <td>Example baseline</td>
-                <td>default</td>
-                <td>pending</td>
-                <td>pending</td>
-                <td>pending</td>
+                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
+                <td>redacted distribution-style</td>
+                <td>81.95</td>
+                <td>~2m 50s</td>
+                <td>gpt-5.5 / openai-codex</td>
                 <td>&lt;$10 target</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="note">
-          HermesBench is score-first. Axis scores explain movement; pass/fail is
-          consolidated into score.
+          Baseline command: <code>HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1</code>.
+          Memory: Honcho enabled. Toolsets: hermes-cli, kanban. Plugins:
+          agentfeeds, kanban-orchestrator-routing, break-glass-cli.
         </p>
       </section>
 
@@ -161,6 +163,23 @@
 HERMES_RUN_LLM_EVALS=1 hermesbench \
   --suite-path ./my-suites \
   --suite team_ops_status</code></pre>
+      </section>
+
+      <section class="section split">
+        <div>
+          <p class="eyebrow">Distribution-aware baselines</p>
+          <h2>Share the agent shape behind the score</h2>
+          <p>
+            HermesBench results are most useful when tied to a Hermes profile
+            distribution: a git repo containing the agent's distribution.yaml,
+            SOUL, config, skills, cron, and MCP wiring. Credentials, memories,
+            sessions, state, logs, and local files stay private.
+          </p>
+        </div>
+        <pre><code>hermes profile install github.com/you/my-agent --alias
+HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+
+# Publish score.json plus distribution repo or redacted baseline.</code></pre>
       </section>
 
       <section id="quickstart" class="section">

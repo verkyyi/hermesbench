@@ -30,6 +30,33 @@ small general-helper overflow package for normal assistant requests.
   HermesBench code.
 - **Trend store**: runs persist to `$HERMES_HOME/hermesbench.db`.
 
+## Published Baseline
+
+The first public baseline is a redacted distribution-style snapshot of a local
+Hermes default profile.
+
+| field | value |
+|---|---:|
+| Configuration | `verkyyi/default` redacted distribution-style baseline |
+| Score | `81.95` |
+| Runtime | `~2m 50s` |
+| Run ID | `hb-20260529T062018Z` |
+| Model | `gpt-5.5` via `openai-codex` |
+| Memory | `honcho`, enabled |
+| Toolsets | `hermes-cli`, `kanban` |
+| Plugins | `agentfeeds`, `kanban-orchestrator-routing`, `break-glass-cli` |
+| Command | `HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1` |
+
+Baseline files:
+
+- [`data/baselines/verkyyi-default-2026-05-29/score.json`](data/baselines/verkyyi-default-2026-05-29/score.json)
+- [`data/baselines/verkyyi-default-2026-05-29/distribution-baseline.yaml`](data/baselines/verkyyi-default-2026-05-29/distribution-baseline.yaml)
+- [`data/baselines/verkyyi-default-2026-05-29/README.md`](data/baselines/verkyyi-default-2026-05-29/README.md)
+
+HermesBench baseline submissions should ideally link an installable Hermes
+profile distribution repo. Redacted distribution-style baselines are acceptable
+when the profile contains private/local state that cannot be published.
+
 ## Install
 
 HermesBench requires a working Hermes Agent installation and the `hermes` CLI on
@@ -176,6 +203,7 @@ score moved.
 - [Methodology](docs/METHODOLOGY.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Local suites guide](docs/local-suites.md)
+- [Profile distribution baselines](docs/profile-distribution-baselines.md)
 - [Website source](site/)
 
 ## Development
