@@ -158,8 +158,11 @@ driver controls:
 - `HERMES_BENCH_CODEX_MODEL` / `HERMES_BENCH_CODEX_PROFILE`: pin the evaluator
   controller model/profile
 - `HERMES_BENCH_CODEX_TIMEOUT_S`: cap the controller wall time
-- `HERMES_BENCH_CODEX_BYPASS_SANDBOX=1`: opt into Codex's bypass mode for an
-  externally sandboxed runner
+- By default the Codex controller uses Codex bypass mode so the nested Hermes
+  target bridge can make provider network calls from the benchmark-owned
+  isolated `HERMES_HOME`. Set `HERMES_BENCH_CODEX_SANDBOX=workspace-write` to
+  force Codex sandbox mode for controller-only experiments; target calls may
+  fail if that sandbox blocks network access.
 
 ## Bundled Suite Packages
 

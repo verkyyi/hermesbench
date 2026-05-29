@@ -269,7 +269,7 @@ def test_codex_driver_records_agentic_closure(monkeypatch, tmp_path: Path):
     assert out["driver_reply"] == "scenario closed"
 
 
-def test_codex_controller_uses_top_level_approval_flag(monkeypatch, tmp_path: Path):
+def test_codex_controller_defaults_to_bypass_mode(monkeypatch, tmp_path: Path):
     class FakeSession:
         control_dir = tmp_path
         home = tmp_path / "home"
@@ -292,6 +292,8 @@ def test_codex_controller_uses_top_level_approval_flag(monkeypatch, tmp_path: Pa
         return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
 
     monkeypatch.setattr(drivers.subprocess, "run", fake_run)
+    monkeypatch.delenv("HERMES_BENCH_CODEX_SANDBOX", raising=False)
+    monkeypatch.delenv("HERMES_BENCH_CODEX_BYPASS_SANDBOX", raising=False)
     out = drivers._run_codex_controller(
         scenario=scenarios.from_case({"id": "demo", "category": "code_workflow", "prompt": "first"}),
         session=FakeSession(),
@@ -299,8 +301,36 @@ def test_codex_controller_uses_top_level_approval_flag(monkeypatch, tmp_path: Pa
         max_turns=3,
     )
     cmd = seen["cmd"]
-    assert cmd[:4] == ["codex", "--ask-for-approval", "never", "exec"]
+    assert cmd[:3] == ["codex", "--dangerously-bypass-approvals-and-sandbox", "exec"]
     assert out["decision"]["scenario_closed"] is True
+
+
+def test_codex_controller_can_use_explicit_sandbox(monkeypatch, tmp_path: Path):
+    class FakeSession:
+        control_dir = tmp_path
+        home = tmp_path / "home"
+        bridge_command = ["python", "-m", "hermesbench.agentic_bridge", "send", "state", "--prompt"]
+        status_command = ["python", "-m", "hermesbench.agentic_bridge", "status", "state"]
+
+    FakeSession.home.mkdir()
+    seen = {}
+
+    def fake_run(cmd, **kwargs):
+        seen["cmd"] = cmd
+        (tmp_path / "codex-final.json").write_text("{}", encoding="utf-8")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setenv("HERMES_BENCH_CODEX_SANDBOX", "workspace-write")
+    monkeypatch.setattr(drivers.subprocess, "run", fake_run)
+    drivers._run_codex_controller(
+        scenario=scenarios.from_case({"id": "demo", "category": "code_workflow", "prompt": "first"}),
+        session=FakeSession(),
+        timeout_s=10,
+        max_turns=3,
+    )
+    cmd = seen["cmd"]
+    assert cmd[:4] == ["codex", "--ask-for-approval", "never", "exec"]
+    assert "--sandbox" in cmd
 
 
 def test_agentic_bridge_records_target_turn(monkeypatch, tmp_path: Path):

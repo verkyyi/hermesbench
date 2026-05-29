@@ -149,42 +149,46 @@ def _controller_prompt(scenario: dict, session, *, max_turns: int) -> str:
 def _run_codex_controller(*, scenario: dict, session, timeout_s: int, max_turns: int) -> dict:
     prompt = _controller_prompt(scenario, session, max_turns=max_turns)
     last_message_path = Path(session.control_dir) / "codex-final.json"
-    cmd = [
-        os.environ.get("HERMES_BENCH_CODEX_BIN") or "codex",
-        "--ask-for-approval",
-        "never",
-        "exec",
-        "--skip-git-repo-check",
-        "--ephemeral",
-        "--sandbox",
-        os.environ.get("HERMES_BENCH_CODEX_SANDBOX") or "workspace-write",
-        "-C",
-        str(session.control_dir),
-        "--add-dir",
-        str(session.home),
-        "--add-dir",
-        str(session.control_dir),
-        "-o",
-        str(last_message_path),
-    ]
     model = os.environ.get("HERMES_BENCH_CODEX_MODEL")
-    if model:
-        cmd.extend(["-m", model])
     profile = os.environ.get("HERMES_BENCH_CODEX_PROFILE")
-    if profile:
-        cmd.extend(["-p", profile])
-    if os.environ.get("HERMES_BENCH_CODEX_BYPASS_SANDBOX") in {"1", "true", "yes", "on"}:
+    sandbox = os.environ.get("HERMES_BENCH_CODEX_SANDBOX")
+    bypass = os.environ.get("HERMES_BENCH_CODEX_BYPASS_SANDBOX")
+    use_bypass = bypass.lower() in {"1", "true", "yes", "on"} if bypass is not None else sandbox is None
+    if use_bypass:
         cmd = [
             os.environ.get("HERMES_BENCH_CODEX_BIN") or "codex",
+            "--dangerously-bypass-approvals-and-sandbox",
             "exec",
             "--skip-git-repo-check",
             "--ephemeral",
-            "--dangerously-bypass-approvals-and-sandbox",
             "-C",
             str(session.control_dir),
             "-o",
             str(last_message_path),
-        ] + (["-m", model] if model else []) + (["-p", profile] if profile else [])
+        ]
+    else:
+        cmd = [
+            os.environ.get("HERMES_BENCH_CODEX_BIN") or "codex",
+            "--ask-for-approval",
+            "never",
+            "exec",
+            "--skip-git-repo-check",
+            "--ephemeral",
+            "--sandbox",
+            sandbox,
+            "-C",
+            str(session.control_dir),
+            "--add-dir",
+            str(session.home),
+            "--add-dir",
+            str(session.control_dir),
+            "-o",
+            str(last_message_path),
+        ]
+    if model:
+        cmd.extend(["-m", model])
+    if profile:
+        cmd.extend(["-p", profile])
     cmd.append(prompt)
 
     env = dict(os.environ)
