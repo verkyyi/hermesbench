@@ -313,6 +313,100 @@ def test_programmatic_api_can_run_single_scenario(monkeypatch):
     assert captured["ids"] == ["calendar_daily_brief"]
 
 
+def test_programmatic_api_single_scenario_baseline_summarizes_capabilities(monkeypatch):
+    monkeypatch.setattr(api, "validate", lambda **kwargs: {"ok": True, "cases": 1})
+    monkeypatch.setattr(api, "list_scenarios", lambda **kwargs: [{"id": "demo_case"}])
+
+    def fake_run_scenario(scenario_id, **kwargs):
+        assert scenario_id == "demo_case"
+        return {
+            "run_id": "hb-demo",
+            "ts": "2026-05-29T00:00:00+00:00",
+            "overall_score": 88.5,
+            "suites_ran": 1,
+            "selection": {"effective_ids": ["demo_case"]},
+            "harness": {
+                "git_sha": "abc123",
+                "model_id": "gpt-demo",
+                "profile_hash": "profile-hash",
+                "profile_snapshot": {
+                    "hermes_home_hash": "home-hash",
+                    "config_hash": "config-hash",
+                    "execution_surface": {"id": "direct"},
+                    "capability_surface": {
+                        "target": {"ui": "cli", "profile": "default"},
+                        "tools": {
+                            "root_toolsets": ["hermes-cli"],
+                            "platform_toolsets": ["web", "memory"],
+                            "platform_toolset_hash": "tools-hash",
+                        },
+                        "agent_skills": {
+                            "inventory": {"count": 2, "hash": "skills-hash"},
+                            "globally_disabled": [],
+                            "platform_disabled": ["godmode"],
+                            "platform_allowed": ["agentfeeds"],
+                        },
+                    },
+                },
+            },
+            "suites": [{
+                "id": "demo_case",
+                "category": "Demo",
+                "mode": "hybrid",
+                "interaction": "multi_turn",
+                "score": 88.5,
+                "skipped": False,
+                "duration_s": 12.3,
+                "metrics": {
+                    "top_axis_scores": {"capability_truthfulness": 90.0},
+                    "axis_scores": {"closure": 100.0},
+                    "deterministic_checks": {"explicit": 1, "failed": []},
+                    "failures": [],
+                    "judge_errors": 0,
+                    "case_results": [{
+                        "case": "demo_case",
+                        "score": 88.5,
+                        "scenario": {
+                            "target": {"ui": "cli"},
+                            "capabilities": {
+                                "toolsets": ["web"],
+                                "agent_skills": ["agentfeeds"],
+                            },
+                        },
+                        "tool_calls": [{"function": {"name": "web_search"}}],
+                        "skills_used": ["agentfeeds"],
+                    }],
+                },
+            }],
+        }
+
+    monkeypatch.setattr(api, "run_scenario", fake_run_scenario)
+    out = api.run_scenario_baseline("demo_case", trials=1, persist=True)
+    summary = out["summary"]
+    assert out["validation"]["ok"] is True
+    assert summary["overall_score"] == 88.5
+    assert summary["capabilities"]["configured"]["platform_toolsets"] == ["web", "memory"]
+    assert summary["capabilities"]["configured"]["agent_skills_inventory"]["hash"] == "skills-hash"
+    assert summary["capabilities"]["scenario"][0]["capabilities"]["agent_skills"] == ["agentfeeds"]
+    assert summary["capabilities"]["observed"] == {
+        "tools": ["web_search"],
+        "skills": ["agentfeeds"],
+        "recorded": True,
+    }
+    assert summary["checks"]["failed"] == []
+
+
+def test_programmatic_api_single_scenario_baseline_rejects_unknown_scenario(monkeypatch):
+    monkeypatch.setattr(api, "validate", lambda **kwargs: {"ok": True, "cases": 1})
+    monkeypatch.setattr(api, "list_scenarios", lambda **kwargs: [{"id": "known"}])
+    try:
+        api.run_scenario_baseline("missing")
+    except ValueError as exc:
+        assert "Unknown HermesBench scenario" in str(exc)
+    else:
+        raise AssertionError("expected unknown scenario to be rejected")
+
+
 def test_programmatic_api_defaults_to_single_scenario_and_requires_full_bundle_opt_in(monkeypatch):
     calls = []
 

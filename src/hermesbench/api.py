@@ -250,6 +250,212 @@ def run_scenario(
     return run(scenarios=[scenario_id], **kwargs)
 
 
+def _sorted_unique(values: Iterable[str]) -> list[str]:
+    return sorted({value for value in values if value})
+
+
+def _collect_observed_usage(value) -> dict:
+    """Best-effort extraction of observed tool/skill names from report payloads."""
+    tools: list[str] = []
+    skills: list[str] = []
+
+    def walk(node) -> None:
+        if isinstance(node, dict):
+            for key, item in node.items():
+                if key in {"used_tools", "tools_used"} and isinstance(item, list):
+                    tools.extend(str(v) for v in item if isinstance(v, str))
+                elif key == "tool_calls" and isinstance(item, list):
+                    for call in item:
+                        if isinstance(call, str):
+                            tools.append(call)
+                        elif isinstance(call, dict):
+                            name = call.get("name")
+                            function = call.get("function")
+                            if not name and isinstance(function, dict):
+                                name = function.get("name")
+                            if name:
+                                tools.append(str(name))
+                elif key in {"used_skills", "skills_used", "agent_skills_used"} and isinstance(item, list):
+                    skills.extend(str(v) for v in item if isinstance(v, str))
+                walk(item)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(value)
+    return {
+        "tools": _sorted_unique(tools),
+        "skills": _sorted_unique(skills),
+        "recorded": bool(tools or skills),
+    }
+
+
+def summarize_report(report: dict) -> dict:
+    """Return the compact one-run summary coding agents should show users.
+
+    The full report can be large and may include public transcripts. This
+    summary keeps the reproducibility tags, axis scores, runtime, and failed
+    checks needed for a user-facing one-recipe baseline.
+    """
+    suites = report.get("suites") or []
+    suite = suites[0] if suites else {}
+    metrics = suite.get("metrics") or {}
+    harness = report.get("harness") or {}
+    snapshot = harness.get("profile_snapshot") or {}
+    capability = snapshot.get("capability_surface") or {}
+    tools = capability.get("tools") or {}
+    skills = capability.get("agent_skills") or {}
+    target = capability.get("target") or {}
+    deterministic = metrics.get("deterministic_checks") or {}
+    case_results = metrics.get("case_results") or []
+    observed_usage = _collect_observed_usage({
+        "metrics": metrics,
+        "case_results": case_results,
+    })
+    scenario_capabilities = []
+    for case in case_results:
+        scenario = case.get("scenario") or {}
+        scenario_capabilities.append({
+            "case": case.get("case"),
+            "target": scenario.get("target") or {},
+            "capabilities": scenario.get("capabilities") or {},
+        })
+
+    failed_checks = list(deterministic.get("failed") or [])
+    case_failures = list(metrics.get("failures") or [])
+    suite_errors = []
+    if suite.get("error"):
+        suite_errors.append({
+            "suite": suite.get("id"),
+            "error": suite.get("error"),
+        })
+    for case in case_results:
+        checks = case.get("checks") or {}
+        for failed in checks.get("failed") or []:
+            failed_checks.append({
+                "case": case.get("case"),
+                "check": failed,
+            })
+        if case.get("judge", {}).get("judge_error"):
+            suite_errors.append({
+                "case": case.get("case"),
+                "error": case["judge"]["judge_error"],
+            })
+
+    return {
+        "run_id": report.get("run_id"),
+        "ts": report.get("ts"),
+        "overall_score": report.get("overall_score"),
+        "suites_ran": report.get("suites_ran"),
+        "selection": report.get("selection") or {},
+        "suite": {
+            "id": suite.get("id"),
+            "category": suite.get("category"),
+            "mode": suite.get("mode"),
+            "interaction": suite.get("interaction"),
+            "score": suite.get("score"),
+            "skipped": bool(suite.get("skipped")),
+            "skip_reason": suite.get("skip_reason"),
+            "error": suite.get("error"),
+            "duration_s": suite.get("duration_s"),
+        },
+        "axes": {
+            "top": metrics.get("top_axis_scores") or {},
+            "sub": metrics.get("axis_scores") or {},
+        },
+        "runtime": {
+            "duration_s": suite.get("duration_s"),
+            "wall_p50_ms": metrics.get("wall_p50_ms"),
+            "turns_sent": metrics.get("turns_sent"),
+            "driver_turn_budget": metrics.get("driver_turn_budget"),
+            "conclusion_types": metrics.get("conclusion_types") or {},
+        },
+        "harness": {
+            "git_sha": harness.get("git_sha"),
+            "model_id": harness.get("model_id"),
+            "profile_hash": harness.get("profile_hash"),
+            "profile_snapshot": {
+                "hermes_home_hash": snapshot.get("hermes_home_hash"),
+                "config_hash": snapshot.get("config_hash"),
+                "execution_surface": snapshot.get("execution_surface") or {},
+                "target": target,
+                "root_toolsets": tools.get("root_toolsets") or [],
+                "platform_toolset_hash": tools.get("platform_toolset_hash"),
+                "agent_skills": (skills.get("inventory") or {}),
+                "globally_disabled": skills.get("globally_disabled") or [],
+                "platform_disabled": skills.get("platform_disabled") or [],
+                "platform_allowed": skills.get("platform_allowed") or [],
+            },
+        },
+        "capabilities": {
+            "configured": {
+                "target": target,
+                "root_toolsets": tools.get("root_toolsets") or [],
+                "platform_toolsets": tools.get("platform_toolsets") or [],
+                "platform_toolset_hash": tools.get("platform_toolset_hash"),
+                "agent_skills_inventory": skills.get("inventory") or {},
+                "agent_skills_globally_disabled": skills.get("globally_disabled") or [],
+                "agent_skills_platform_disabled": skills.get("platform_disabled") or [],
+                "agent_skills_platform_allowed": skills.get("platform_allowed") or [],
+            },
+            "scenario": scenario_capabilities,
+            "observed": observed_usage,
+            "observed_note": (
+                "Observed tool/skill usage is empty when the target adapter did "
+                "not expose tool-call telemetry for this run."
+                if not observed_usage["recorded"]
+                else None
+            ),
+        },
+        "checks": {
+            "judge_errors": metrics.get("judge_errors"),
+            "deterministic_explicit": deterministic.get("explicit"),
+            "failed": failed_checks,
+            "failures": case_failures,
+            "errors": suite_errors,
+        },
+        "case_results": [
+            {
+                "case": case.get("case"),
+                "score": case.get("score"),
+                "expectation": case.get("expectation"),
+                "turn_count": case.get("turn_count"),
+                "top_axes": case.get("top_axes") or {},
+                "axes": case.get("axes") or {},
+                "mechanical": case.get("mechanical") or {},
+                "driver_decision": case.get("driver_decision") or {},
+                "judge": case.get("judge") or {},
+                "checks": case.get("checks") or {},
+            }
+            for case in case_results
+        ],
+    }
+
+
+def run_scenario_baseline(
+    scenario_id: str,
+    **kwargs,
+) -> dict:
+    """Validate, run one scenario, and return report plus compact summary.
+
+    This is the preferred primitive for coding-agent "run one current Hermes
+    configuration recipe" workflows. It validates the suite catalog, verifies
+    the requested scenario id exists, persists according to ``kwargs``, and
+    avoids callers scraping the full trend store for basic result fields.
+    """
+    suite_path = kwargs.get("suite_path")
+    validation = validate(suite_path=suite_path)
+    scenario_ids = {scenario["id"] for scenario in list_scenarios(suite_path=suite_path)}
+    if scenario_id not in scenario_ids:
+        raise ValueError(f"Unknown HermesBench scenario: {scenario_id}")
+    report = run_scenario(scenario_id, **kwargs)
+    return {
+        "validation": validation,
+        "report": report,
+        "summary": summarize_report(report),
+    }
+
+
 def recent_runs(*, limit: int = 30, db_path: str | Path | None = None) -> list[dict]:
     """Return recent persisted runs from the HermesBench store."""
     return store.recent_runs(limit=limit, db_path=Path(db_path) if db_path else None)

@@ -587,7 +587,7 @@ Skill: https://github.com/verkyyi/hermesbench/blob/main/agent-skills/hermesbench
 
 Scenario: {task['id']}
 
-Follow the skill's "Run Current Hermes Configuration" workflow using run_scenario("{task['id']}", trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, and any failed checks."""
+Follow the skill's "Run Current Hermes Configuration" workflow using run_scenario_baseline("{task['id']}", trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks."""
         leaderboard = task.get("leaderboard") or []
         if leaderboard:
             best = leaderboard[0]

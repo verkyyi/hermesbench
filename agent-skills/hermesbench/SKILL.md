@@ -75,6 +75,8 @@ from hermesbench.api import (
     recent_runs,
     run,
     run_scenario,
+    run_scenario_baseline,
+    summarize_report,
     validate,
 )
 ```
@@ -121,6 +123,23 @@ report = run_scenario(
     persist=False,
 )
 print(report["overall_score"])
+```
+
+Run one scenario as a current-configuration baseline with the standard compact
+summary:
+
+```python
+from hermesbench.api import run_scenario_baseline
+
+baseline = run_scenario_baseline(
+    "calendar_daily_brief",
+    trials=1,
+    run_llm_evals=True,
+    target_ui="cli",
+    target_profile="default",
+    persist=True,
+)
+print(baseline["summary"])
 ```
 
 Run selected suites and persist to the trend store. Suites aggregate the same
@@ -256,7 +275,19 @@ profile. The whole bundled benchmark is opt-in.
 
 Steps:
 
-1. Install/import HermesBench from `https://github.com/verkyyi/hermesbench`.
+1. Use the active Hermes Python environment when it is discoverable. Prefer the
+   interpreter in the `~/.local/bin/hermes` shebang or
+   `~/.hermes/hermes-agent/venv/bin/python`, and verify it can
+   `import hermes_cli`. Install HermesBench into that interpreter:
+
+   ```bash
+   uv pip install --python "$HERMES_PYTHON" git+https://github.com/verkyyi/hermesbench.git
+   ```
+
+   Fall back to a temporary virtualenv only when no active Hermes interpreter is
+   available. Do not run the benchmark from an unrelated system Python; that can
+   fail with `ModuleNotFoundError: No module named 'hermes_cli'` and wastes a
+   persisted run.
 2. Call `validate()` and report any suite definition errors before running.
 3. If the user asks to run every recipe, all recipes, a full bundle, or a
    batch of recipes, ask for the target Hermes profile before starting. Use the
@@ -264,15 +295,28 @@ Steps:
    available user-input/request tool); otherwise ask one concise question in
    chat. Do not ask again when the user already specified the profile or asked
    for the current/default profile.
-4. Run `run_scenario("calendar_daily_brief", trials=1, run_llm_evals=True,
-   target_ui="cli", target_profile="<chosen-or-default>", persist=True)` unless
-   the user names a different recipe.
+4. Run `run_scenario_baseline("calendar_daily_brief", trials=1,
+   run_llm_evals=True, target_ui="cli",
+   target_profile="<chosen-or-default>", persist=True)` unless the user names a
+   different recipe. If working from a checked-out HermesBench repo, the same
+   workflow is available as `scripts/run_one_recipe_baseline.py`.
 5. Do not run the whole bundled benchmark unless the user explicitly asks for a
    full-bundle run. Use `run(full_bundle=True, ...)` only for that opt-in path.
 6. Summarize `overall_score`, top axes, six sub-axes, runtime, target UI,
-   target profile, profile snapshot labels/tags, skipped suites, and the most
-   important failed cases.
-7. Call `build_public_artifacts()` in a checked-out repo when website/repo
+   target profile, profile snapshot labels/tags, configured tools/toolsets,
+   configured AgentSkills inventory/filter tags, observed tools/skills when the
+   report exposes telemetry, skipped suites, and the most important failed
+   cases. If observed tool/skill usage is empty, say it was not recorded rather
+   than inferring it from transcript text.
+7. Avoid dumping `recent_runs()` or large raw reports for a one-recipe result.
+   Use `baseline["summary"]` or `summarize_report(report)` so the result shape
+   is stable and fast to inspect.
+8. Treat internal target warnings in the public transcript, such as auth
+   fallback/model normalization/scanner warnings, as communication/UX findings
+   when the judge flags them. Do not report them as failed deterministic checks
+   unless they appear under `checks.failed`, `metrics.failures`, or suite
+   `error`.
+9. Call `build_public_artifacts()` in a checked-out repo when website/repo
    artifacts should be refreshed.
 
 ### Prepare A Publishable Baseline
