@@ -7,8 +7,6 @@ configuration chooses the driver and target adapters.
 
 from __future__ import annotations
 
-import os
-
 from hermesbench import usecases
 
 
@@ -18,7 +16,7 @@ def from_case(case: dict) -> dict:
     initial_prompt = str(case.get("initial_prompt") or case.get("prompt") or turns[0]["prompt"])
     raw_driver = dict(case.get("driver") or {})
     driver = dict(raw_driver)
-    driver.setdefault("kind", os.environ.get("HERMES_BENCH_DRIVER") or "codex")
+    driver.setdefault("kind", "codex")
     driver["_declared_max_turns"] = "max_turns" in raw_driver
     if "max_turns" not in driver:
         driver["max_turns"] = len(turns)

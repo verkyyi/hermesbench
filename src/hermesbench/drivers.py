@@ -1,8 +1,9 @@
 """Driver adapters.
 
-Drivers orchestrate scenarios against a target adapter. They may be static,
-deterministic state machines, or bounded agent controllers. Drivers do not
-solve the task for the target; they provide user turns and observations.
+Drivers orchestrate scenarios against a target adapter. HermesBench prompt
+suites are agent-driven: a Codex headless controller provides bounded user
+turns and observations, then reports whether the scenario closed. The driver
+does not solve the task for the target.
 """
 
 from __future__ import annotations
@@ -14,23 +15,6 @@ import shlex
 import subprocess
 import time
 from pathlib import Path
-
-
-@dataclass
-class StaticDriver:
-    """Replay the scenario's declared turns exactly."""
-
-    def run(self, scenario: dict, target, *, timeout_s: int) -> dict:
-        turns = list(scenario.get("turns") or [{"prompt": scenario["initial_prompt"]}])
-        max_turns = int((scenario.get("driver") or {}).get("max_turns") or len(turns))
-        turns = turns[:max(1, max_turns)]
-        result = target.run_turns(turns, timeout_s=timeout_s)
-        result["driver"] = {
-            "kind": "static",
-            "max_turns": max_turns,
-            "turns_sent": len(turns),
-        }
-        return result
 
 
 @dataclass
@@ -65,13 +49,6 @@ class CodexDriver:
             "controller": controller,
         }
         return result
-
-
-def _configured_kind(scenario: dict) -> str:
-    override = os.environ.get("HERMES_BENCH_DRIVER")
-    if override:
-        return override.strip().lower()
-    return str((scenario.get("driver") or {}).get("kind") or "codex").strip().lower()
 
 
 def _codex_max_turns(scenario: dict) -> int:
@@ -260,12 +237,10 @@ def _parse_controller_decision(content: str) -> dict:
 
 
 def build_driver(scenario: dict):
-    kind = _configured_kind(scenario)
-    if kind == "static":
-        return StaticDriver()
-    if kind == "codex":
-        return CodexDriver(max_turns=_codex_max_turns(scenario))
-    raise ValueError(f"unsupported driver kind: {kind}")
+    kind = str((scenario.get("driver") or {}).get("kind") or "codex").strip().lower()
+    if kind != "codex":
+        raise ValueError(f"unsupported driver kind: {kind}; HermesBench prompt suites are agent-driven")
+    return CodexDriver(max_turns=_codex_max_turns(scenario))
 
 
 def run(scenario: dict, target, *, timeout_s: int) -> dict:

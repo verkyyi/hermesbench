@@ -96,6 +96,30 @@ def test_local_suite_supports_multi_turn_cases(monkeypatch, tmp_path: Path):
     assert "Turn 2" in usecases.case_prompt_for_judge(case)
 
 
+def test_local_suite_rejects_non_codex_driver(monkeypatch, tmp_path: Path):
+    local = tmp_path / "local.json"
+    local.write_text(json.dumps({
+        "categories": [{
+            "id": "local_static",
+            "label": "Local static",
+            "cases": [{
+                "id": "static_case",
+                "expectation": "answer",
+                "prompt": "hello",
+                "driver": {"kind": "static"},
+            }],
+        }],
+    }), encoding="utf-8")
+    monkeypatch.setenv("HERMESBENCH_SUITE_PATH", str(local))
+
+    try:
+        usecases.validate_dataset()
+    except ValueError as exc:
+        assert "unsupported driver.kind" in str(exc)
+    else:
+        raise AssertionError("expected non-codex driver to be rejected")
+
+
 def test_harness_runs_multi_turn_scenario(monkeypatch, tmp_path: Path):
     src_home = tmp_path / "home"
     src_home.mkdir()
@@ -194,7 +218,6 @@ def test_execution_surface_classification():
 
 def test_case_normalizes_to_driver_target_agnostic_scenario(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
-    monkeypatch.delenv("HERMES_BENCH_DRIVER", raising=False)
     case = {
         "id": "demo",
         "category": "code_workflow",
@@ -207,16 +230,6 @@ def test_case_normalizes_to_driver_target_agnostic_scenario(monkeypatch):
     assert scenario["driver"]["kind"] == "codex"
     assert scenario["turns"] == [{"prompt": "Fix the fixture."}]
     assert "target_surfaces" not in scenario
-
-
-def test_static_driver_can_be_selected_by_run_config(monkeypatch):
-    monkeypatch.setenv("HERMES_BENCH_DRIVER", "static")
-    scenario = scenarios.from_case({
-        "id": "demo",
-        "category": "code_workflow",
-        "prompt": "Say hi.",
-    })
-    assert isinstance(drivers.build_driver(scenario), drivers.StaticDriver)
 
 
 def test_codex_driver_records_agentic_closure(monkeypatch, tmp_path: Path):

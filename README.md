@@ -47,7 +47,7 @@ case spec -> driver adapter -> target adapter -> deterministic checks -> judge -
 - **Driver adapter**: orchestrates the scenario. The default is `codex`, which
   uses Codex headless mode as a bounded evaluator-side controller. It sends the
   initial prompt, may ask natural follow-up turns, and reports whether the
-  scenario is closed. Use `--driver static` to replay declared turns exactly.
+  scenario is closed.
 - **Target adapter**: talks to the agent under test. The current public adapter
   is Hermes CLI; direct/no-kanban vs kanban delegation is run/profile config,
   not case data.
@@ -64,15 +64,15 @@ different configuration surfaces.
 
 | configuration | target surface | evaluator | score | runtime | profile hash | bench git | run id |
 |---|---|---|---:|---:|---|---|---|
-| `verkyyi/default-no-kanban` | Direct/no-kanban | `static` | `91.76` | `~4m 50s` | `4080cb90` | `c14f160` | `hb-20260529T082033Z` |
-| `verkyyi/default` | Kanban delegation | `static` | `89.78` | `~4m 0s` | `46baed47` | `c14f160` | `hb-20260529T081506Z` |
+| `verkyyi/default-no-kanban` | Direct/no-kanban | `legacy_static` | `91.76` | `~4m 50s` | `4080cb90` | `c14f160` | `hb-20260529T082033Z` |
+| `verkyyi/default` | Kanban delegation | `legacy_static` | `89.78` | `~4m 0s` | `46baed47` | `c14f160` | `hb-20260529T081506Z` |
 
-Both baselines use `gpt-5.5` via `openai-codex`, Honcho memory, high-rate mode,
-one trial per prompt case, and the pinned `static` evaluator driver. The kanban
-baseline has `hermes-cli` + `kanban` toolsets and
-`kanban-orchestrator-routing`; the no-kanban baseline removes the kanban
-toolset, kanban config block, and kanban routing plugin. The opt-in
-`delegated_closure` suite is not included in either baseline score.
+These checked-in rows are legacy static-evaluator baselines retained for
+historical traceability. Current HermesBench prompt suites are agent-driven
+only and use the Codex evaluator driver. The kanban baseline has `hermes-cli` +
+`kanban` toolsets and `kanban-orchestrator-routing`; the no-kanban baseline
+removes the kanban toolset, kanban config block, and kanban routing plugin. The
+opt-in `delegated_closure` suite is not included in either baseline score.
 
 Baseline files:
 
@@ -127,9 +127,6 @@ HERMES_RUN_LLM_EVALS=1 hermesbench
 # Faster high-rate run. Use when your provider/key can handle the burst.
 HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 
-# Replay declared turns exactly instead of using the agentic Codex driver.
-HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
-
 # Run only selected suites.
 HERMES_RUN_LLM_EVALS=1 hermesbench --suite runtime_config,ambiguous_followup
 
@@ -142,7 +139,6 @@ Concurrency controls:
 - `--trials N` or `HERMES_BENCH_TRIALS`
 - `--case-concurrency N` or `HERMES_BENCH_CONCURRENCY`
 - `--suite-concurrency N` or `HERMES_BENCH_SUITE_CONCURRENCY`
-- `--driver codex|static` or `HERMES_BENCH_DRIVER`
 - `--high-rate`, which defaults to suite concurrency 4 and case concurrency 8
   unless the explicit flags above are supplied
 

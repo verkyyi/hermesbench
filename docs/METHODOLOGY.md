@@ -169,8 +169,8 @@ transcript ───────────────────────
   target frameworks or surfaces.
 - **`drivers.py`** — orchestrates scenarios. The default `codex` driver uses
   Codex headless mode as a bounded evaluator-side controller that can ask
-  natural follow-up turns and report whether the scenario closed. The `static`
-  driver remains available for exact replay and baseline reproduction.
+  natural follow-up turns and report whether the scenario closed. Prompt suites
+  are agent-driven only.
 - **`targets.py`** — talks to the target agent framework. The first adapter is
   Hermes CLI; direct vs kanban is profile/run configuration, not case data.
 - **`harness.py`** — lower-level isolated Hermes process/session execution.
@@ -234,8 +234,7 @@ for sending user turns to the target, and requires a final JSON decision:
 whether the scenario closed, what closure type it observed, how many turns it
 sent, and an optional driver-facing reply. The controller must not solve the
 task for the target; it only provides bounded user turns, observations, and
-closure judgement. Use `--driver static` when a run must replay declared turns
-exactly.
+closure judgement.
 
 For each prompt case the harness runs, in its **own throwaway `HERMES_HOME`**
 (config + creds copied from the default profile) and a benchmark-owned working

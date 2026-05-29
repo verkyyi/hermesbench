@@ -11,7 +11,7 @@
     "case_concurrency": 8,
     "suite_concurrency": 4,
     "high_rate": true,
-    "evaluator_driver": "static"
+    "evaluator_driver": "legacy_static"
   },
   "profile_fingerprint": {
     "hermesbench_git_sha": "c14f160b89a5828af70344df290f66d127bafed3",

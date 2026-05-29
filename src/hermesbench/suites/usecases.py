@@ -1,11 +1,10 @@
 """HermesBench v2 use-case suites — one per category.
 
-For each case in a category, a driver orchestrates a target adapter against a
-driver/target-agnostic scenario. The first bundled driver is static replay of
-the declared prompt/turns; target selection is run configuration. Scoring is
-deterministic-first: mechanical signals, artifact checks, scope checks, and
-latency dominate; LLM judgement is used only for semantic appropriateness and
-coherence.
+For each case in a category, a Codex evaluator driver orchestrates a target
+adapter against a driver/target-agnostic scenario. Target selection is run
+configuration. Scoring is deterministic-first: mechanical signals, artifact
+checks, scope checks, and latency dominate; LLM judgement is used only for
+semantic appropriateness and coherence.
 
 The final score is the only verdict. Closure, stability, scope, deterministic
 checks, and judged semantics are folded into the score, so a correct-looking but
@@ -79,7 +78,7 @@ def _run_trial(case: dict, b: dict) -> dict:
         "expectation": case.get("expectation"),
         "turn_count": len(scenario["turns"]),
         "scenario": {
-            "driver": (m.get("driver") or {}).get("kind", "static"),
+            "driver": (m.get("driver") or {}).get("kind", "codex"),
             "checks": len(scenario.get("checks") or []),
         },
         "mech": m,
@@ -170,7 +169,7 @@ def _run_category(category: str) -> dict:
             ),
             "multi_turn_cases": sum(1 for c in cases if len(usecases.case_turns(c)) > 1),
             "scenario_model": "driver_target",
-            "driver_kinds": sorted({r["scenario"]["driver"] for r in results}),
+            "evaluator_driver": "codex",
             "driver_scenario_closed_rate": (
                 round(driver_closed_rate, 3) if driver_closed_rate is not None else None
             ),

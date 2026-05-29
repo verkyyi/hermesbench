@@ -591,6 +591,9 @@ def _coerce_local_bundle(data: Any, source: Path) -> tuple[list[dict], dict[str,
             has_turns = isinstance(case.get("turns"), list) and bool(case.get("turns"))
             if not has_prompt and not has_turns:
                 raise ValueError(f"{source}: local case in {cid!r} missing prompt, initial_prompt, or turns")
+            driver = case.get("driver")
+            if isinstance(driver, dict) and str(driver.get("kind") or "codex").strip().lower() != "codex":
+                raise ValueError(f"{source}: local case {case.get('id')!r} uses unsupported driver.kind")
             if has_turns:
                 turns = []
                 for idx, raw_turn in enumerate(case["turns"], start=1):

@@ -262,11 +262,6 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--case-concurrency", type=int, help="parallel prompt cases within each suite")
     ap.add_argument("--suite-concurrency", type=int, help="parallel suites")
     ap.add_argument(
-        "--driver",
-        choices=("codex", "static"),
-        help="evaluator-side driver for prompt suites; default is codex",
-    )
-    ap.add_argument(
         "--high-rate",
         action="store_true",
         help="fast preset: suite concurrency 4 and case concurrency 8 unless explicitly set",
@@ -288,8 +283,6 @@ def main(argv: list[str] | None = None) -> int:
         os.environ["HERMES_BENCH_HIGH_RATE"] = "1"
     if args.trials is not None:
         os.environ["HERMES_BENCH_TRIALS"] = str(max(1, args.trials))
-    if args.driver:
-        os.environ["HERMES_BENCH_DRIVER"] = args.driver
     if args.case_concurrency is not None:
         os.environ["HERMES_BENCH_CONCURRENCY"] = str(max(1, args.case_concurrency))
     if args.suite_concurrency is not None:

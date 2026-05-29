@@ -69,9 +69,7 @@ Recommended:
 
 - `notes`: judge-facing rubric notes
 - `category`: optional inside each case; defaults to the category id
-- `driver`: driver policy knobs; default run configuration uses
-  `{"kind": "codex"}` unless `--driver static` or `HERMES_BENCH_DRIVER=static`
-  is set
+- `driver`: Codex evaluator policy knobs such as `max_turns`
 - `checks`: deterministic checks such as `artifact_exists`
 
 Cases are driver- and target-agnostic. Do not put target surfaces such as
@@ -109,8 +107,7 @@ cases:
 
 `codex` is the default evaluator-side driver. It uses Codex headless mode as a
 bounded controller, sends turns through the target adapter bridge, and returns a
-driver-side scenario-closure judgement. `static` remains available for exact
-replay and baseline reproduction.
+driver-side scenario-closure judgement. Prompt suites are agent-driven only.
 
 Simple deterministic check:
 
