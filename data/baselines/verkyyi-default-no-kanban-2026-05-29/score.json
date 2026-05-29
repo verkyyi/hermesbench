@@ -1,26 +1,31 @@
 {
-  "run_id": "hb-20260529T082033Z",
-  "timestamp_utc": "2026-05-29T08:20:33.932221+00:00",
-  "overall_score": 91.76,
-  "observed_runtime_s": 290,
+  "run_id": "hb-20260529T095156Z",
+  "timestamp_utc": "2026-05-29T09:51:56.603205+00:00",
+  "overall_score": 92.34,
+  "observed_runtime_s": 226,
   "suites_ran": 13,
   "delegated_closure": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
-  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1",
+  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
   "environment": {
     "trials_per_case": 1,
-    "case_concurrency": 8,
-    "suite_concurrency": 4,
+    "case_concurrency": 6,
+    "suite_concurrency": 6,
     "high_rate": true,
-    "evaluator_driver": "legacy_static"
+    "evaluator_driver": "codex",
+    "agentic_max_turns_default": 2,
+    "controller_timeout_s": 180,
+    "driver_scenario_closed_rate": 1.0,
+    "turns_sent": 48,
+    "turn_budget": 96
   },
   "profile_fingerprint": {
-    "hermesbench_git_sha": "c14f160b89a5828af70344df290f66d127bafed3",
-    "profile_hash": "4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4"
+    "hermesbench_git_sha": "3a3893f36d7b7dc4aa172fe29b7b864bf4c34891",
+    "profile_hash": "aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599"
   },
   "profile": {
     "model_provider": "openai-codex",
     "model": "gpt-5.5",
-    "profile_hash": "4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4",
+    "profile_hash": "aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599",
     "execution_surface": {
       "id": "direct",
       "label": "Direct/no-kanban",
@@ -28,44 +33,47 @@
       "prompt_case_contract": "framework_agnostic"
     },
     "memory_provider": "honcho",
+    "memory_enabled": true,
     "toolsets": [
       "hermes-cli"
     ],
     "plugins_enabled": [
       "agentfeeds",
-      "break-glass-cli"
+      "break-glass-cli",
+      "observability/langfuse"
     ],
     "worker_profile_coverage": {
       "kanban_enabled": false,
       "multi_worker_execution_exercised": false,
       "delegated_closure_suite": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
-      "published_worker_profiles": []
+      "published_worker_profiles": [],
+      "publication_policy": "If a baseline runs delegated/multi-worker suites, every involved orchestrator/worker profile must be published as an installable profile distribution or as a redacted distribution-style profile snapshot."
     }
   },
   "suite_scores": {
-    "runtime_config": 92.13,
-    "code_workflow": 71.04,
-    "ops_monitoring": 69.0,
-    "tool_discipline": 94.2,
-    "benchmark_design": 95.85,
-    "delegation_boundary": 98.11,
-    "gateway_messaging": 97.06,
-    "research_synthesis": 95.94,
-    "memory_hygiene": 93.19,
-    "truthfulness": 98.72,
+    "runtime_config": 94.45,
+    "code_workflow": 68.58,
+    "ops_monitoring": 70.94,
+    "tool_discipline": 97.88,
+    "benchmark_design": 96.24,
+    "delegation_boundary": 98.04,
+    "gateway_messaging": 96.54,
+    "research_synthesis": 95.75,
+    "memory_hygiene": 93.83,
+    "truthfulness": 99.05,
     "daily_assistant": 92.5,
-    "ambiguous_followup": 95.08,
+    "ambiguous_followup": 96.56,
     "gateway_ack_policy": 100.0
   },
   "axis_highlights": {
-    "lowest_suite": "ops_monitoring",
-    "lowest_suite_score": 69.0,
+    "lowest_suite": "code_workflow",
+    "lowest_suite_score": 68.58,
     "best_prompt_suites": [
       "truthfulness",
       "delegation_boundary",
-      "gateway_messaging"
+      "tool_discipline"
     ],
     "framework_agnostic_surface": "direct",
-    "scoring_model": "deterministic_first_driver_target"
+    "scoring_model": "deterministic_first_agentic_driver_target"
   }
 }

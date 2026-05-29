@@ -5,23 +5,30 @@ description: Redacted distribution-style baseline for a local Hermes default pro
 author: verkyyi
 license: MIT
 benchmark:
-  run_id: hb-20260529T082033Z
-  score: 91.76
-  observed_runtime_s: 290
+  run_id: hb-20260529T095156Z
+  score: 92.34
+  observed_runtime_s: 226
   suite_count: 13
   prompt_cases: 48
   trials_per_case: 1
-  suite_concurrency: 4
-  case_concurrency: 8
-  evaluator_driver: legacy_static
-  command: HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
+  suite_concurrency: 6
+  case_concurrency: 6
+  high_rate: true
+  evaluator_driver: codex
+  agentic_max_turns_default: 2
+  controller_timeout_s: 180
+  driver_scenario_closed_rate: 1.0
+  turns_sent: 48
+  turn_budget: 96
+  command: HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 profile_fingerprint:
-  hermesbench_git_sha: c14f160b89a5828af70344df290f66d127bafed3
-  profile_hash: 4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4
+  hermesbench_git_sha: 3a3893f36d7b7dc4aa172fe29b7b864bf4c34891
+  profile_hash: aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599
 runtime_config:
   execution_surface:
     id: direct
     label: Direct/no-kanban
+    kanban_enabled: false
     prompt_case_contract: framework_agnostic
   model:
     provider: openai-codex
@@ -35,7 +42,10 @@ runtime_config:
   plugins_enabled:
   - agentfeeds
   - break-glass-cli
+  - observability/langfuse
   gateway:
+    strict: false
+    media_delivery_allow_dirs: []
     trust_recent_files: true
     trust_recent_files_seconds: 600
   kanban:
@@ -70,3 +80,5 @@ notes:
 - Use this as a comparable benchmark baseline, not as an installable Hermes profile
   distribution.
 - Bundled prompt use cases are framework-agnostic and should run with or without kanban.
+- Prompt suites are agent-driven with the Codex evaluator driver; legacy static driver
+  baselines are superseded.

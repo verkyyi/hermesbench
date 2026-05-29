@@ -89,12 +89,12 @@
                 <td>1</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
                 <td>Direct/no-kanban</td>
-                <td>legacy_static</td>
+                <td>codex</td>
                 <td>redacted distribution-style</td>
-                <td>91.76</td>
-                <td>~4m 50s</td>
-                <td><code>4080cb90</code></td>
-                <td><code>c14f160</code></td>
+                <td>92.34</td>
+                <td>~3m 46s</td>
+                <td><code>aa14b22a</code></td>
+                <td><code>3a3893f</code></td>
                 <td>gpt-5.5 / openai-codex</td>
                 <td>&lt;$10 target</td>
               </tr>
@@ -102,12 +102,12 @@
                 <td>2</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
                 <td>Kanban delegation</td>
-                <td>legacy_static</td>
+                <td>codex</td>
                 <td>redacted distribution-style</td>
-                <td>89.78</td>
-                <td>~4m 0s</td>
-                <td><code>46baed47</code></td>
-                <td><code>c14f160</code></td>
+                <td>88.82</td>
+                <td>~5m 12s</td>
+                <td><code>e460b216</code></td>
+                <td><code>3a3893f</code></td>
                 <td>gpt-5.5 / openai-codex</td>
                 <td>&lt;$10 target</td>
               </tr>
@@ -115,9 +115,10 @@
           </table>
         </div>
         <p class="note">
-          These rows are legacy static-evaluator baselines retained for
-          traceability. Current prompt suites are agent-driven only and use the
-          Codex evaluator driver.
+          These rows use agent-driven prompt suites with the Codex evaluator
+          driver, default turn budget 2, and high-rate suite/case concurrency
+          6/6. The bundled prompt cases stay framework-agnostic; the surface
+          column exposes whether kanban delegation was available.
         </p>
       </section>
 

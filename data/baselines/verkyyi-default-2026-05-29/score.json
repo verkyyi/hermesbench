@@ -1,26 +1,31 @@
 {
-  "run_id": "hb-20260529T081506Z",
-  "timestamp_utc": "2026-05-29T08:15:06.684072+00:00",
-  "overall_score": 89.78,
-  "observed_runtime_s": 240,
+  "run_id": "hb-20260529T094614Z",
+  "timestamp_utc": "2026-05-29T09:46:14.022879+00:00",
+  "overall_score": 88.82,
+  "observed_runtime_s": 312,
   "suites_ran": 13,
   "delegated_closure": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
-  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1",
+  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
   "environment": {
     "trials_per_case": 1,
-    "case_concurrency": 8,
-    "suite_concurrency": 4,
+    "case_concurrency": 6,
+    "suite_concurrency": 6,
     "high_rate": true,
-    "evaluator_driver": "legacy_static"
+    "evaluator_driver": "codex",
+    "agentic_max_turns_default": 2,
+    "controller_timeout_s": 180,
+    "driver_scenario_closed_rate": 0.9792,
+    "turns_sent": 47,
+    "turn_budget": 96
   },
   "profile_fingerprint": {
-    "hermesbench_git_sha": "c14f160b89a5828af70344df290f66d127bafed3",
-    "profile_hash": "46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377"
+    "hermesbench_git_sha": "3a3893f36d7b7dc4aa172fe29b7b864bf4c34891",
+    "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
   },
   "profile": {
     "model_provider": "openai-codex",
     "model": "gpt-5.5",
-    "profile_hash": "46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377",
+    "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355",
     "execution_surface": {
       "id": "kanban_delegation",
       "label": "Kanban delegation",
@@ -28,19 +33,23 @@
       "prompt_case_contract": "framework_agnostic"
     },
     "memory_provider": "honcho",
+    "memory_enabled": true,
     "toolsets": [
       "hermes-cli",
       "kanban"
     ],
     "plugins_enabled": [
       "agentfeeds",
+      "break-glass-cli",
       "kanban-orchestrator-routing",
-      "break-glass-cli"
+      "observability/langfuse"
     ],
     "worker_profile_coverage": {
       "kanban_enabled": true,
       "multi_worker_execution_exercised": false,
       "delegated_closure_suite": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
+      "published_worker_profiles": [],
+      "publication_policy": "If a baseline runs delegated/multi-worker suites, every involved orchestrator/worker profile must be published as an installable profile distribution or as a redacted distribution-style profile snapshot.",
       "locally_present_profiles": [
         "orchestrator",
         "worker",
@@ -49,34 +58,33 @@
         "worker-ops",
         "worker-report",
         "worker-research"
-      ],
-      "published_worker_profiles": []
+      ]
     }
   },
   "suite_scores": {
-    "runtime_config": 94.66,
-    "code_workflow": 68.99,
-    "ops_monitoring": 71.12,
-    "tool_discipline": 98.81,
-    "benchmark_design": 96.89,
-    "delegation_boundary": 99.06,
-    "gateway_messaging": 96.06,
-    "research_synthesis": 94.0,
-    "memory_hygiene": 98.06,
-    "truthfulness": 93.44,
-    "daily_assistant": 67.29,
-    "ambiguous_followup": 88.76,
+    "runtime_config": 94.24,
+    "code_workflow": 68.41,
+    "ops_monitoring": 69.81,
+    "tool_discipline": 97.45,
+    "benchmark_design": 94.28,
+    "delegation_boundary": 97.77,
+    "gateway_messaging": 96.84,
+    "research_synthesis": 95.81,
+    "memory_hygiene": 73.62,
+    "truthfulness": 98.51,
+    "daily_assistant": 72.88,
+    "ambiguous_followup": 95.06,
     "gateway_ack_policy": 100.0
   },
   "axis_highlights": {
-    "lowest_suite": "daily_assistant",
-    "lowest_suite_score": 67.29,
+    "lowest_suite": "code_workflow",
+    "lowest_suite_score": 68.41,
     "best_prompt_suites": [
+      "truthfulness",
       "delegation_boundary",
-      "tool_discipline",
-      "memory_hygiene"
+      "tool_discipline"
     ],
     "framework_agnostic_surface": "kanban_delegation",
-    "scoring_model": "deterministic_first_driver_target"
+    "scoring_model": "deterministic_first_agentic_driver_target"
   }
 }

@@ -64,15 +64,15 @@ different configuration surfaces.
 
 | configuration | target surface | evaluator | score | runtime | profile hash | bench git | run id |
 |---|---|---|---:|---:|---|---|---|
-| `verkyyi/default-no-kanban` | Direct/no-kanban | `legacy_static` | `91.76` | `~4m 50s` | `4080cb90` | `c14f160` | `hb-20260529T082033Z` |
-| `verkyyi/default` | Kanban delegation | `legacy_static` | `89.78` | `~4m 0s` | `46baed47` | `c14f160` | `hb-20260529T081506Z` |
+| `verkyyi/default-no-kanban` | Direct/no-kanban | `codex` | `92.34` | `~3m 46s` | `aa14b22a` | `3a3893f` | `hb-20260529T095156Z` |
+| `verkyyi/default` | Kanban delegation | `codex` | `88.82` | `~5m 12s` | `e460b216` | `3a3893f` | `hb-20260529T094614Z` |
 
-These checked-in rows are legacy static-evaluator baselines retained for
-historical traceability. Current HermesBench prompt suites are agent-driven
-only and use the Codex evaluator driver. The kanban baseline has `hermes-cli` +
-`kanban` toolsets and `kanban-orchestrator-routing`; the no-kanban baseline
-removes the kanban toolset, kanban config block, and kanban routing plugin. The
-opt-in `delegated_closure` suite is not included in either baseline score.
+These checked-in rows use the current agent-driven prompt suites with the Codex
+evaluator driver, default agentic turn budget 2, and high-rate concurrency
+6/6. The kanban baseline has `hermes-cli` + `kanban` toolsets and
+`kanban-orchestrator-routing`; the no-kanban baseline removes the kanban
+toolset, kanban config block, and kanban routing plugin. The opt-in
+`delegated_closure` suite is not included in either baseline score.
 
 Baseline files:
 

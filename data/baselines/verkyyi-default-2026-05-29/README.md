@@ -1,9 +1,7 @@
 # verkyyi default baseline, 2026-05-29
 
-This is the first published HermesBench baseline from a local Hermes default
-profile. It is the **kanban delegation** surface for the same profile family;
-see `../verkyyi-default-no-kanban-2026-05-29` for the paired direct/no-kanban
-baseline.
+This is the kanban delegation surface for the same profile family. See
+`../verkyyi-default-no-kanban-2026-05-29` for the paired baseline.
 
 It is published as a **redacted distribution-style baseline**. It follows the
 Hermes profile-distribution shape enough to describe the runtime configuration,
@@ -18,22 +16,23 @@ repository and link it from the benchmark result.
 
 | field | value |
 |---|---:|
-| Run ID | `hb-20260529T081506Z` |
-| Overall score | `89.78` |
-| Observed runtime | `~4m 0s` |
-| Evaluator driver | `legacy_static` |
-| Profile hash | `46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377` |
-| HermesBench git SHA | `c14f160b89a5828af70344df290f66d127bafed3` |
+| Run ID | `hb-20260529T094614Z` |
+| Overall score | `88.82` |
+| Observed runtime | `~5m 12s` |
+| Evaluator driver | `codex` |
+| Agentic max turns default | `2` |
+| Profile hash | `e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355` |
+| HermesBench git SHA | `3a3893f36d7b7dc4aa172fe29b7b864bf4c34891` |
 | Prompt cases | `48` |
 | Suites ran | `13` |
 | Trials per case | `1` |
-| Suite concurrency | `4` |
-| Case concurrency | `8` |
+| Suite concurrency | `6` |
+| Case concurrency | `6` |
 
 Command:
 
 ```bash
-HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
+HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 ```
 
 ## Runtime Shape
@@ -45,7 +44,7 @@ HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
 | Memory | `honcho`, enabled |
 | Execution surface | Kanban delegation |
 | Toolsets | `hermes-cli`, `kanban` |
-| Enabled plugins | `agentfeeds`, `kanban-orchestrator-routing`, `break-glass-cli` |
+| Enabled plugins | `agentfeeds`, `break-glass-cli`, `kanban-orchestrator-routing`, `observability/langfuse` |
 | Kanban | dispatch in gateway, orchestrator profile, auto-decompose |
 | Gateway | recent-file trust enabled for 600 seconds |
 
@@ -63,9 +62,9 @@ profiles were present:
 - `worker-research`
 
 However, this baseline did **not** exercise multi-worker execution. The measured
-run used the default/front-desk prompt suites plus deterministic
-`gateway_ack_policy`; `delegated_closure` was skipped because
-`HERMES_BENCH_DELEGATED_CLOSURE` was not set.
+run used the standard prompt suites plus deterministic `gateway_ack_policy`;
+`delegated_closure` was skipped because `HERMES_BENCH_DELEGATED_CLOSURE` was
+not set.
 
 Because worker profiles were not part of the measured path, their full profile
 configs are not published in this baseline. If a future baseline runs delegated
@@ -77,18 +76,18 @@ distribution-style profile snapshot.
 
 | suite | score |
 |---|---:|
-| `runtime_config` | 94.66 |
-| `code_workflow` | 68.99 |
-| `ops_monitoring` | 71.12 |
-| `tool_discipline` | 98.81 |
-| `benchmark_design` | 96.89 |
-| `delegation_boundary` | 99.06 |
-| `gateway_messaging` | 96.06 |
-| `research_synthesis` | 94.00 |
-| `memory_hygiene` | 98.06 |
-| `truthfulness` | 93.44 |
-| `daily_assistant` | 67.29 |
-| `ambiguous_followup` | 88.76 |
+| `runtime_config` | 94.24 |
+| `code_workflow` | 68.41 |
+| `ops_monitoring` | 69.81 |
+| `tool_discipline` | 97.45 |
+| `benchmark_design` | 94.28 |
+| `delegation_boundary` | 97.77 |
+| `gateway_messaging` | 96.84 |
+| `research_synthesis` | 95.81 |
+| `memory_hygiene` | 73.62 |
+| `truthfulness` | 98.51 |
+| `daily_assistant` | 72.88 |
+| `ambiguous_followup` | 95.06 |
 | `gateway_ack_policy` | 100.00 |
 
 `delegated_closure` was skipped because `HERMES_BENCH_DELEGATED_CLOSURE` was not set.

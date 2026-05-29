@@ -5,23 +5,30 @@ description: Redacted distribution-style baseline for a local Hermes default pro
 author: verkyyi
 license: MIT
 benchmark:
-  run_id: hb-20260529T081506Z
-  score: 89.78
-  observed_runtime_s: 240
+  run_id: hb-20260529T094614Z
+  score: 88.82
+  observed_runtime_s: 312
   suite_count: 13
   prompt_cases: 48
   trials_per_case: 1
-  suite_concurrency: 4
-  case_concurrency: 8
-  evaluator_driver: legacy_static
-  command: HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
+  suite_concurrency: 6
+  case_concurrency: 6
+  high_rate: true
+  evaluator_driver: codex
+  agentic_max_turns_default: 2
+  controller_timeout_s: 180
+  driver_scenario_closed_rate: 0.9792
+  turns_sent: 47
+  turn_budget: 96
+  command: HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 profile_fingerprint:
-  hermesbench_git_sha: c14f160b89a5828af70344df290f66d127bafed3
-  profile_hash: 46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377
+  hermesbench_git_sha: 3a3893f36d7b7dc4aa172fe29b7b864bf4c34891
+  profile_hash: e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355
 runtime_config:
   execution_surface:
     id: kanban_delegation
     label: Kanban delegation
+    kanban_enabled: true
     prompt_case_contract: framework_agnostic
   model:
     provider: openai-codex
@@ -35,21 +42,35 @@ runtime_config:
   - kanban
   plugins_enabled:
   - agentfeeds
-  - kanban-orchestrator-routing
   - break-glass-cli
+  - kanban-orchestrator-routing
+  - observability/langfuse
   gateway:
+    strict: false
+    media_delivery_allow_dirs: []
     trust_recent_files: true
     trust_recent_files_seconds: 600
   kanban:
     dispatch_in_gateway: true
+    dispatch_interval_seconds: 5
+    synthesis_timeout_seconds: 120
+    failure_limit: 2
+    worker_log_rotate_bytes: 2097152
+    worker_log_backup_count: 1
     orchestrator_profile: orchestrator
     default_assignee: orchestrator
     auto_decompose: true
+    auto_decompose_per_tick: 3
+    dispatch_stale_timeout_seconds: 14400
     max_spawn: 20
 worker_profile_coverage:
   kanban_enabled: true
   multi_worker_execution_exercised: false
   delegated_closure_suite: 'skipped: HERMES_BENCH_DELEGATED_CLOSURE not set'
+  published_worker_profiles: []
+  publication_policy: If a baseline runs delegated/multi-worker suites, every involved
+    orchestrator/worker profile must be published as an installable profile distribution
+    or as a redacted distribution-style profile snapshot.
   locally_present_profiles:
   - orchestrator
   - worker
@@ -58,10 +79,6 @@ worker_profile_coverage:
   - worker-ops
   - worker-report
   - worker-research
-  published_worker_profiles: []
-  publication_policy: If a baseline runs delegated/multi-worker suites, every involved
-    orchestrator/worker profile must be published as an installable profile distribution
-    or as a redacted distribution-style profile snapshot.
 redaction:
   installable_distribution: false
   reason: This baseline publishes benchmark-relevant runtime shape, not the full private
@@ -80,3 +97,5 @@ notes:
 - Use this as a comparable benchmark baseline, not as an installable Hermes profile
   distribution.
 - Bundled prompt use cases are framework-agnostic and should run with or without kanban.
+- Prompt suites are agent-driven with the Codex evaluator driver; legacy static driver
+  baselines are superseded.
