@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "hb-20260529T094614Z",
+  "status": "estimated_usage_only",
+  "observed_runtime_s": 312,
+  "cost_target_usd": "<10",
+  "tokens": {
+    "available": false,
+    "reason": "provider token accounting was not captured by this run"
+  },
+  "estimated_call_counts": {
+    "target_turns_sent": 47,
+    "judge_trials": 48,
+    "codex_controller_sessions": 48
+  },
+  "models": {
+    "target_model": "gpt-5.5",
+    "target_provider": "openai-codex",
+    "evaluator_driver": "codex"
+  }
+}

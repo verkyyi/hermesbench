@@ -111,3 +111,16 @@ The baseline omits:
 
 See `distribution-baseline.yaml` for the machine-readable profile snapshot and
 `score.json` for the machine-readable benchmark result.
+
+## Observability Artifacts
+
+| file | purpose |
+|---|---|
+| `run-manifest.json` | Run identity, command, environment knobs, skipped suites, redaction policy, and file hashes. |
+| `suite-results.json` | Per-suite scores, axes, latency summaries, turns, judge errors, sampled failures, and side-effect samples. |
+| `case-results.jsonl` | Case catalogue with prompt hashes/excerpts, suite-level observed metrics, and sampled failures/side effects. Historical per-trial observations were not retained for this run. |
+| `judge-decisions.jsonl` | Aggregated LLM-judged metrics and sampled rationales; raw judge prompts/responses are omitted. |
+| `artifact-manifest.json` | Benchmark-created side-effect files by relative path, size, and short hash; contents are not published. |
+| `cost-usage.json` | Runtime and estimated call counts; token/cost accounting was not captured by this run. |
+| `variance.json` | Single-run variance placeholder; repeated-run statistics are unavailable for this baseline. |
+| `profile-snapshot.redacted.yaml` | Redacted runtime/profile snapshot extracted from the baseline. |

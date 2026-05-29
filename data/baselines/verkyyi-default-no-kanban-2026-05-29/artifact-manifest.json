@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "run_id": "hb-20260529T095156Z",
+  "benchmark_created_side_effects": [
+    {
+      "suite_id": "code_workflow",
+      "case_id": "code_sandbox_file",
+      "scope": "benchmark_workdir",
+      "path": "hb_note.txt",
+      "bytes": 38,
+      "sha256_16": "339513fff8c21917",
+      "content_retained": false
+    },
+    {
+      "suite_id": "ops_monitoring",
+      "case_id": "ops_status_summary",
+      "scope": "benchmark_workdir",
+      "path": "agent_status_update.md",
+      "bytes": 1546,
+      "sha256_16": "997f33c4f6bff6e6",
+      "content_retained": false
+    }
+  ],
+  "content_policy": "Generated artifact contents are not published by default; only relative paths, sizes, and short hashes are retained.",
+  "checked_in_files": [
+    {
+      "path": "README.md",
+      "bytes": 4631,
+      "sha256": "5707814b0a6d70f16c7a48bdf879a9acbaa1af1dcf807b8077fa0d886a5b3a6f"
+    },
+    {
+      "path": "case-results.jsonl",
+      "bytes": 41510,
+      "sha256": "956b6aed2fcd3e1235cfc30abb26ec46942df5eb244e2216278b3f6f196b9010"
+    },
+    {
+      "path": "cost-usage.json",
+      "bytes": 512,
+      "sha256": "c41b7087c9051a8d9402a01866cc869b0c9cb2f780146a26f073b3d70304bdb0"
+    },
+    {
+      "path": "distribution-baseline.yaml",
+      "bytes": 3015,
+      "sha256": "d2ffd6d7ce9a9702586752a2977807973f66a2268688f769bc1251702b0f4caf"
+    },
+    {
+      "path": "judge-decisions.jsonl",
+      "bytes": 5161,
+      "sha256": "095a2c4075daa1f9c23154dd09fc436e3aaca7dd7c3b15f439d4d97542d09d55"
+    },
+    {
+      "path": "profile-snapshot.redacted.yaml",
+      "bytes": 1584,
+      "sha256": "6261b4c62e6e9db5cd39c88b761c7c1c6c3ca38375585af3becdbd0f14d4ccf2"
+    },
+    {
+      "path": "score.json",
+      "bytes": 3212,
+      "sha256": "1bb21c47404056758b2155f41af93d165a04e4479697a82a110ca8c999b4904e"
+    },
+    {
+      "path": "suite-results.json",
+      "bytes": 17412,
+      "sha256": "ce9796c2bc269f985990d41b62d61d9f482af367bde36244e00f94764a4d0cbb"
+    },
+    {
+      "path": "variance.json",
+      "bytes": 284,
+      "sha256": "46f556f4484f638aaa78b784a8f556e59a5c7c3f82414cfb138b263111806efd"
+    }
+  ]
+}

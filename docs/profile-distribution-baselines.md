@@ -34,6 +34,13 @@ Required:
 - HermesBench version or commit SHA
 - run command
 - score JSON
+- run manifest
+- suite results
+- case result catalogue or redacted per-case observations
+- judge decision summary
+- artifact manifest
+- cost/usage summary
+- variance summary, even if it says only one run is available
 
 ### Redacted Distribution-Style Baseline
 
@@ -50,6 +57,9 @@ Required:
 - benchmark env vars
 - profile hash
 - explicit list of redactions
+- public-safe observability artifacts: run manifest, suite results, case
+  catalogue/results, judge summary, artifact manifest, cost/usage summary, and
+  variance summary
 
 The first checked-in baseline, `data/baselines/verkyyi-default-2026-05-29`, uses
 this second form.
@@ -107,6 +117,14 @@ not exercised" rather than implying they contributed to the score.
 ## Submission Checklist
 
 - The result includes `score.json`.
+- The result includes `run-manifest.json`.
+- The result includes `suite-results.json`.
+- The result includes `case-results.jsonl` with either redacted per-trial
+  observations or an explicit retention note.
+- The result includes `judge-decisions.jsonl`.
+- The result includes `artifact-manifest.json`.
+- The result includes `cost-usage.json`.
+- The result includes `variance.json`.
 - The runtime configuration is either linked as a profile distribution repo or
   summarized as a redacted distribution-style baseline.
 - Any worker profiles involved in measured delegated execution are published or

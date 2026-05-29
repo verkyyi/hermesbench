@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "run_id": "hb-20260529T095156Z",
+  "status": "single_run_only",
+  "repeated_runs": 1,
+  "overall_score_stddev": null,
+  "suite_score_stddev": {},
+  "note": "Variance requires repeated runs of the same profile/configuration; this baseline stores one run."
+}

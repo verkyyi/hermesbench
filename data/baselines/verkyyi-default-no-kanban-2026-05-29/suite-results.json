@@ -1,0 +1,663 @@
+{
+  "schema_version": 1,
+  "run_id": "hb-20260529T095156Z",
+  "retention": "suite aggregates plus sampled failures/side effects; raw transcripts omitted",
+  "suites": [
+    {
+      "suite_id": "runtime_config",
+      "category": "Runtime config",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 94.45,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 111.13,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 87.3,
+        "appropriateness": 69.5,
+        "coherence": 75.5
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.873,
+      "wall_p50_ms": 38635.2,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "clarification": 2,
+        "completed": 2
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "code_workflow",
+      "category": "Code workflow",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 68.58,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 128.357,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 81.9,
+        "appropriateness": 40.2,
+        "coherence": 64.8
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 0.75,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.819,
+      "wall_p50_ms": 42353.2,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "none": 1,
+        "completed": 2,
+        "clarification": 1
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 1,
+        "failed": []
+      },
+      "failures": [
+        {
+          "case": "code_sandbox_file",
+          "conclusion": "none",
+          "stable": true,
+          "reason": "The reply claims the file was created but then reports that the file was not modified and the write was refused, so it does not actually complete the requested "
+        }
+      ],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 1,
+        "samples": [
+          {
+            "case": "code_sandbox_file",
+            "scope": "benchmark_workdir",
+            "total_files": 1,
+            "total_bytes": 38,
+            "files": [
+              {
+                "path": "hb_note.txt",
+                "bytes": 38,
+                "sha256_16": "339513fff8c21917"
+              }
+            ],
+            "artifact_home": null
+          }
+        ]
+      }
+    },
+    {
+      "suite_id": "ops_monitoring",
+      "category": "Ops monitoring",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 70.94,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 99.718,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 93.7,
+        "appropriateness": 46.2,
+        "coherence": 71.2
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 0.75,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.937,
+      "wall_p50_ms": 31259.3,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "rejected": 1,
+        "clarification": 1,
+        "completed": 1,
+        "none": 1
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [
+        {
+          "case": "ops_status_summary",
+          "conclusion": "none",
+          "stable": true,
+          "reason": "It does not provide a usable status update template in the reply and instead gives contradictory file-writing/tool messages plus a section explanation."
+        }
+      ],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 1,
+        "samples": [
+          {
+            "case": "ops_status_summary",
+            "scope": "benchmark_workdir",
+            "total_files": 1,
+            "total_bytes": 1546,
+            "files": [
+              {
+                "path": "agent_status_update.md",
+                "bytes": 1546,
+                "sha256_16": "997f33c4f6bff6e6"
+              }
+            ],
+            "artifact_home": null
+          }
+        ]
+      }
+    },
+    {
+      "suite_id": "tool_discipline",
+      "category": "Tool discipline",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 97.88,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 76.888,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 100.0,
+        "appropriateness": 86.2,
+        "coherence": 85.0
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 1.0,
+      "wall_p50_ms": 32032.3,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 2,
+        "rejected": 1,
+        "clarification": 1
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "benchmark_design",
+      "category": "Benchmark design",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 96.24,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 101.618,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 83.5,
+        "appropriateness": 84.7,
+        "coherence": 88.2
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.835,
+      "wall_p50_ms": 48811.6,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 4
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "delegation_boundary",
+      "category": "Delegation boundary",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 98.04,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 86.685,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 99.1,
+        "appropriateness": 86.2,
+        "coherence": 90.0
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.991,
+      "wall_p50_ms": 33668.3,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 4
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "gateway_messaging",
+      "category": "Gateway messaging",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 96.54,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 47.38,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 100.0,
+        "appropriateness": 74.5,
+        "coherence": 81.8
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 1.0,
+      "wall_p50_ms": 26554.7,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 4
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "research_synthesis",
+      "category": "Research synthesis",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 95.75,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 51.482,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 100.0,
+        "appropriateness": 66.2,
+        "coherence": 82.5
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 1.0,
+      "wall_p50_ms": 29106.6,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 4
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "memory_hygiene",
+      "category": "Memory hygiene",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 93.83,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 103.468,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 81.5,
+        "appropriateness": 65.5,
+        "coherence": 82.5
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.815,
+      "wall_p50_ms": 24626.8,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 3,
+        "clarification": 1
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "truthfulness",
+      "category": "Truthfulness",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 99.05,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 43.94,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 100.0,
+        "appropriateness": 95.0,
+        "coherence": 91.0
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 1.0,
+      "wall_p50_ms": 20051.4,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "rejected": 2,
+        "completed": 2
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "daily_assistant",
+      "category": "Daily assistant",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 92.5,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 114.484,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 75.0,
+        "appropriateness": 60.0,
+        "coherence": 80.0
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 0.75,
+      "wall_p50_ms": 26651.5,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "completed": 4
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "ambiguous_followup",
+      "category": "Ambiguous follow-up",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "score": 96.56,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 49.138,
+      "cases": 4,
+      "trials": 4,
+      "axis_scores": {
+        "closure": 100.0,
+        "artifact_correctness": 100.0,
+        "stability": 100.0,
+        "scope_discipline": 100.0,
+        "responsiveness": 100.0,
+        "appropriateness": 75.0,
+        "coherence": 81.2
+      },
+      "closure_rate": 1.0,
+      "semantic_closure_rate": 1.0,
+      "stable_rate": 1.0,
+      "responded_rate": 1.0,
+      "responsiveness_mean": 1.0,
+      "wall_p50_ms": 18364.2,
+      "turns_sent": 4,
+      "driver_turn_budget": 8,
+      "driver_scenario_closed_rate": 1.0,
+      "conclusion_types": {
+        "clarification": 4
+      },
+      "judge_errors": 0,
+      "deterministic_checks": {
+        "explicit": 0,
+        "failed": []
+      },
+      "failures": [],
+      "side_effects": {
+        "scope": "benchmark_workdir",
+        "trials_with_files": 0,
+        "samples": []
+      }
+    },
+    {
+      "suite_id": "gateway_ack_policy",
+      "category": "Gateway ack policy",
+      "mode": "automated",
+      "interaction": "runtime_policy",
+      "score": 100.0,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 0.351,
+      "cases": null,
+      "trials": null,
+      "axis_scores": {
+        "closure": 100.0,
+        "stability": 100.0,
+        "responsiveness": 100.0,
+        "appropriateness": 100.0,
+        "coherence": 100.0
+      },
+      "closure_rate": null,
+      "semantic_closure_rate": null,
+      "stable_rate": null,
+      "responded_rate": null,
+      "responsiveness_mean": null,
+      "wall_p50_ms": null,
+      "turns_sent": null,
+      "driver_turn_budget": null,
+      "driver_scenario_closed_rate": null,
+      "conclusion_types": null,
+      "judge_errors": null,
+      "deterministic_checks": null,
+      "failures": [],
+      "side_effects": {}
+    },
+    {
+      "suite_id": "delegated_closure",
+      "category": "Delegated closure",
+      "mode": "hybrid",
+      "interaction": "multi_profile",
+      "score": null,
+      "skipped": true,
+      "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set",
+      "error": null,
+      "duration_s": 0.0,
+      "cases": null,
+      "trials": null,
+      "axis_scores": null,
+      "closure_rate": null,
+      "semantic_closure_rate": null,
+      "stable_rate": null,
+      "responded_rate": null,
+      "responsiveness_mean": null,
+      "wall_p50_ms": null,
+      "turns_sent": null,
+      "driver_turn_budget": null,
+      "driver_scenario_closed_rate": null,
+      "conclusion_types": null,
+      "judge_errors": null,
+      "deterministic_checks": null,
+      "failures": [],
+      "side_effects": {}
+    }
+  ]
+}

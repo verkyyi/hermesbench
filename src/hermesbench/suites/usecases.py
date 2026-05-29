@@ -91,6 +91,78 @@ def _run_trial(case: dict, b: dict) -> dict:
     }
 
 
+def _redacted_case_result(r: dict) -> dict:
+    """Public-safe per-trial observation for run artifacts.
+
+    The raw target reply, transcript, controller stdout/stderr, and local
+    artifact paths are intentionally omitted. Those can contain user-private
+    context or environment-specific details even in a benchmark sandbox.
+    """
+    mech = r.get("mech") or {}
+    driver = mech.get("driver") or {}
+    scored = r.get("score") or {}
+    judge = r.get("judge") or {}
+    checks = r.get("checks") or {}
+    side_effects = mech.get("side_effects") or {}
+    return {
+        "case": r.get("case"),
+        "expectation": r.get("expectation"),
+        "turn_count": r.get("turn_count"),
+        "scenario": r.get("scenario") or {},
+        "score": round(float(scored.get("score") or 0.0), 2),
+        "base_score": round(float(scored.get("base_score") or 0.0), 2),
+        "axes": {
+            k: round(100.0 * float(v), 1)
+            for k, v in (scored.get("axes") or {}).items()
+        },
+        "mechanical": {
+            "responded": bool(mech.get("responded")),
+            "concluded": bool(mech.get("concluded")),
+            "stable": bool(mech.get("stable")),
+            "timed_out": bool(mech.get("timed_out")),
+            "turns_sent": driver.get("turns_sent", mech.get("turn_count", 0)),
+            "turn_budget": driver.get("max_turns", r.get("turn_count")),
+            "ttfa_ms": mech.get("ttfa_ms"),
+            "ttlt_ms": mech.get("ttlt_ms"),
+            "wall_ms": mech.get("wall_ms"),
+        },
+        "driver_decision": {
+            k: (v[:240] if isinstance(v, str) else v)
+            for k, v in (r.get("driver_decision") or {}).items()
+            if k in {"scenario_closed", "closure_type", "turns_sent", "reason"}
+        },
+        "judge": {
+            "conclusion_type": judge.get("conclusion_type"),
+            "appropriate": judge.get("appropriate"),
+            "coherent": judge.get("coherent"),
+            "judge_error": judge.get("judge_error"),
+            "reason": str(judge.get("reason") or "")[:240],
+        },
+        "checks": {
+            "explicit_count": checks.get("explicit_count"),
+            "score": checks.get("score"),
+            "scope_ok": checks.get("scope_ok"),
+            "failed": [
+                c for c in (checks.get("checks") or [])
+                if not c.get("ok")
+            ][:5],
+        },
+        "side_effects": {
+            "scope": side_effects.get("scope"),
+            "total_files": side_effects.get("total_files", 0),
+            "total_bytes": side_effects.get("total_bytes", 0),
+            "files": [
+                {
+                    "path": f.get("path"),
+                    "bytes": f.get("bytes"),
+                    "sha256_16": f.get("sha256_16"),
+                }
+                for f in (side_effects.get("files") or [])[:10]
+            ],
+        },
+    }
+
+
 def _run_category(category: str) -> dict:
     if not os.environ.get("HERMES_RUN_LLM_EVALS"):
         return {"skipped": True, "skip_reason": "HERMES_RUN_LLM_EVALS not set"}
@@ -217,6 +289,7 @@ def _run_category(category: str) -> dict:
                 "trials_with_files": len(side_effect_trials),
                 "samples": side_effect_samples,
             },
+            "case_results": [_redacted_case_result(r) for r in results],
         },
     }
 

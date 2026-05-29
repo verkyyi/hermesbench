@@ -70,14 +70,16 @@ execution metrics. Appropriateness and coherence are LLM-judged semantic
 metrics. The opt-in `delegated_closure` suite is not included in either
 baseline score.
 
-Baseline files:
+Each baseline directory includes a human summary plus public-safe observability
+artifacts: `run-manifest.json`, `suite-results.json`, `case-results.jsonl`,
+`judge-decisions.jsonl`, `artifact-manifest.json`, `cost-usage.json`,
+`variance.json`, `profile-snapshot.redacted.yaml`, `score.json`, and
+`distribution-baseline.yaml`.
 
-- [`data/baselines/verkyyi-default-2026-05-29/score.json`](data/baselines/verkyyi-default-2026-05-29/score.json)
-- [`data/baselines/verkyyi-default-2026-05-29/distribution-baseline.yaml`](data/baselines/verkyyi-default-2026-05-29/distribution-baseline.yaml)
-- [`data/baselines/verkyyi-default-2026-05-29/README.md`](data/baselines/verkyyi-default-2026-05-29/README.md)
-- [`data/baselines/verkyyi-default-no-kanban-2026-05-29/score.json`](data/baselines/verkyyi-default-no-kanban-2026-05-29/score.json)
-- [`data/baselines/verkyyi-default-no-kanban-2026-05-29/distribution-baseline.yaml`](data/baselines/verkyyi-default-no-kanban-2026-05-29/distribution-baseline.yaml)
-- [`data/baselines/verkyyi-default-no-kanban-2026-05-29/README.md`](data/baselines/verkyyi-default-no-kanban-2026-05-29/README.md)
+Baseline directories:
+
+- [`data/baselines/verkyyi-default-2026-05-29`](data/baselines/verkyyi-default-2026-05-29)
+- [`data/baselines/verkyyi-default-no-kanban-2026-05-29`](data/baselines/verkyyi-default-no-kanban-2026-05-29)
 
 HermesBench baseline submissions should ideally link an installable Hermes
 profile distribution repo. Redacted distribution-style baselines are acceptable
