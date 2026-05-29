@@ -114,9 +114,9 @@ runtime suite:
 
 ```bash
 HERMES_RUN_LLM_EVALS=1 \
-HERMES_BENCH_ORIGIN_RETURN=1 \
+HERMES_BENCH_DELEGATED_CLOSURE=1 \
 HERMES_BENCH_WORKER_PROFILES=orchestrator,worker-code,worker-research \
-hermesbench --suite origin_return
+hermesbench --suite delegated_closure
 ```
 
 `HERMES_BENCH_WORKER_PROFILES` records the orchestrator/worker profile contract

@@ -33,17 +33,17 @@ thing "responsiveness" should mean here.
 
 **Status:** partially addressed. The prompt dataset grew from 9 to 48 cases
 across balanced audience-packaged configuration-quality categories, prompt
-cases can now be single-turn or multi-turn scenarios, and `origin_return` is
+cases can now be single-turn or multi-turn scenarios, and `delegated_closure` is
 available as an opt-in multi-profile e2e suite.
 
 **Async-delegated closure harness.** The default prompt harness now supports
 multi-turn `chat -q` scenarios, but it still can't verify that *async delegated*
 work (kanban → worker → gateway return) actually comes back to the user — the
-origin-return contract.
+delegated-closure contract.
 - **Why:** "every prompt reaches a conclusion" is the headline contract, but the
   delegated path is exactly where closure historically broke.
-- **Approach:** `origin_return` now covers the origin subscription + self-park
-  contract with an isolated board and real agents when explicitly enabled.
+- **Approach:** `delegated_closure` now covers the delegated return-path and
+  self-park contract with an isolated board and real agents when explicitly enabled.
   Remaining work: a true gateway-chat watcher that observes the final user
   message, not board state.
 - **Effort:** medium-high.

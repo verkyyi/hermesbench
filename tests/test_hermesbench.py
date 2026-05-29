@@ -24,9 +24,11 @@ def test_registry_includes_runtime_and_prompt_suites(monkeypatch):
     ids = {s.id for s in registry.all_suites()}
     assert "runtime_config" in ids
     assert "gateway_ack_policy" in ids
-    assert "origin_return" in ids
+    assert "delegated_closure" in ids
+    assert "origin_return" not in ids
     assert registry.by_id("runtime_config").interaction == registry.MULTI_TURN
-    assert registry.by_id("origin_return").interaction == registry.MULTI_PROFILE
+    assert registry.by_id("delegated_closure").interaction == registry.MULTI_PROFILE
+    assert registry.by_id("origin_return").id == "delegated_closure"
 
 
 def test_prompt_suite_skips_without_llm_flag(monkeypatch):
@@ -116,9 +118,9 @@ def test_harness_runs_multi_turn_scenario(monkeypatch, tmp_path: Path):
     assert calls == [("first", "default"), ("second", "worker-code")]
 
 
-def test_origin_return_records_requested_profile_coverage(monkeypatch):
+def test_delegated_closure_records_requested_profile_coverage(monkeypatch):
     monkeypatch.setenv("HERMES_RUN_LLM_EVALS", "1")
-    monkeypatch.setenv("HERMES_BENCH_ORIGIN_RETURN", "1")
+    monkeypatch.setenv("HERMES_BENCH_DELEGATED_CLOSURE", "1")
     monkeypatch.setenv("HERMES_BENCH_WORKER_PROFILES", "orchestrator,worker-code")
     monkeypatch.setattr(gateway_mod, "_profile_inventory", lambda: {
         "available": ["orchestrator"],
@@ -147,10 +149,20 @@ def test_origin_return_records_requested_profile_coverage(monkeypatch):
     monkeypatch.setitem(sys.modules, "evals", evals_mod)
     monkeypatch.setitem(sys.modules, "evals.origin_return", origin_pkg)
 
-    out = gateway_mod.run_origin_return()
+    out = gateway_mod.run_delegated_closure()
     assert out["score"] == 80.0
     assert out["metrics"]["interaction"] == "multi_profile"
     assert out["metrics"]["profile_coverage"]["missing_requested"] == ["worker-code"]
+
+
+def test_old_origin_return_alias_still_selects_delegated_closure(monkeypatch):
+    assert [s.id for s in registry.select(ids=["origin_return"])] == ["delegated_closure"]
+
+    def fake_run():
+        return {"score": 100.0, "metrics": {}}
+
+    monkeypatch.setattr(gateway_mod, "run_delegated_closure", fake_run)
+    assert gateway_mod.run_origin_return()["score"] == 100.0
 
 
 def test_run_benchmark_weights_scores(monkeypatch):

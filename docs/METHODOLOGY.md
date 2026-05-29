@@ -13,7 +13,7 @@ The default public prompt suites drive the front-desk assistant the user
 actually talks to and evaluate from the end user's perspective: send one or more
 turns, observe what comes back. Runtime suites may add auditable internal checks
 for behavior that is invisible from a single chat reply, such as kanban
-origin-return preservation across multiple profiles.
+delegated-closure preservation across multiple profiles.
 
 ### Positioning
 
@@ -219,7 +219,7 @@ is captured. Set `HERMES_BENCH_KEEP_ARTIFACTS=1` to retain it for debugging.
 
 > **Runtime caveat.** Prompt scenarios still use synchronous `chat -q`, so they
 > measure turn-terminal closure. Async worker-delegated closure (kanban → worker
-> → async return) belongs in runtime suites. `origin_return` is the current
+> → async return) belongs in runtime suites. `delegated_closure` is the current
 > opt-in kanban/multi-profile runtime suite; it uses isolated kanban state and
 > records requested worker profile coverage. `chat -q` also has no gateway
 > pre-LLM fast-ack, so the responsiveness signal is total time to the reply, not
@@ -283,7 +283,7 @@ categories:
 | Suite | What it measures | Default behavior |
 |-------|------------------|------------------|
 | `gateway_ack_policy` | Deterministic gateway pre-LLM ack/progress policy over emulated DM/group sessions | always runs; no model call |
-| `origin_return` | Real kanban/multi-profile e2e check that delegated work keeps a user return path and records requested worker profile coverage | self-skips unless `HERMES_BENCH_ORIGIN_RETURN=1` and `HERMES_RUN_LLM_EVALS=1` |
+| `delegated_closure` | Real kanban/multi-profile e2e check that delegated work keeps a user return path and records requested worker profile coverage | self-skips unless `HERMES_BENCH_DELEGATED_CLOSURE=1` and `HERMES_RUN_LLM_EVALS=1` |
 
 Add cases by editing `usecases.py` (and a budget + label for a new category).
 
@@ -365,7 +365,7 @@ missing. Overall moved but no category did → check the fingerprint.
 ## 9. Known limitations
 
 - **Gateway-chat watching remains future work.** Prompt scenarios can be
-  multi-turn, and `origin_return` covers the kanban/orchestrator return path,
+  multi-turn, and `delegated_closure` covers the kanban/orchestrator return path,
   but a live gateway watcher that observes user-visible async delivery is still
   separate future work.
 - **Non-deterministic.** Real agent + LLM judge → run-to-run variance. Use more

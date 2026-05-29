@@ -58,8 +58,8 @@ profiles were present:
 
 However, this baseline did **not** exercise multi-worker execution. The measured
 run used the default/front-desk prompt suites plus deterministic
-`gateway_ack_policy`; `origin_return` was skipped because
-`HERMES_BENCH_ORIGIN_RETURN` was not set.
+`gateway_ack_policy`; `delegated_closure` was skipped because
+`HERMES_BENCH_DELEGATED_CLOSURE` was not set.
 
 Because worker profiles were not part of the measured path, their full profile
 configs are not published in this baseline. If a future baseline runs delegated
@@ -85,7 +85,7 @@ distribution-style profile snapshot.
 | `ambiguous_followup` | 88.59 |
 | `gateway_ack_policy` | 100.00 |
 
-`origin_return` was skipped because `HERMES_BENCH_ORIGIN_RETURN` was not set.
+`delegated_closure` was skipped because `HERMES_BENCH_DELEGATED_CLOSURE` was not set.
 
 ## Redaction
 

@@ -107,10 +107,19 @@ def run_gateway_ack_policy() -> dict:
     }
 
 
-def run_origin_return() -> dict:
-    """Optional real-LLM kanban origin-return check.
+def _delegated_closure_enabled() -> bool:
+    return (
+        os.environ.get("HERMES_BENCH_DELEGATED_CLOSURE") in _TRUE
+        or os.environ.get("HERMES_BENCH_ORIGIN_RETURN") in _TRUE
+    )
 
-    This wraps the standalone Hermes Agent origin-return eval. It is
+
+def run_delegated_closure() -> dict:
+    """Optional real-LLM kanban delegated-closure check.
+
+    This wraps the standalone Hermes Agent origin-return eval. The public suite
+    name is delegated_closure because the user-facing contract is easier to
+    understand: delegated work should still reach closure for the user. It is
     intentionally opt-in because it spawns real agents and can take several
     minutes. For multi-profile configurations, set
     HERMES_BENCH_WORKER_PROFILES=orchestrator,worker-code,... so the run records
@@ -118,8 +127,8 @@ def run_origin_return() -> dict:
     """
     if not os.environ.get("HERMES_RUN_LLM_EVALS"):
         return {"skipped": True, "skip_reason": "HERMES_RUN_LLM_EVALS not set"}
-    if os.environ.get("HERMES_BENCH_ORIGIN_RETURN") not in _TRUE:
-        return {"skipped": True, "skip_reason": "HERMES_BENCH_ORIGIN_RETURN not set"}
+    if not _delegated_closure_enabled():
+        return {"skipped": True, "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set"}
 
     try:
         from evals.origin_return import run as origin
@@ -160,3 +169,8 @@ def run_origin_return() -> dict:
             "profile_coverage": inventory,
         },
     }
+
+
+def run_origin_return() -> dict:
+    """Backward-compatible alias for the old suite name."""
+    return run_delegated_closure()

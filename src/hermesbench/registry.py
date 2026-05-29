@@ -6,8 +6,8 @@ observable result, and returns a normalized
 ``{score: 0..100, metrics: {...}}`` (or ``{skipped: True, skip_reason}``).
 Prompt suites evaluate from the user's perspective and runtime suites may add
 auditable internal/runtime checks for behavior that is otherwise invisible, such
-as kanban origin-return preservation. All suites weight
-reliability/responsiveness/closure above capability.
+as delegated kanban closure across profiles. All suites weight reliability,
+responsiveness, and closure above capability.
 
 Most suites drive real agents, so model-backed suites self-skip when
 HERMES_RUN_LLM_EVALS is unset. Deterministic runtime-policy suites can still
@@ -52,6 +52,9 @@ class Suite:
 
 
 _RUNNER = "hermesbench.suites.usecases:run_{}"
+_ALIASES = {
+    "origin_return": "delegated_closure",
+}
 
 
 def _prompt_suites() -> list[Suite]:
@@ -88,12 +91,12 @@ def _runtime_suites() -> list[Suite]:
             interaction=RUNTIME_POLICY,
         ),
         Suite(
-            id="origin_return",
-            category="Async origin return",
+            id="delegated_closure",
+            category="Delegated closure",
             mode=HYBRID,
             weight=1.0,
-            runner="hermesbench.suites.gateway:run_origin_return",
-            summary="Optional kanban/multi-profile check that delegated work preserves user return path.",
+            runner="hermesbench.suites.gateway:run_delegated_closure",
+            summary="Optional kanban/multi-profile check that delegated work reaches user-visible closure.",
             interaction=MULTI_PROFILE,
         ),
     ]
@@ -104,6 +107,7 @@ def all_suites() -> list[Suite]:
 
 
 def by_id(suite_id: str) -> Suite | None:
+    suite_id = _ALIASES.get(suite_id, suite_id)
     return next((s for s in all_suites() if s.id == suite_id), None)
 
 
@@ -111,5 +115,5 @@ def select(*, ids: list[str] | None = None) -> list[Suite]:
     """Select suites for a run, optionally restricted to named ``ids``."""
     if not ids:
         return all_suites()
-    wanted = set(ids)
+    wanted = {_ALIASES.get(s, s) for s in ids}
     return [s for s in all_suites() if s.id in wanted]

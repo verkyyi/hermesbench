@@ -127,18 +127,18 @@ with provider credentials that can tolerate the burst.
 | Knowledge worker | Technical/product users asking for research, synthesis, memory-aware help, and decisions | `research_synthesis`, `memory_hygiene`, `truthfulness` |
 | General helper overflow | Normal assistant usage outside the current technical-user core | `daily_assistant`, `ambiguous_followup` |
 
-Runtime suites such as `gateway_ack_policy` and `origin_return` are registered
-separately because they need non-prompt harnesses. `origin_return` is the
+Runtime suites such as `gateway_ack_policy` and `delegated_closure` are registered
+separately because they need non-prompt harnesses. `delegated_closure` is the
 kanban/multi-profile runtime suite for delegated work: it verifies that work
-created from a front-desk origin can be picked up by the orchestrator path and
-still preserve the user return path. It skips cleanly when the corresponding
-Hermes Agent internal modules or opt-in flags are unavailable.
+created from a user request can be picked up by the orchestrator path and still
+reach user-visible closure. It skips cleanly when the corresponding Hermes Agent
+internal modules or opt-in flags are unavailable.
 
 ```bash
 HERMES_RUN_LLM_EVALS=1 \
-HERMES_BENCH_ORIGIN_RETURN=1 \
+HERMES_BENCH_DELEGATED_CLOSURE=1 \
 HERMES_BENCH_WORKER_PROFILES=orchestrator,worker-code,worker-research \
-hermesbench --suite origin_return
+hermesbench --suite delegated_closure
 ```
 
 ## Local Suites

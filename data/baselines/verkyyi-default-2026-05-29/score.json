@@ -4,7 +4,7 @@
   "overall_score": 81.95,
   "observed_runtime_s": 170,
   "suites_ran": 13,
-  "origin_return": "skipped: HERMES_BENCH_ORIGIN_RETURN not set",
+  "delegated_closure": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
   "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
   "environment": {
     "trials_per_case": 1,
@@ -22,7 +22,7 @@
     "worker_profile_coverage": {
       "kanban_enabled": true,
       "multi_worker_execution_exercised": false,
-      "origin_return_suite": "skipped: HERMES_BENCH_ORIGIN_RETURN not set",
+      "delegated_closure_suite": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
       "locally_present_profiles": [
         "orchestrator",
         "worker",

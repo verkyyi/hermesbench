@@ -43,7 +43,7 @@ runtime_config:
 worker_profile_coverage:
   kanban_enabled: true
   multi_worker_execution_exercised: false
-  origin_return_suite: "skipped: HERMES_BENCH_ORIGIN_RETURN not set"
+  delegated_closure_suite: "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set"
   reason: "This baseline measured the default/front-desk profile prompt suites and deterministic gateway ack policy. It did not run the async delegated worker path."
   locally_present_profiles:
     - orchestrator
