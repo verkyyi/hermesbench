@@ -32,29 +32,33 @@ small general-helper overflow package for normal assistant requests.
   HermesBench code.
 - **Trend store**: runs persist to `$HERMES_HOME/hermesbench.db`.
 
-## Published Baseline
+## Published Baselines
 
-The first public baseline is a redacted distribution-style snapshot of a local
-Hermes default profile.
+The first public baselines are redacted distribution-style snapshots of the same
+local Hermes default profile family across two execution surfaces. The use cases
+are framework-agnostic and run on both surfaces; the leaderboard exposes the
+surface because Hermes with kanban and Hermes without kanban have materially
+different configuration surfaces.
 
-| field | value |
-|---|---:|
-| Configuration | `verkyyi/default` redacted distribution-style baseline |
-| Score | `81.95` |
-| Runtime | `~2m 50s` |
-| Run ID | `hb-20260529T062018Z` |
-| Model | `gpt-5.5` via `openai-codex` |
-| Memory | `honcho`, enabled |
-| Toolsets | `hermes-cli`, `kanban` |
-| Plugins | `agentfeeds`, `kanban-orchestrator-routing`, `break-glass-cli` |
-| Worker profiles | present locally, not exercised in this baseline |
-| Command | `HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1` |
+| configuration | execution surface | score | runtime | run id |
+|---|---|---:|---:|---|
+| `verkyyi/default` | Kanban delegation | `81.95` | `~2m 50s` | `hb-20260529T062018Z` |
+| `verkyyi/default-no-kanban` | Direct/no-kanban | `76.78` | `~4m 20s` | `hb-20260529T072241Z` |
+
+Both baselines use `gpt-5.5` via `openai-codex`, Honcho memory, high-rate mode,
+and one trial per prompt case. The kanban baseline has `hermes-cli` + `kanban`
+toolsets and `kanban-orchestrator-routing`; the no-kanban baseline removes the
+kanban toolset, kanban config block, and kanban routing plugin. The opt-in
+`delegated_closure` suite is not included in either baseline score.
 
 Baseline files:
 
 - [`data/baselines/verkyyi-default-2026-05-29/score.json`](data/baselines/verkyyi-default-2026-05-29/score.json)
 - [`data/baselines/verkyyi-default-2026-05-29/distribution-baseline.yaml`](data/baselines/verkyyi-default-2026-05-29/distribution-baseline.yaml)
 - [`data/baselines/verkyyi-default-2026-05-29/README.md`](data/baselines/verkyyi-default-2026-05-29/README.md)
+- [`data/baselines/verkyyi-default-no-kanban-2026-05-29/score.json`](data/baselines/verkyyi-default-no-kanban-2026-05-29/score.json)
+- [`data/baselines/verkyyi-default-no-kanban-2026-05-29/distribution-baseline.yaml`](data/baselines/verkyyi-default-no-kanban-2026-05-29/distribution-baseline.yaml)
+- [`data/baselines/verkyyi-default-no-kanban-2026-05-29/README.md`](data/baselines/verkyyi-default-no-kanban-2026-05-29/README.md)
 
 HermesBench baseline submissions should ideally link an installable Hermes
 profile distribution repo. Redacted distribution-style baselines are acceptable

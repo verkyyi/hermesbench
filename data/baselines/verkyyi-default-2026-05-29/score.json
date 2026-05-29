@@ -16,6 +16,12 @@
     "model_provider": "openai-codex",
     "model": "gpt-5.5",
     "profile_hash": "46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377",
+    "execution_surface": {
+      "id": "kanban_delegation",
+      "label": "Kanban delegation",
+      "kanban_enabled": true,
+      "prompt_case_contract": "framework_agnostic"
+    },
     "memory_provider": "honcho",
     "toolsets": ["hermes-cli", "kanban"],
     "plugins_enabled": ["agentfeeds", "kanban-orchestrator-routing", "break-glass-cli"],

@@ -1,0 +1,56 @@
+{
+  "run_id": "hb-20260529T072241Z",
+  "timestamp_utc": "2026-05-29T07:22:41.528296+00:00",
+  "overall_score": 76.78,
+  "observed_runtime_s": 260,
+  "suites_ran": 13,
+  "delegated_closure": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
+  "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
+  "environment": {
+    "trials_per_case": 1,
+    "case_concurrency": 8,
+    "suite_concurrency": 4,
+    "high_rate": true
+  },
+  "profile": {
+    "model_provider": "openai-codex",
+    "model": "gpt-5.5",
+    "profile_hash": "4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4",
+    "execution_surface": {
+      "id": "direct",
+      "label": "Direct/no-kanban",
+      "kanban_enabled": false,
+      "prompt_case_contract": "framework_agnostic"
+    },
+    "memory_provider": "honcho",
+    "toolsets": ["hermes-cli"],
+    "plugins_enabled": ["agentfeeds", "break-glass-cli"],
+    "worker_profile_coverage": {
+      "kanban_enabled": false,
+      "multi_worker_execution_exercised": false,
+      "delegated_closure_suite": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
+      "published_worker_profiles": []
+    }
+  },
+  "suite_scores": {
+    "runtime_config": 92.48,
+    "code_workflow": 19.22,
+    "ops_monitoring": 36.52,
+    "tool_discipline": 97.50,
+    "benchmark_design": 39.08,
+    "delegation_boundary": 96.06,
+    "gateway_messaging": 95.00,
+    "research_synthesis": 88.59,
+    "memory_hygiene": 77.57,
+    "truthfulness": 97.19,
+    "daily_assistant": 68.55,
+    "ambiguous_followup": 90.36,
+    "gateway_ack_policy": 100.00
+  },
+  "axis_highlights": {
+    "lowest_suite": "code_workflow",
+    "lowest_suite_score": 19.22,
+    "best_prompt_suites": ["tool_discipline", "truthfulness", "delegation_boundary"],
+    "framework_agnostic_surface": "direct"
+  }
+}

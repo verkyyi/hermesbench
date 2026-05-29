@@ -139,9 +139,43 @@ def _profile_snapshot() -> dict:
                 if k in data
             }
             snap["config"] = _redact(selected)
+            snap["execution_surface"] = _execution_surface(data)
     except Exception as exc:
         snap["config_error"] = f"{type(exc).__name__}: {exc}"[:200]
     return snap
+
+
+def _execution_surface(config: dict) -> dict:
+    """Classify the Hermes execution surface exposed to the benchmark."""
+    toolsets = config.get("toolsets") if isinstance(config.get("toolsets"), list) else []
+    plugins = config.get("plugins") if isinstance(config.get("plugins"), dict) else {}
+    enabled_plugins = plugins.get("enabled") if isinstance(plugins.get("enabled"), list) else []
+    kanban_enabled = (
+        "kanban" in toolsets
+        or isinstance(config.get("kanban"), dict)
+        or "kanban-orchestrator-routing" in enabled_plugins
+    )
+    if kanban_enabled:
+        surface_id = "kanban_delegation"
+        label = "Kanban delegation"
+        comparison_role = "Kanban-enabled baseline"
+    else:
+        surface_id = "direct"
+        label = "Direct/no-kanban"
+        comparison_role = "No-kanban baseline"
+    return {
+        "id": surface_id,
+        "label": label,
+        "comparison_role": comparison_role,
+        "kanban_enabled": kanban_enabled,
+        "prompt_case_contract": "framework_agnostic",
+        "notes": (
+            "Bundled prompt use cases are intended to run on either surface. "
+            "Kanban-enabled configurations may perform better on delegation, "
+            "progress, and long-work closure behavior; explicit multi-profile "
+            "checks live in opt-in runtime suites."
+        ),
+    }
 
 
 def _execute(suite: registry.Suite) -> dict:

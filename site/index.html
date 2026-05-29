@@ -61,8 +61,9 @@
           <h2>Leaderboard</h2>
           <p>
             Published runs should identify the Hermes profile distribution or a
-            redacted distribution-style baseline, plus the exact command and
-            runtime.
+            redacted distribution-style baseline, the execution surface, exact
+            command, and runtime. Prompt use cases are framework-agnostic; the
+            surface shows whether kanban delegation was available.
           </p>
         </div>
         <div class="table-wrap">
@@ -71,6 +72,7 @@
               <tr>
                 <th>Rank</th>
                 <th>Configuration</th>
+                <th>Surface</th>
                 <th>Hermes profile</th>
                 <th>Score</th>
                 <th>Runtime</th>
@@ -82,9 +84,20 @@
               <tr>
                 <td>1</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
+                <td>Kanban delegation</td>
                 <td>redacted distribution-style</td>
                 <td>81.95</td>
                 <td>~2m 50s</td>
+                <td>gpt-5.5 / openai-codex</td>
+                <td>&lt;$10 target</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
+                <td>Direct/no-kanban</td>
+                <td>redacted distribution-style</td>
+                <td>76.78</td>
+                <td>~4m 20s</td>
                 <td>gpt-5.5 / openai-codex</td>
                 <td>&lt;$10 target</td>
               </tr>
@@ -93,11 +106,45 @@
         </div>
         <p class="note">
           Baseline command: <code>HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1</code>.
-          Memory: Honcho enabled. Toolsets: hermes-cli, kanban. Plugins:
-          agentfeeds, kanban-orchestrator-routing, break-glass-cli. Worker
-          profiles were present locally but not exercised because delegated_closure
-          was skipped.
+          Both rows run the same framework-agnostic prompt suites. The kanban
+          row enables hermes-cli + kanban plus kanban-orchestrator-routing; the
+          direct row removes kanban and keeps hermes-cli, agentfeeds, and
+          break-glass-cli. <code>delegated_closure</code> is opt-in and skipped
+          in both standard baselines.
         </p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <p class="eyebrow">Execution surfaces</p>
+          <h2>Same use cases, visible runtime shape</h2>
+          <p>
+            HermesBench keeps one leaderboard, but it exposes whether a run used
+            direct front-desk execution or kanban delegation. Use cases should
+            remain compatible with both surfaces; kanban-enabled profiles may
+            score better on delegation, progress, and long-work closure behavior.
+          </p>
+        </div>
+        <div class="grid two">
+          <article class="card">
+            <h3>Direct/no-kanban</h3>
+            <p>Front-desk profile handles the prompt surface without kanban routing.</p>
+            <ul>
+              <li>simpler profile surface</li>
+              <li>no worker profile publication required unless a runtime suite uses workers</li>
+              <li>baseline for non-kanban Hermes setups</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Kanban delegation</h3>
+            <p>Kanban toolset/config/routing is available for delegation-oriented behavior.</p>
+            <ul>
+              <li>larger shared configuration surface</li>
+              <li>worker profiles must be disclosed when exercised</li>
+              <li>opt-in <code>delegated_closure</code> checks the multi-profile path</li>
+            </ul>
+          </article>
+        </div>
       </section>
 
       <section id="suites" class="section">

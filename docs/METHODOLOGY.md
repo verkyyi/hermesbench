@@ -25,6 +25,14 @@ model/provider choice, tool and skill configuration, memory configuration,
 gateway/front-desk behavior, delegation/routing behavior, safety/refusal
 behavior, latency, and reliability under the actual Hermes harness.
 
+Hermes can expose very different configuration surfaces with and without
+kanban. HermesBench keeps one leaderboard because the bundled prompt use cases
+are framework-agnostic: they should run whether kanban is enabled or not. The
+run metadata and public leaderboard must still surface the execution surface
+(`kanban_delegation` vs `direct`) because kanban-enabled configurations may
+perform better on delegation, progress, long-work closure, and async return-path
+behavior, while direct/no-kanban configurations provide a simpler baseline.
+
 The primary question is:
 
 > Given this Hermes runtime configuration, does the agent reliably reach useful,
@@ -79,6 +87,9 @@ Accept:
   money, or touch external services are opt-in and isolated.
 - Each run records a redacted profile snapshot and harness fingerprint so trend
   changes can be explained without storing secrets, raw memory, or raw chats.
+- Each run records the execution surface. Results from kanban-enabled and
+  no-kanban profiles can share one leaderboard, but the surface must be visible
+  next to the score.
 - Test suites and use cases are easy to extend. HermesBench should be both a
   standard benchmark for Hermes harness quality and a reusable evaluation
   harness: adding a case or category should not require touching the runner,
@@ -107,6 +118,8 @@ Reject:
 - Prompts that require private memory facts, personal accounts, a specific
   provider, or a local machine setup unless they are clearly labeled as
   opt-in/config-specific suites.
+- Bundled use cases that require kanban to exist. Kanban-specific checks belong
+  in opt-in runtime suites such as `delegated_closure`.
 - Unredacted storage of secrets, `.env` contents, raw profile config, raw memory,
   or raw chat transcripts.
 - Non-parallelizable cases, cases that conflict through shared state, or cases
@@ -353,7 +366,7 @@ failure class, independent of the kanban kernel's own WAL).
 The CLI prints a score-only report and can emit the full run JSON with `--json`.
 The SQLite store keeps enough data for a dashboard or public leaderboard:
 overall score, per-suite score, axis scores, suite metrics, harness fingerprint,
-and redacted profile snapshot.
+redacted profile snapshot, and execution surface.
 
 **Reading a move:** overall down + one category down → localized; open the run
 JSON (`--json`) for that category's `metrics` (closure/stable/appropriate +

@@ -180,3 +180,11 @@ def test_run_benchmark_weights_scores(monkeypatch):
     report = run_mod.run_benchmark()
     assert report["overall_score"] == 80.0
     assert report["suites_ran"] == 1
+
+
+def test_execution_surface_classification():
+    assert run_mod._execution_surface({"toolsets": ["hermes-cli"]})["id"] == "direct"
+    assert run_mod._execution_surface({"toolsets": ["hermes-cli", "kanban"]})["id"] == "kanban_delegation"
+    assert run_mod._execution_surface({
+        "plugins": {"enabled": ["kanban-orchestrator-routing"]},
+    })["kanban_enabled"] is True

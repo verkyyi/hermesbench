@@ -1,7 +1,9 @@
 # verkyyi default baseline, 2026-05-29
 
 This is the first published HermesBench baseline from a local Hermes default
-profile.
+profile. It is the **kanban delegation** surface for the same profile family;
+see `../verkyyi-default-no-kanban-2026-05-29` for the paired direct/no-kanban
+baseline.
 
 It is published as a **redacted distribution-style baseline**. It follows the
 Hermes profile-distribution shape enough to describe the runtime configuration,
@@ -38,6 +40,7 @@ HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 | Model provider | `openai-codex` |
 | Model | `gpt-5.5` |
 | Memory | `honcho`, enabled |
+| Execution surface | Kanban delegation |
 | Toolsets | `hermes-cli`, `kanban` |
 | Enabled plugins | `agentfeeds`, `kanban-orchestrator-routing`, `break-glass-cli` |
 | Kanban | dispatch in gateway, orchestrator profile, auto-decompose |

@@ -17,6 +17,10 @@ profile_fingerprint:
   hermesbench_git_sha: "83eae579675563fc888627c9a26df06a58ba6cec"
   profile_hash: "46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377"
 runtime_config:
+  execution_surface:
+    id: kanban_delegation
+    label: "Kanban delegation"
+    prompt_case_contract: framework_agnostic
   model:
     provider: openai-codex
     default: gpt-5.5

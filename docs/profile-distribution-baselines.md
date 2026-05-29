@@ -45,6 +45,7 @@ Required:
 - model/provider
 - memory provider and whether memory is enabled
 - toolsets
+- execution surface: `kanban_delegation` or `direct`
 - public plugin names
 - benchmark env vars
 - profile hash
@@ -52,6 +53,22 @@ Required:
 
 The first checked-in baseline, `data/baselines/verkyyi-default-2026-05-29`, uses
 this second form.
+
+## Execution Surfaces
+
+HermesBench uses one leaderboard, but every public result should expose the
+runtime execution surface:
+
+- `direct`: no kanban toolset/config/routing plugin is active. The agent handles
+  prompt cases through the front-desk/default profile surface.
+- `kanban_delegation`: kanban is active through toolsets, config, or routing
+  plugins. Prompt cases remain framework-agnostic, but delegation/progress
+  behavior can improve relative to a direct baseline.
+
+For fair comparison, publish separate baselines when the same profile family is
+meaningfully available in both surfaces. Kanban-specific suites such as
+`delegated_closure` remain opt-in and should be reported separately from the
+standard prompt baseline unless explicitly included.
 
 ## What Not To Publish
 
@@ -67,7 +84,7 @@ Never publish:
 
 ## Multi-Profile / Worker Baselines
 
-If a HermesBench result exercises kanban delegation, origin return, or any
+If a HermesBench result exercises kanban delegation, delegated closure, or any
 multi-worker execution path, the baseline must publish every profile involved in
 that measured path:
 

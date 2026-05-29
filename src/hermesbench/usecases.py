@@ -24,6 +24,10 @@ may declare either one `prompt` or a `turns` list. Multi-turn prompt cases stay
 in one isolated Hermes session so conversation state and scoped side effects can
 carry across turns.
 
+Bundled prompt cases are framework-agnostic: they must remain compatible whether
+kanban is enabled or disabled. Kanban-specific behavior belongs in explicit
+runtime suites such as `delegated_closure`.
+
 A case declares its `expectation` — the closure the end user should get:
   - "answer"        a direct answer resolves it
   - "task_done"     a small task is carried out / synthesized in-turn

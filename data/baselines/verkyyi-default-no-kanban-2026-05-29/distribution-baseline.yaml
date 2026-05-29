@@ -1,0 +1,66 @@
+name: verkyyi-default-no-kanban-baseline
+version: "2026.05.29"
+description: "Redacted distribution-style baseline for a local Hermes default profile with kanban disabled."
+author: "verkyyi"
+license: "MIT"
+benchmark:
+  run_id: hb-20260529T072241Z
+  score: 76.78
+  observed_runtime_s: 260
+  suite_count: 13
+  prompt_cases: 48
+  trials_per_case: 1
+  suite_concurrency: 4
+  case_concurrency: 8
+  command: "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1"
+profile_fingerprint:
+  hermesbench_git_sha: "4b0c022e722c12eb446cb2f8bdf2890a7697f9dd"
+  profile_hash: "4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4"
+runtime_config:
+  execution_surface:
+    id: direct
+    label: "Direct/no-kanban"
+    prompt_case_contract: framework_agnostic
+  model:
+    provider: openai-codex
+    default: gpt-5.5
+  memory:
+    enabled: true
+    provider: honcho
+    user_profile_enabled: true
+  toolsets:
+    - hermes-cli
+  plugins_enabled:
+    - agentfeeds
+    - break-glass-cli
+  gateway:
+    trust_recent_files: true
+    trust_recent_files_seconds: 600
+  kanban:
+    enabled: false
+    removed_for_run:
+      - toolsets.kanban
+      - config.kanban
+      - plugins.enabled.kanban-orchestrator-routing
+worker_profile_coverage:
+  kanban_enabled: false
+  multi_worker_execution_exercised: false
+  delegated_closure_suite: "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set"
+  published_worker_profiles: []
+  publication_policy: "No worker profiles are involved in the direct/no-kanban baseline. If a future run exercises delegated/multi-worker suites, every involved profile must be published as an installable profile distribution or as a redacted distribution-style profile snapshot."
+redaction:
+  installable_distribution: false
+  reason: "This baseline publishes benchmark-relevant runtime shape, not the full private profile distribution."
+  omitted:
+    - auth.json
+    - .env
+    - memories/
+    - sessions/
+    - state.db*
+    - logs/
+    - workspace/
+    - local paths
+    - personal skill allowlists
+notes:
+  - "Use this as the direct/no-kanban comparison point for the same profile family."
+  - "The bundled prompt use cases are framework-agnostic and should run with or without kanban."
