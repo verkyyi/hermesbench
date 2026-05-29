@@ -61,9 +61,10 @@
           <h2>Leaderboard</h2>
           <p>
             Published runs should identify the Hermes profile distribution or a
-            redacted distribution-style baseline, the execution surface, exact
-            command, and runtime. Prompt use cases are framework-agnostic; the
-            surface shows whether kanban delegation was available.
+            redacted distribution-style baseline, the execution surface, profile
+            hash, HermesBench git hash, exact command, and runtime. Prompt use
+            cases are framework-agnostic; the surface shows whether kanban
+            delegation was available.
           </p>
         </div>
         <div class="table-wrap">
@@ -76,6 +77,8 @@
                 <th>Hermes profile</th>
                 <th>Score</th>
                 <th>Runtime</th>
+                <th>Profile hash</th>
+                <th>Bench git</th>
                 <th>Model</th>
                 <th>Cost/run</th>
               </tr>
@@ -83,21 +86,25 @@
             <tbody>
               <tr>
                 <td>1</td>
-                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
-                <td>Kanban delegation</td>
+                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
+                <td>Direct/no-kanban</td>
                 <td>redacted distribution-style</td>
-                <td>81.95</td>
-                <td>~2m 50s</td>
+                <td>91.76</td>
+                <td>~4m 50s</td>
+                <td><code>4080cb90</code></td>
+                <td><code>c14f160</code></td>
                 <td>gpt-5.5 / openai-codex</td>
                 <td>&lt;$10 target</td>
               </tr>
               <tr>
                 <td>2</td>
-                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
-                <td>Direct/no-kanban</td>
+                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
+                <td>Kanban delegation</td>
                 <td>redacted distribution-style</td>
-                <td>76.78</td>
-                <td>~4m 20s</td>
+                <td>89.78</td>
+                <td>~4m 0s</td>
+                <td><code>46baed47</code></td>
+                <td><code>c14f160</code></td>
                 <td>gpt-5.5 / openai-codex</td>
                 <td>&lt;$10 target</td>
               </tr>

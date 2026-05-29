@@ -1,8 +1,8 @@
 {
-  "run_id": "hb-20260529T062018Z",
-  "timestamp_utc": "2026-05-29T06:20:18.277476+00:00",
-  "overall_score": 81.95,
-  "observed_runtime_s": 170,
+  "run_id": "hb-20260529T081506Z",
+  "timestamp_utc": "2026-05-29T08:15:06.684072+00:00",
+  "overall_score": 89.78,
+  "observed_runtime_s": 240,
   "suites_ran": 13,
   "delegated_closure": "skipped: HERMES_BENCH_DELEGATED_CLOSURE not set",
   "command": "HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1",
@@ -11,6 +11,10 @@
     "case_concurrency": 8,
     "suite_concurrency": 4,
     "high_rate": true
+  },
+  "profile_fingerprint": {
+    "hermesbench_git_sha": "c14f160b89a5828af70344df290f66d127bafed3",
+    "profile_hash": "46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377"
   },
   "profile": {
     "model_provider": "openai-codex",
@@ -23,8 +27,15 @@
       "prompt_case_contract": "framework_agnostic"
     },
     "memory_provider": "honcho",
-    "toolsets": ["hermes-cli", "kanban"],
-    "plugins_enabled": ["agentfeeds", "kanban-orchestrator-routing", "break-glass-cli"],
+    "toolsets": [
+      "hermes-cli",
+      "kanban"
+    ],
+    "plugins_enabled": [
+      "agentfeeds",
+      "kanban-orchestrator-routing",
+      "break-glass-cli"
+    ],
     "worker_profile_coverage": {
       "kanban_enabled": true,
       "multi_worker_execution_exercised": false,
@@ -42,29 +53,29 @@
     }
   },
   "suite_scores": {
-    "runtime_config": 68.38,
-    "code_workflow": 37.10,
-    "ops_monitoring": 92.73,
-    "tool_discipline": 97.19,
-    "benchmark_design": 91.83,
-    "delegation_boundary": 97.19,
-    "gateway_messaging": 95.00,
-    "research_synthesis": 84.73,
-    "memory_hygiene": 55.23,
-    "truthfulness": 97.19,
-    "daily_assistant": 60.23,
-    "ambiguous_followup": 88.59,
-    "gateway_ack_policy": 100.00
+    "runtime_config": 94.66,
+    "code_workflow": 68.99,
+    "ops_monitoring": 71.12,
+    "tool_discipline": 98.81,
+    "benchmark_design": 96.89,
+    "delegation_boundary": 99.06,
+    "gateway_messaging": 96.06,
+    "research_synthesis": 94.0,
+    "memory_hygiene": 98.06,
+    "truthfulness": 93.44,
+    "daily_assistant": 67.29,
+    "ambiguous_followup": 88.76,
+    "gateway_ack_policy": 100.0
   },
   "axis_highlights": {
-    "lowest_suite": "code_workflow",
-    "lowest_suite_score": 37.10,
-    "best_prompt_suites": ["delegation_boundary", "tool_discipline", "truthfulness"],
-    "scoped_side_effects_observed": {
-      "suite": "code_workflow",
-      "case": "code_sandbox_file",
-      "files_created": 1,
-      "bytes": 38
-    }
+    "lowest_suite": "daily_assistant",
+    "lowest_suite_score": 67.29,
+    "best_prompt_suites": [
+      "delegation_boundary",
+      "tool_discipline",
+      "memory_hygiene"
+    ],
+    "framework_agnostic_surface": "kanban_delegation",
+    "scoring_model": "deterministic_first_driver_target"
   }
 }

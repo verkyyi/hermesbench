@@ -18,9 +18,11 @@ repository and link it from the benchmark result.
 
 | field | value |
 |---|---:|
-| Run ID | `hb-20260529T062018Z` |
-| Overall score | `81.95` |
-| Observed runtime | `~2m 50s` |
+| Run ID | `hb-20260529T081506Z` |
+| Overall score | `89.78` |
+| Observed runtime | `~4m 0s` |
+| Profile hash | `46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377` |
+| HermesBench git SHA | `c14f160b89a5828af70344df290f66d127bafed3` |
 | Prompt cases | `48` |
 | Suites ran | `13` |
 | Trials per case | `1` |
@@ -74,18 +76,18 @@ distribution-style profile snapshot.
 
 | suite | score |
 |---|---:|
-| `runtime_config` | 68.38 |
-| `code_workflow` | 37.10 |
-| `ops_monitoring` | 92.73 |
-| `tool_discipline` | 97.19 |
-| `benchmark_design` | 91.83 |
-| `delegation_boundary` | 97.19 |
-| `gateway_messaging` | 95.00 |
-| `research_synthesis` | 84.73 |
-| `memory_hygiene` | 55.23 |
-| `truthfulness` | 97.19 |
-| `daily_assistant` | 60.23 |
-| `ambiguous_followup` | 88.59 |
+| `runtime_config` | 94.66 |
+| `code_workflow` | 68.99 |
+| `ops_monitoring` | 71.12 |
+| `tool_discipline` | 98.81 |
+| `benchmark_design` | 96.89 |
+| `delegation_boundary` | 99.06 |
+| `gateway_messaging` | 96.06 |
+| `research_synthesis` | 94.00 |
+| `memory_hygiene` | 98.06 |
+| `truthfulness` | 93.44 |
+| `daily_assistant` | 67.29 |
+| `ambiguous_followup` | 88.76 |
 | `gateway_ack_policy` | 100.00 |
 
 `delegated_closure` was skipped because `HERMES_BENCH_DELEGATED_CLOSURE` was not set.

@@ -11,9 +11,11 @@ skills, local allowlists, credentials, memories, sessions, and state.
 
 | field | value |
 |---|---:|
-| Run ID | `hb-20260529T072241Z` |
-| Overall score | `76.78` |
-| Observed runtime | `~4m 20s` |
+| Run ID | `hb-20260529T082033Z` |
+| Overall score | `91.76` |
+| Observed runtime | `~4m 50s` |
+| Profile hash | `4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4` |
+| HermesBench git SHA | `c14f160b89a5828af70344df290f66d127bafed3` |
 | Prompt cases | `48` |
 | Suites ran | `13` |
 | Trials per case | `1` |
@@ -62,18 +64,18 @@ specific and should be reported separately when included.
 
 | suite | score |
 |---|---:|
-| `runtime_config` | 92.48 |
-| `code_workflow` | 19.22 |
-| `ops_monitoring` | 36.52 |
-| `tool_discipline` | 97.50 |
-| `benchmark_design` | 39.08 |
-| `delegation_boundary` | 96.06 |
-| `gateway_messaging` | 95.00 |
-| `research_synthesis` | 88.59 |
-| `memory_hygiene` | 77.57 |
-| `truthfulness` | 97.19 |
-| `daily_assistant` | 68.55 |
-| `ambiguous_followup` | 90.36 |
+| `runtime_config` | 92.13 |
+| `code_workflow` | 71.04 |
+| `ops_monitoring` | 69.00 |
+| `tool_discipline` | 94.20 |
+| `benchmark_design` | 95.85 |
+| `delegation_boundary` | 98.11 |
+| `gateway_messaging` | 97.06 |
+| `research_synthesis` | 95.94 |
+| `memory_hygiene` | 93.19 |
+| `truthfulness` | 98.72 |
+| `daily_assistant` | 92.50 |
+| `ambiguous_followup` | 95.08 |
 | `gateway_ack_policy` | 100.00 |
 
 ## Redaction

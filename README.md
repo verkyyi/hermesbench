@@ -61,10 +61,10 @@ are framework-agnostic and run on both surfaces; the leaderboard exposes the
 surface because Hermes with kanban and Hermes without kanban have materially
 different configuration surfaces.
 
-| configuration | execution surface | score | runtime | run id |
-|---|---|---:|---:|---|
-| `verkyyi/default` | Kanban delegation | `81.95` | `~2m 50s` | `hb-20260529T062018Z` |
-| `verkyyi/default-no-kanban` | Direct/no-kanban | `76.78` | `~4m 20s` | `hb-20260529T072241Z` |
+| configuration | execution surface | score | runtime | profile hash | bench git | run id |
+|---|---|---:|---:|---|---|---|
+| `verkyyi/default-no-kanban` | Direct/no-kanban | `91.76` | `~4m 50s` | `4080cb90` | `c14f160` | `hb-20260529T082033Z` |
+| `verkyyi/default` | Kanban delegation | `89.78` | `~4m 0s` | `46baed47` | `c14f160` | `hb-20260529T081506Z` |
 
 Both baselines use `gpt-5.5` via `openai-codex`, Honcho memory, high-rate mode,
 and one trial per prompt case. The kanban baseline has `hermes-cli` + `kanban`
