@@ -11,10 +11,10 @@
     <header class="topbar">
       <a class="brand" href="#home">HermesBench</a>
       <nav>
-        <a href="#leaderboard">Leaderboard</a>
-        <a href="#suites">Suites</a>
-        <a href="#local">Local suites</a>
         <a href="#quickstart">Quick start</a>
+        <a href="recipes.html">Recipes</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="#contribute">Contribute</a>
         <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
       </nav>
     </header>
@@ -23,275 +23,79 @@
       <section class="hero">
         <div>
           <p class="eyebrow">Hermes Agent runtime evaluation</p>
-          <h1>Benchmark the whole Hermes configuration, not just the model.</h1>
+          <h1>Stop guessing whether your Hermes setup got better.</h1>
           <p class="lede">
-            HermesBench measures whether a Hermes Agent setup reliably reaches
-            useful, truthful, stable conclusions across daily technical-user
-            workflows. It is a public benchmark and a reusable scenario harness
-            for single-turn, multi-turn, and opt-in multi-profile checks.
+            Run HermesBench through your coding agent to compare configurations
+            with scenario recipes, redacted evidence, and per-scenario
+            leaderboards. See what improved, what regressed, and which
+            profile/config package is worth reusing for daily personal-agent work.
           </p>
           <div class="actions">
-            <a class="button primary" href="#quickstart">Run it</a>
+            <a class="button primary" href="#quickstart">Benchmark my setup</a>
+            <a class="button" href="recipes.html">Browse recipes</a>
+            <a class="button" href="leaderboard.html">Open leaderboard</a>
             <a class="button" href="https://github.com/verkyyi/hermesbench">Star on GitHub</a>
           </div>
         </div>
         <div class="scorecard" aria-label="Benchmark summary">
           <div>
             <span class="metric">48</span>
-            <span class="label">bundled scenario cases</span>
+            <span class="label">scenario recipes</span>
           </div>
           <div>
             <span class="metric">12</span>
-            <span class="label">balanced prompt suites</span>
-          </div>
-          <div>
-            <span class="metric">4</span>
-            <span class="label">audience packages</span>
-          </div>
-          <div>
-            <span class="metric">1</span>
-            <span class="label">agentic driver</span>
+            <span class="label">balanced scenario suites</span>
           </div>
         </div>
       </section>
 
-      <section id="leaderboard" class="section">
-        <div class="section-head">
-          <p class="eyebrow">Public score surface</p>
-          <h2>Leaderboard</h2>
+      <section id="quickstart" class="section split">
+        <div>
+          <p class="eyebrow">Agent-driven quick start</p>
+          <h2>Run it through a coding agent.</h2>
           <p>
-            Published runs should identify the Hermes profile distribution or a
-            redacted distribution-style baseline. The main table keeps the
-            comparison score-focused: the three top axes and their six sub-axes
-            are shown directly, while
-            exact run IDs, hashes, commands, raw env vars, suite summaries, case
-            catalogues, judge summaries, side-effect manifests, and
-            cost/variance notes live in the linked baseline files.
+            The public user pathway is intentionally simple: copy the prompt to
+            Codex, Claude, or another coding agent. The agent loads the
+            HermesBench skill and drives one scenario recipe first. Full bundle
+            runs are opt-in because they take longer and cost more.
           </p>
         </div>
-        <div class="table-wrap">
-          <table class="leaderboard">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Configuration</th>
-                <th>Score</th>
-                <th>Cap.</th>
-                <th>Rel.</th>
-                <th>UX</th>
-                <th>Fulfill.</th>
-                <th>Evidence</th>
-                <th>Outcome</th>
-                <th>Safety</th>
-                <th>Resp.</th>
-                <th>Comm.</th>
-                <th>Coverage</th>
-                <th>Profile snapshot</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
-                <td>78.15</td>
-                <td>70.9</td>
-                <td>96.2</td>
-                <td>86.6</td>
-                <td>71.6</td>
-                <td>69.9</td>
-                <td>94.2</td>
-                <td>98.1</td>
-                <td>92.2</td>
-                <td>80.9</td>
-                <td>13/14</td>
-                <td>
-                  <span class="tag-list">
-                    <span>direct</span>
-                    <span>gpt-5.5</span>
-                    <span>honcho</span>
-                    <span>3 plugins</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
-                <td>77.23</td>
-                <td>68.9</td>
-                <td>94.2</td>
-                <td>86.5</td>
-                <td>69.8</td>
-                <td>67.5</td>
-                <td>92.3</td>
-                <td>96.2</td>
-                <td>94.6</td>
-                <td>78.4</td>
-                <td>13/14</td>
-                <td>
-                  <span class="tag-list">
-                    <span>kanban</span>
-                    <span>gpt-5.5</span>
-                    <span>honcho</span>
-                    <span>4 plugins</span>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="note">
-          Outcome reached is evidence-grounded: a reply alone does not count.
-          Capability/truthfulness, reliability/safety, and efficiency/UX each
-          expose two sub-axes so lopsided results are visible. The linked baseline files
-          retain run IDs, hashes, commands, runtime, and raw profile fingerprints
-          for reproducibility. These baselines were run in parallel with bounded
-          high-rate concurrency to avoid saturating the target harness.
-        </p>
-      </section>
+        <div class="prompt-box">
+          <p class="prompt-label">Prompt to copy into Codex or Claude</p>
+          <pre><code>Use the HermesBench skill and run one default scenario recipe for my current Hermes configuration.
 
-      <section class="section">
-        <div class="section-head">
-          <p class="eyebrow">Execution surfaces</p>
-          <h2>Same use cases, visible runtime shape</h2>
-          <p>
-            HermesBench keeps one leaderboard, but it exposes whether a run used
-            direct front-desk execution or kanban delegation. Use cases should
-            remain compatible with both surfaces; kanban-enabled profiles may
-            score better on delegation, progress, and long-work closure behavior.
-          </p>
-        </div>
-        <div class="grid two">
-          <article class="card">
-            <h3>Direct/no-kanban</h3>
-            <p>Front-desk profile handles the prompt surface without kanban routing.</p>
-            <ul>
-              <li>simpler profile surface</li>
-              <li>no worker profile publication required unless a runtime suite uses workers</li>
-              <li>baseline for non-kanban Hermes setups</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>Kanban delegation</h3>
-            <p>Kanban toolset/config/routing is available for delegation-oriented behavior.</p>
-            <ul>
-              <li>larger shared configuration surface</li>
-              <li>worker profiles must be disclosed when exercised</li>
-              <li>opt-in <code>delegated_closure</code> checks the multi-profile path</li>
-            </ul>
-          </article>
+Skill: https://github.com/verkyyi/hermesbench/blob/main/agent-skills/hermesbench/SKILL.md
+
+Follow the skill's "Run Current Hermes Configuration" workflow. Use the Python API default single-recipe path, save artifacts, and summarize the score and main findings. Do not run the full bundle unless I explicitly ask.</code></pre>
         </div>
       </section>
 
       <section id="suites" class="section">
         <div class="section-head">
           <p class="eyebrow">Coverage model</p>
-          <h2>Audience packages and suites</h2>
+          <h2>Small recipes, broad personal-agent coverage.</h2>
           <p>
-            Technical users are the current main population. General assistant
-            use remains covered as overflow, so the benchmark does not become
-            tech-only. Cases can be single-turn or multi-turn; runtime suites
-            such as delegated_closure can exercise kanban/orchestrator profile
-            paths.
+            HermesBench starts with one focused recipe, then lets you opt into
+            broader suites when you need more confidence. The bundled catalog
+            covers everyday personal-agent work: context, calendar, web,
+            reports, communication, location, travel, finance, safety, and
+            power-user integrations.
           </p>
+          <p><a class="button" href="recipes.html">Browse recipes</a></p>
         </div>
-        <div class="grid">
-          <article class="card">
-            <h3>Technical operator</h3>
-            <p>Developers/operators using Hermes for code, config, and system work.</p>
-            <ul>
-              <li>runtime_config</li>
-              <li>code_workflow</li>
-              <li>ops_monitoring</li>
-              <li>tool_discipline</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>Agent builder</h3>
-            <p>Users shaping Hermes itself: benchmark, delegation, routing, gateway behavior.</p>
-            <ul>
-              <li>benchmark_design</li>
-              <li>delegation_boundary</li>
-              <li>gateway_messaging</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>Knowledge worker</h3>
-            <p>Technical/product users asking for research, synthesis, memory-aware help.</p>
-            <ul>
-              <li>research_synthesis</li>
-              <li>memory_hygiene</li>
-              <li>truthfulness</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>General helper overflow</h3>
-            <p>Normal assistant usage outside the current technical-user core.</p>
-            <ul>
-              <li>daily_assistant</li>
-              <li>ambiguous_followup</li>
-            </ul>
-          </article>
+        <div class="pill-row">
+          <span>Personal core</span>
+          <span>Communications</span>
+          <span>Ambient and travel</span>
+          <span>Private sensitive</span>
+          <span>Power-user optional</span>
         </div>
-      </section>
-
-      <section id="local" class="section split">
-        <div>
-          <p class="eyebrow">Reusable harness</p>
-          <h2>Bring your own local suites</h2>
-          <p>
-            Public suites make scores comparable. Local suites make the
-            framework useful for your own Hermes deployment. Load private JSON
-            or YAML suites without changing the runner, store, report, or
-            dashboard code. Cases define prompts, fixtures, checks, and driver
-            policy; run configuration chooses the target agent. Use
-            <code>initial_prompt</code> for one turn or <code>turns</code> for a
-            multi-turn conversation.
-          </p>
-        </div>
-        <pre><code>hermesbench --suite-path ./my-suites --list-suites
-HERMES_RUN_LLM_EVALS=1 hermesbench \
-  --suite-path ./my-suites \
-  --suite team_ops_status</code></pre>
-      </section>
-
-      <section class="section split">
-        <div>
-          <p class="eyebrow">Distribution-aware baselines</p>
-          <h2>Share the agent shape behind the score</h2>
-          <p>
-            HermesBench results are most useful when tied to a Hermes profile
-            distribution: a git repo containing the agent's distribution.yaml,
-            SOUL, config, skills, cron, and MCP wiring. Credentials, memories,
-            sessions, state, logs, and local files stay private. If a result
-            exercises delegated or multi-worker execution, every involved
-            worker profile must be published or redacted as part of the
-            baseline.
-          </p>
-        </div>
-        <pre><code>hermes profile install github.com/you/my-agent --alias
-HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
-
-# Publish score.json plus distribution repo or redacted baseline.</code></pre>
-      </section>
-
-      <section id="quickstart" class="section">
-        <div class="section-head">
-          <p class="eyebrow">Install and run</p>
-          <h2>Quick start</h2>
-        </div>
-        <pre><code>pip install git+https://github.com/verkyyi/hermesbench.git
-
-hermesbench --list-suites
-hermesbench --validate
-HERMES_RUN_LLM_EVALS=1 hermesbench
-HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
-HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store</code></pre>
       </section>
 
       <section class="section">
         <div class="section-head">
-          <p class="eyebrow">Scoring</p>
-          <h2>Reliability before capability</h2>
+          <p class="eyebrow">Scoring philosophy</p>
+          <h2>Good agents finish the right thing safely.</h2>
         </div>
         <div class="pill-row">
           <span>Outcome reached</span>
@@ -302,24 +106,58 @@ HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store</code></pre>
           <span>Communication quality</span>
         </div>
         <p>
-          HermesBench balances reliability with capability and daily usability:
-          capability/truthfulness 40%, reliability/safety 30%, and
-          efficiency/UX 30%. Each top axis has two sub-axes, and a balance
-          factor rewards configurations that stay strong across all three
-          areas instead of over-optimizing one.
+          HermesBench is reliability-first, but not capability-blind. A good
+          configuration should do useful work, tell the truth about what it
+          knows, avoid unsafe side effects, stay stable, respond promptly, and
+          communicate clearly. Lopsided scores are penalized because a personal
+          agent that is capable but unsafe, safe but unhelpful, or correct but
+          unusably slow is not actually good.
         </p>
-        <pre><code>base = .24*fulfillment + .16*evidence_truthfulness
-     + .15*outcome     + .15*runtime_scope_safety
-     + .15*response    + .15*communication
+        <p class="note">
+          Detailed formulas and implementation mechanics live in the methodology
+          document; the website keeps the scoring model readable for users and
+          LLM agents.
+        </p>
+      </section>
 
-balance = .85 + .15 * min(capability, reliability, ux) / max(...)
-final = min(base * balance * outcome_gate * safety_gate, caps)</code></pre>
+      <section id="contribute" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Use and contribute</p>
+          <h2>Turn good results into reusable recipes.</h2>
+          <p>
+            HermesBench is useful as a quick benchmark, but it is also a way to
+            publish what worked. Share a redacted profile/config package when a
+            setup improves a recipe, or submit a generic recipe when an
+            important personal-agent use case is missing.
+          </p>
+        </div>
+        <div class="grid two">
+          <div class="prompt-box">
+            <p class="prompt-label">Profile submission prompt</p>
+            <pre><code>Use the HermesBench skill to prepare my current Hermes profile/config as a public profile submission.
+
+Skill: https://github.com/verkyyi/hermesbench/blob/main/agent-skills/hermesbench/SKILL.md
+
+Run one representative recipe first, package the redacted profile snapshot and score evidence, and tell me what must be reviewed before opening a pull request.</code></pre>
+          </div>
+          <div class="prompt-box">
+            <p class="prompt-label">Recipe submission prompt</p>
+            <pre><code>Use the HermesBench skill to propose a new generic personal-agent recipe for HermesBench.
+
+Skill: https://github.com/verkyyi/hermesbench/blob/main/agent-skills/hermesbench/SKILL.md
+
+Make the use case privacy-safe, driver/target agnostic, fixture-backed where possible, and include deterministic checks before preparing a pull request.</code></pre>
+          </div>
+        </div>
       </section>
     </main>
 
     <footer>
       <span>HermesBench</span>
       <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
+      <a href="recipes.html">Recipes</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="llms.txt">llms.txt</a>
       <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">Methodology</a>
       <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/local-suites.md">Local suites</a>
     </footer>

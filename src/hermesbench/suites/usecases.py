@@ -24,6 +24,22 @@ from hermesbench import judge as judge_mod
 
 TRIALS = int(os.environ.get("HERMES_BENCH_TRIALS", "2"))
 CONCURRENCY = int(os.environ.get("HERMES_BENCH_CONCURRENCY", "4"))
+_PII_PATTERNS = (
+    ("email", r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"),
+    ("phone", r"(?<!\d)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}(?!\d)"),
+    ("token", r"(?i)\b(?:sk|ghp|gho|xoxb|xoxp|AKIA)[A-Za-z0-9_\-]{12,}\b"),
+)
+
+
+def _redact_pii_text(value) -> str | None:
+    if value is None:
+        return None
+    import re
+
+    text = str(value)
+    for label, pattern in _PII_PATTERNS:
+        text = re.sub(pattern, f"<redacted:{label}>", text)
+    return text
 
 
 def _responsiveness(ttfa_ms, wall_ms, reply_target_s: float) -> float:
@@ -57,6 +73,8 @@ def _run_trial(case: dict, b: dict) -> dict:
 
     judge_case = dict(case)
     judge_case["prompt"] = scenarios.prompt_for_judge(scenario)
+    judge_case["success_criteria"] = scenario.get("success_criteria") or case.get("success_criteria") or []
+    judge_case["safety_criteria"] = scenario.get("safety_criteria") or case.get("safety_criteria") or []
     v = judge_mod.judge(judge_case, m["reply"], transcript=transcript if len(transcript) > 1 else None)
     check_result = checks.run_checks(scenario, m)
     resp = _responsiveness(m.get("ttfa_ms"), m.get("wall_ms"), b["reply_target_s"])
@@ -80,6 +98,8 @@ def _run_trial(case: dict, b: dict) -> dict:
         "turn_count": len(scenario["turns"]),
         "scenario": {
             "driver": (m.get("driver") or {}).get("kind", "codex"),
+            "target": m.get("target") or getattr(target, "describe", lambda: {})(),
+            "capabilities": scenario.get("capabilities") or {},
             "checks": len(scenario.get("checks") or []),
         },
         "mech": m,
@@ -95,9 +115,11 @@ def _run_trial(case: dict, b: dict) -> dict:
 def _redacted_case_result(r: dict) -> dict:
     """Public-safe per-trial observation for run artifacts.
 
-    The raw target reply, transcript, controller stdout/stderr, and local
-    artifact paths are intentionally omitted. Those can contain user-private
-    context or environment-specific details even in a benchmark sandbox.
+    A redacted public transcript is kept by default so published leaderboard
+    evidence is reviewable. Unredacted raw replies/transcripts, controller
+    stdout/stderr,
+    and local artifact paths are not published by default because they can
+    contain user-private context or environment-specific details.
     """
     mech = r.get("mech") or {}
     driver = mech.get("driver") or {}
@@ -105,7 +127,21 @@ def _redacted_case_result(r: dict) -> dict:
     judge = r.get("judge") or {}
     checks = r.get("checks") or {}
     side_effects = mech.get("side_effects") or {}
-    return {
+    include_raw_trace = os.environ.get("HERMES_BENCH_INCLUDE_RAW_TRACES", "").lower() in {
+        "1", "true", "yes", "on",
+    }
+    public_transcript = [
+        {
+            "turn": t.get("turn"),
+            "user": _redact_pii_text(t.get("user")),
+            "assistant": _redact_pii_text(t.get("assistant")),
+            "error": _redact_pii_text(t.get("error")),
+            "timed_out": t.get("timed_out"),
+            "wall_ms": t.get("wall_ms"),
+        }
+        for t in (mech.get("transcript") or [])
+    ]
+    out = {
         "case": r.get("case"),
         "expectation": r.get("expectation"),
         "turn_count": r.get("turn_count"),
@@ -167,14 +203,35 @@ def _redacted_case_result(r: dict) -> dict:
                 for f in (side_effects.get("files") or [])[:10]
             ],
         },
+        "trace_retention": {
+            "public_transcript": "included_pii_redacted",
+            "raw_target_reply": "included_private_opt_in" if include_raw_trace else "omitted_public_safe",
+            "raw_transcript": "included_private_opt_in" if include_raw_trace else "omitted_public_safe",
+            "controller_output": "omitted_public_safe",
+            "local_artifact_paths": "redacted_to_scoped_manifest",
+        },
+        "public_transcript": public_transcript,
     }
+    if include_raw_trace:
+        out["raw_transcript"] = [
+            {
+                "turn": t.get("turn"),
+                "user": t.get("user"),
+                "assistant": t.get("assistant"),
+                "error": t.get("error"),
+                "timed_out": t.get("timed_out"),
+                "wall_ms": t.get("wall_ms"),
+            }
+            for t in (mech.get("transcript") or [])
+        ]
+        out["raw_target_reply"] = mech.get("reply")
+    return out
 
 
-def _run_category(category: str) -> dict:
+def _run_cases(cases: list[dict], *, category: str) -> dict:
     if not os.environ.get("HERMES_RUN_LLM_EVALS"):
         return {"skipped": True, "skip_reason": "HERMES_RUN_LLM_EVALS not set"}
 
-    cases = usecases.cases_for(category)
     b = usecases.budget(category)
     if not cases:
         return {"skipped": True, "skip_reason": f"no cases for {category}"}
@@ -332,11 +389,28 @@ def _run_category(category: str) -> dict:
     }
 
 
+def run_scenario(case_id: str) -> dict:
+    """Run exactly one scenario id using the same primitive suites aggregate."""
+    case = usecases.case_by_id(case_id)
+    if not case:
+        return {"skipped": True, "skip_reason": f"unknown scenario {case_id}"}
+    return _run_cases([case], category=str(case["category"]))
+
+
+def _run_category(category: str) -> dict:
+    return _run_cases(usecases.cases_for(category), category=category)
+
+
 def __getattr__(name: str):
-    """Dynamically expose run_<category>() for every dataset category."""
-    prefix = "run_"
-    if name.startswith(prefix):
-        category = name[len(prefix):]
+    """Dynamically expose run_<category>() and run_case_<scenario>()."""
+    case_prefix = "run_case_"
+    if name.startswith(case_prefix):
+        case_id = name[len(case_prefix):]
+        if usecases.case_by_id(case_id):
+            return lambda case_id=case_id: run_scenario(case_id)
+    category_prefix = "run_"
+    if name.startswith(category_prefix):
+        category = name[len(category_prefix):]
         if category in usecases.categories():
             return lambda category=category: _run_category(category)
     raise AttributeError(name)

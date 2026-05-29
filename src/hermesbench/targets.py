@@ -18,6 +18,56 @@ from hermesbench import harness
 
 
 @dataclass
+class TargetConfig:
+    """Runtime-selected target UI/capability surface."""
+
+    ui: str = "cli"
+    profile: str = "default"
+    platform: str = "cli"
+    toolsets: str | None = None
+    skills: str | None = None
+    command: str | None = None
+
+    @classmethod
+    def from_env(cls) -> "TargetConfig":
+        raw_ui = (
+            os.environ.get("HERMES_BENCH_TARGET_UI")
+            or os.environ.get("HERMES_BENCH_TARGET_INTERFACE")
+            or "cli"
+        ).strip()
+        ui = raw_ui or "cli"
+        platform = (os.environ.get("HERMES_BENCH_TARGET_PLATFORM") or "").strip()
+        if ui.startswith("platform:"):
+            platform = platform or ui.split(":", 1)[1].strip()
+            ui = "cli"
+        elif ui not in {"cli", "command"}:
+            # Simulate a messaging/UI platform through the Hermes CLI transport:
+            # platform-specific toolsets/skills are selected, without sending a
+            # real Telegram/Weixin/etc. message.
+            platform = platform or ui
+            ui = "cli"
+        platform = platform or "cli"
+        return cls(
+            ui=ui,
+            profile=(os.environ.get("HERMES_BENCH_TARGET_PROFILE") or "default"),
+            platform=platform,
+            toolsets=(os.environ.get("HERMES_BENCH_TARGET_TOOLSETS") or None),
+            skills=(os.environ.get("HERMES_BENCH_TARGET_SKILLS") or None),
+            command=(os.environ.get("HERMES_BENCH_TARGET_COMMAND") or None),
+        )
+
+    def describe(self) -> dict:
+        return {
+            "ui": self.ui,
+            "profile": self.profile,
+            "platform": self.platform,
+            "toolsets": self.toolsets,
+            "skills": self.skills,
+            "command_configured": bool(self.command),
+        }
+
+
+@dataclass
 class HermesAgenticSession:
     """Prepared Hermes target session for out-of-process evaluator drivers."""
 
@@ -27,9 +77,10 @@ class HermesAgenticSession:
     state_path: Path
     timeout_s: int
     max_turns: int
+    config: TargetConfig
 
     @classmethod
-    def create(cls, *, timeout_s: int, max_turns: int) -> "HermesAgenticSession":
+    def create(cls, *, timeout_s: int, max_turns: int, config: TargetConfig) -> "HermesAgenticSession":
         src_home = harness._default_home()
         harness._ensure_warm(src_home)
         home = harness._make_isolated_home(src_home)
@@ -45,6 +96,13 @@ class HermesAgenticSession:
             "timeout_s": int(timeout_s),
             "turn_timeout_s": int(timeout_s),
             "max_turns": int(max_turns),
+            "target_ui": config.ui,
+            "target_profile": config.profile,
+            "target_platform": config.platform,
+            "target_toolsets": config.toolsets,
+            "target_skills": config.skills,
+            "target_command": config.command,
+            "target_session_id": None,
             "turns": [],
             "transcript": [],
         }
@@ -56,6 +114,7 @@ class HermesAgenticSession:
             state_path=state_path,
             timeout_s=timeout_s,
             max_turns=max_turns,
+            config=config,
         )
 
     @property
@@ -140,9 +199,23 @@ class HermesAgenticSession:
 class HermesCliTarget:
     """Target adapter for Hermes `chat -q` in an isolated benchmark session."""
 
+    config: TargetConfig
+
+    def __init__(self, config: TargetConfig | None = None):
+        self.config = config or TargetConfig.from_env()
+
     def run_turns(self, turns: list[dict], *, timeout_s: int) -> dict:
         if len(turns) == 1:
-            result = harness.run_case(turns[0]["prompt"], timeout_s=timeout_s)
+            result = harness.run_case(
+                turns[0]["prompt"],
+                timeout_s=timeout_s,
+                profile=self.config.profile,
+                toolsets=turns[0].get("toolsets") or self.config.toolsets,
+                skills=turns[0].get("skills") or self.config.skills,
+                platform=self.config.platform,
+                target_ui=self.config.ui,
+                target_command=self.config.command,
+            )
             result["turns"] = [dict(result, turn_index=1, profile="default")]
             result["transcript"] = [
                 {"turn": 1, "user": turns[0]["prompt"], "assistant": result.get("reply", "")}
@@ -151,10 +224,22 @@ class HermesCliTarget:
             result["expected_turn_count"] = 1
             result["scenario_completion_rate"] = 1.0
             return result
-        return harness.run_scenario(turns, timeout_s=timeout_s)
+        return harness.run_scenario(
+            turns,
+            timeout_s=timeout_s,
+            profile=self.config.profile,
+            toolsets=self.config.toolsets,
+            skills=self.config.skills,
+            platform=self.config.platform,
+            target_ui=self.config.ui,
+            target_command=self.config.command,
+        )
 
     def start_agentic_session(self, *, timeout_s: int, max_turns: int) -> HermesAgenticSession:
-        return HermesAgenticSession.create(timeout_s=timeout_s, max_turns=max_turns)
+        return HermesAgenticSession.create(timeout_s=timeout_s, max_turns=max_turns, config=self.config)
+
+    def describe(self) -> dict:
+        return self.config.describe()
 
 
 def build_target() -> HermesCliTarget:
@@ -163,4 +248,4 @@ def build_target() -> HermesCliTarget:
     The first public implementation targets Hermes. Other target frameworks can
     plug in here without changing cases.
     """
-    return HermesCliTarget()
+    return HermesCliTarget(TargetConfig.from_env())

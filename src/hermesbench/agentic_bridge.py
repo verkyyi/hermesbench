@@ -44,8 +44,9 @@ def send_turn(
     state_path: Path,
     *,
     prompt: str,
-    profile: str = "default",
+    profile: str | None = None,
     toolsets: str | None = None,
+    skills: str | None = None,
     timeout_s: int | None = None,
 ) -> dict:
     state = _load(state_path)
@@ -69,13 +70,19 @@ def send_turn(
 
     home = Path(state["home"])
     workdir = Path(state["workdir"])
+    effective_profile = profile or state.get("target_profile") or "default"
     rc, reply, timed_out, err, row, wall_ms = harness._spawn_in_session(
         prompt,
         home=home,
         workdir=workdir,
         timeout_s=int(timeout_s or state.get("turn_timeout_s") or state.get("timeout_s") or 120),
-        profile=profile,
-        toolsets=toolsets,
+        profile=effective_profile,
+        toolsets=toolsets or state.get("target_toolsets"),
+        skills=skills or state.get("target_skills"),
+        platform=state.get("target_platform"),
+        target_ui=state.get("target_ui") or "cli",
+        target_command=state.get("target_command"),
+        resume_session_id=state.get("target_session_id"),
     )
     side_effects = harness._artifact_manifest(workdir)
     result = harness._turn_result(
@@ -90,7 +97,9 @@ def send_turn(
         retained_home=None,
     )
     result["turn_index"] = len(turns) + 1
-    result["profile"] = profile
+    result["profile"] = effective_profile
+    if result.get("session_id"):
+        state["target_session_id"] = result["session_id"]
     turns.append(result)
     transcript = list(state.get("transcript") or [])
     transcript.append({"turn": result["turn_index"], "user": prompt, "assistant": reply})
@@ -119,6 +128,7 @@ def status(state_path: Path) -> dict:
     out = {
         "turn_count": len(state.get("turns") or []),
         "max_turns": state.get("max_turns"),
+        "target_session_id": state.get("target_session_id"),
         "transcript": state.get("transcript") or [],
         "side_effects": harness._artifact_manifest(Path(state["workdir"])),
     }
@@ -133,8 +143,9 @@ def main(argv: list[str] | None = None) -> int:
     send = sub.add_parser("send", help="send one user turn to the target session")
     send.add_argument("state")
     send.add_argument("--prompt", "-p", help="prompt text; use '-' or omit to read stdin")
-    send.add_argument("--profile", default="default")
+    send.add_argument("--profile")
     send.add_argument("--toolsets")
+    send.add_argument("--skills")
     send.add_argument("--timeout-s", type=int)
 
     stat = sub.add_parser("status", help="print transcript and side-effect summary")
@@ -147,6 +158,7 @@ def main(argv: list[str] | None = None) -> int:
             prompt=_read_prompt(args.prompt),
             profile=args.profile,
             toolsets=args.toolsets,
+            skills=args.skills,
             timeout_s=args.timeout_s,
         )
         return 0 if out.get("ok") else 2

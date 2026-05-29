@@ -1,0 +1,61 @@
+# HermesBench
+
+HermesBench is a reliability-first benchmark for Hermes Agent runtime
+configurations. It evaluates the whole configured agent harness, not just the
+base model.
+
+Primary pages:
+
+- Home and single-recipe quick start: /
+- Agent-driven quick start: /#quickstart
+- Scenario recipe catalog: /recipes.html
+- Leaderboard: /leaderboard.html
+- Submission contract: /../data/submissions/README.md
+
+Machine-readable artifacts:
+
+- Scenario recipe JSON: /../data/tasks/tasks.json
+- Leaderboard evidence JSON: /../data/traces/index.json
+
+Agent-facing Python API:
+
+Skill source:
+
+- https://github.com/verkyyi/hermesbench/blob/main/agent-skills/hermesbench/SKILL.md
+
+Package source:
+
+- https://github.com/verkyyi/hermesbench
+
+```python
+from hermesbench.api import agent_skill_text, list_scenarios, validate, run_scenario, build_public_artifacts
+
+print(agent_skill_text())
+print(validate())
+print(list_scenarios()[:5])
+report = run_scenario("calendar_daily_brief", trials=1, run_llm_evals=True, persist=True)
+build_public_artifacts()
+```
+
+Current bundled public benchmark shape:
+
+- 48 scenario recipes
+- 12 prompt suites
+- 5 audience packages
+- Agent-driven evaluator by default
+- Default user-facing run is one scenario recipe: calendar_daily_brief
+- Full bundled benchmark runs are opt-in
+
+Publishing policy:
+
+- Public recipe pages show scenario prompts, expected outcomes, budgets,
+  checks, capability intent, side-effect scope, and per-scenario leaderboards
+  linked to the best public evidence.
+- Public leaderboard pages show per-case score, axes, mechanical closure,
+  evaluator decision, judge summary, side effects, and redacted public
+  transcripts when available.
+- Unredacted raw transcripts are private debugging artifacts and must be
+  redacted before publication.
+- Public leaderboard submissions are prepared by coding agents using the
+  HermesBench skill workflow "Publish A Benchmark Result" and submitted by
+  GitHub pull request under data/submissions/.

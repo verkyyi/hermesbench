@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-05-29T19:59:11.185693+00:00",
+  "schema_version": 3,
+  "trace_count": 2,
+  "traces": [
+    {
+      "baseline_dir": "data/baselines/verkyyi-default-2026-05-29",
+      "baseline_id": "verkyyi-default-2026-05-29",
+      "observed_runtime_s": 435,
+      "overall_score": 77.23,
+      "run_id": "hb-20260529T111322Z",
+      "timestamp_utc": "2026-05-29T11:13:22.874055+00:00",
+      "trace_json": "data/traces/verkyyi-default-2026-05-29/trace.json",
+      "trace_markdown": "data/traces/verkyyi-default-2026-05-29/README.md"
+    },
+    {
+      "baseline_dir": "data/baselines/verkyyi-default-no-kanban-2026-05-29",
+      "baseline_id": "verkyyi-default-no-kanban-2026-05-29",
+      "observed_runtime_s": 417,
+      "overall_score": 78.15,
+      "run_id": "hb-20260529T111210Z",
+      "timestamp_utc": "2026-05-29T11:12:10.032769+00:00",
+      "trace_json": "data/traces/verkyyi-default-no-kanban-2026-05-29/trace.json",
+      "trace_markdown": "data/traces/verkyyi-default-no-kanban-2026-05-29/README.md"
+    }
+  ]
+}

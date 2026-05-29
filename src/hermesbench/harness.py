@@ -20,7 +20,10 @@ from __future__ import annotations
 
 import os
 import hashlib
+import json
+import re
 import shutil
+import shlex
 import sqlite3
 import subprocess
 import tempfile
@@ -131,6 +134,182 @@ def _read_turn_row(home: Path) -> dict | None:
     return dict(row) if row else None
 
 
+def _split_csv(value: str | list[str] | tuple[str, ...] | None) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, (list, tuple)):
+        raw_items = value
+    else:
+        raw_items = str(value).split(",")
+    return [str(item).strip() for item in raw_items if str(item).strip()]
+
+
+def _platform_toolsets(home: Path, platform: str | None) -> str | None:
+    if not platform or platform == "cli":
+        return None
+    cfg = home / "config.yaml"
+    if not cfg.exists():
+        return None
+    try:
+        import yaml  # type: ignore
+
+        data = yaml.safe_load(cfg.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return None
+    platform_toolsets = data.get("platform_toolsets")
+    if not isinstance(platform_toolsets, dict):
+        return None
+    raw = platform_toolsets.get(platform)
+    if not isinstance(raw, list):
+        return None
+    items = _split_csv(raw)
+    return ",".join(items) if items else None
+
+
+def _target_env(*, home: Path, workdir: Path, profile: str, platform: str | None) -> dict:
+    env = dict(os.environ)
+    env["HERMES_HOME"] = str(home)
+    env["HERMES_PROFILE"] = profile
+    env["HERMES_BENCH_WORKDIR"] = str(workdir)
+    env["HERMES_BENCH_SIDE_EFFECT_SCOPE"] = "benchmark_workdir"
+    env["HERMES_SESSION_SOURCE"] = env.get("HERMES_SESSION_SOURCE") or "hermesbench"
+    if platform:
+        env["HERMES_PLATFORM"] = platform
+        env["HERMES_SESSION_PLATFORM"] = platform
+    env.pop("HERMES_KANBAN_TASK", None)
+    return env
+
+
+def _extract_session_id(stderr: str) -> str | None:
+    """Return the parseable Hermes quiet-mode session id, if present."""
+    for line in reversed((stderr or "").splitlines()):
+        match = re.search(r"\bsession_id:\s*([A-Za-z0-9_.:-]+)", line)
+        if match:
+            return match.group(1)
+    return None
+
+
+def _spawn_cli_in_session(
+    prompt: str,
+    *,
+    home: Path,
+    workdir: Path,
+    timeout_s: int,
+    profile: str = "default",
+    toolsets: str | None = None,
+    skills: str | list[str] | None = None,
+    platform: str | None = None,
+    resume_session_id: str | None = None,
+):
+    """Run one `hermes chat -q` turn inside an existing isolated session."""
+    env = _target_env(home=home, workdir=workdir, profile=profile, platform=platform)
+    cmd = [*_hermes_argv(), "chat", "-q", _scope_prompt(prompt), "--quiet"]
+    if resume_session_id:
+        cmd.extend(["--resume", resume_session_id])
+    selected_toolsets = toolsets or _platform_toolsets(home, platform)
+    if selected_toolsets is not None:
+        cmd.extend(["--toolsets", selected_toolsets])
+    for skill in _split_csv(skills):
+        cmd.extend(["--skills", skill])
+
+    reply, rc, timed_out, err, session_id = "", None, False, None, None
+    wall0 = time.monotonic()
+    try:
+        proc = subprocess.run(cmd, env=env, cwd=workdir, capture_output=True, text=True, timeout=timeout_s)
+        rc = proc.returncode
+        reply = (proc.stdout or "").strip()
+        session_id = _extract_session_id(proc.stderr or "")
+        if rc != 0 and not reply:
+            err = (proc.stderr or "")[-400:]
+    except subprocess.TimeoutExpired:
+        rc, timed_out, err = 124, True, f"timeout after {timeout_s}s"
+    except Exception as exc:
+        rc, err = 1, f"{type(exc).__name__}: {exc}"[:400]
+    wall_ms = round((time.monotonic() - wall0) * 1000.0, 1)
+    row = _read_turn_row(home) or {}
+    if session_id:
+        row["session_id"] = session_id
+    return rc, reply, timed_out, err, row, wall_ms
+
+
+def _spawn_command_in_session(
+    prompt: str,
+    *,
+    home: Path,
+    workdir: Path,
+    timeout_s: int,
+    profile: str = "default",
+    toolsets: str | None = None,
+    skills: str | list[str] | None = None,
+    platform: str | None = None,
+    command: str | list[str] | None = None,
+):
+    """Run one turn through a custom target UI command.
+
+    The command receives the scoped prompt on stdin unless one of its argv
+    tokens contains ``{prompt}``. JSON stdout with a ``reply`` field is accepted;
+    otherwise stdout is treated as the target reply.
+    """
+    if not command:
+        return 1, "", False, "HERMES_BENCH_TARGET_COMMAND is required for command target UI", None, 0.0
+    env = _target_env(home=home, workdir=workdir, profile=profile, platform=platform)
+    if toolsets:
+        env["HERMES_BENCH_TARGET_TOOLSETS_EFFECTIVE"] = toolsets
+    if skills:
+        env["HERMES_BENCH_TARGET_SKILLS_EFFECTIVE"] = ",".join(_split_csv(skills))
+    scoped_prompt = _scope_prompt(prompt)
+    parts = list(command) if isinstance(command, list) else shlex.split(str(command))
+    uses_prompt_placeholder = any("{prompt}" in part for part in parts)
+    replacements = {
+        "{prompt}": scoped_prompt,
+        "{workdir}": str(workdir),
+        "{home}": str(home),
+        "{timeout_s}": str(int(timeout_s)),
+        "{platform}": platform or "",
+        "{profile}": profile,
+    }
+    cmd = []
+    for part in parts:
+        for needle, value in replacements.items():
+            part = part.replace(needle, value)
+        cmd.append(part)
+
+    reply, rc, timed_out, err = "", None, False, None
+    wall0 = time.monotonic()
+    try:
+        proc = subprocess.run(
+            cmd,
+            input=None if uses_prompt_placeholder else scoped_prompt,
+            env=env,
+            cwd=workdir,
+            capture_output=True,
+            text=True,
+            timeout=timeout_s,
+        )
+        rc = proc.returncode
+        stdout = (proc.stdout or "").strip()
+        if stdout:
+            try:
+                payload = json.loads(stdout)
+            except json.JSONDecodeError:
+                payload = None
+            if isinstance(payload, dict):
+                reply = str(payload.get("reply") or payload.get("message") or "")
+                if payload.get("stable") is False and rc == 0:
+                    rc = 1
+                err = str(payload.get("error") or "")[:400] or None
+            else:
+                reply = stdout
+        if rc != 0 and not err:
+            err = (proc.stderr or stdout or "")[-400:]
+    except subprocess.TimeoutExpired:
+        rc, timed_out, err = 124, True, f"timeout after {timeout_s}s"
+    except Exception as exc:
+        rc, err = 1, f"{type(exc).__name__}: {exc}"[:400]
+    wall_ms = round((time.monotonic() - wall0) * 1000.0, 1)
+    return rc, reply.strip(), timed_out, err, None, wall_ms
+
+
 def _spawn_in_session(
     prompt: str,
     *,
@@ -139,33 +318,35 @@ def _spawn_in_session(
     timeout_s: int,
     profile: str = "default",
     toolsets: str | None = None,
+    skills: str | list[str] | None = None,
+    platform: str | None = None,
+    target_ui: str = "cli",
+    target_command: str | list[str] | None = None,
+    resume_session_id: str | None = None,
 ):
-    """Run one `hermes chat -q` turn inside an existing isolated session."""
-    env = dict(os.environ)
-    env["HERMES_HOME"] = str(home)
-    env["HERMES_PROFILE"] = profile
-    env["HERMES_BENCH_WORKDIR"] = str(workdir)
-    env["HERMES_BENCH_SIDE_EFFECT_SCOPE"] = "benchmark_workdir"
-    env.pop("HERMES_KANBAN_TASK", None)
-    cmd = [*_hermes_argv(), "chat", "-q", _scope_prompt(prompt), "--quiet"]
-    if toolsets is not None:
-        cmd.extend(["--toolsets", toolsets])
-
-    reply, rc, timed_out, err = "", None, False, None
-    wall0 = time.monotonic()
-    try:
-        proc = subprocess.run(cmd, env=env, cwd=workdir, capture_output=True, text=True, timeout=timeout_s)
-        rc = proc.returncode
-        reply = (proc.stdout or "").strip()
-        if rc != 0 and not reply:
-            err = (proc.stderr or "")[-400:]
-    except subprocess.TimeoutExpired:
-        rc, timed_out, err = 124, True, f"timeout after {timeout_s}s"
-    except Exception as exc:
-        rc, err = 1, f"{type(exc).__name__}: {exc}"[:400]
-    wall_ms = round((time.monotonic() - wall0) * 1000.0, 1)
-    row = _read_turn_row(home)
-    return rc, reply, timed_out, err, row, wall_ms
+    if target_ui == "command":
+        return _spawn_command_in_session(
+            prompt,
+            home=home,
+            workdir=workdir,
+            timeout_s=timeout_s,
+            profile=profile,
+            toolsets=toolsets,
+            skills=skills,
+            platform=platform,
+            command=target_command,
+        )
+    return _spawn_cli_in_session(
+        prompt,
+        home=home,
+        workdir=workdir,
+        timeout_s=timeout_s,
+        profile=profile,
+        toolsets=toolsets,
+        skills=skills,
+        platform=platform,
+        resume_session_id=resume_session_id,
+    )
 
 
 def _turn_result(
@@ -196,6 +377,7 @@ def _turn_result(
         "ttfa_ms": (row or {}).get("ttfa_ms"),
         "ttft_ms": (row or {}).get("ttft_ms"),
         "ttlt_ms": (row or {}).get("ttlt_ms"),
+        "session_id": (row or {}).get("session_id"),
         "wall_ms": wall_ms,
         "telemetry_status": status,
         "model": (row or {}).get("model"),
@@ -205,7 +387,18 @@ def _turn_result(
     }
 
 
-def _spawn(prompt: str, *, src_home: Path, timeout_s: int, toolsets: str | None = None):
+def _spawn(
+    prompt: str,
+    *,
+    src_home: Path,
+    timeout_s: int,
+    profile: str = "default",
+    toolsets: str | None = None,
+    skills: str | list[str] | None = None,
+    platform: str | None = None,
+    target_ui: str = "cli",
+    target_command: str | list[str] | None = None,
+):
     """Run one isolated `hermes chat -q` turn."""
     home = _make_isolated_home(src_home)
     workdir = home / "workdir"
@@ -213,7 +406,16 @@ def _spawn(prompt: str, *, src_home: Path, timeout_s: int, toolsets: str | None 
     retained_home = None
     try:
         rc, reply, timed_out, err, row, wall_ms = _spawn_in_session(
-            prompt, home=home, workdir=workdir, timeout_s=timeout_s, toolsets=toolsets
+            prompt,
+            home=home,
+            workdir=workdir,
+            timeout_s=timeout_s,
+            profile=profile,
+            toolsets=toolsets,
+            skills=skills,
+            platform=platform,
+            target_ui=target_ui,
+            target_command=target_command,
         )
     finally:
         side_effects = _artifact_manifest(workdir)
@@ -240,7 +442,18 @@ def _ensure_warm(src_home: Path) -> None:
         _warmed = True
 
 
-def run_case(prompt: str, *, timeout_s: int, src_home: Path | None = None) -> dict:
+def run_case(
+    prompt: str,
+    *,
+    timeout_s: int,
+    src_home: Path | None = None,
+    profile: str = "default",
+    toolsets: str | None = None,
+    skills: str | list[str] | None = None,
+    platform: str | None = None,
+    target_ui: str = "cli",
+    target_command: str | list[str] | None = None,
+) -> dict:
     """Drive one isolated default-profile turn. Returns reply + mechanical signals.
 
     Mechanical signals (no LLM judgement):
@@ -255,7 +468,15 @@ def run_case(prompt: str, *, timeout_s: int, src_home: Path | None = None) -> di
     src_home = src_home or _default_home()
     _ensure_warm(src_home)
     rc, reply, timed_out, err, row, wall_ms, side_effects, retained_home = _spawn(
-        prompt, src_home=src_home, timeout_s=timeout_s
+        prompt,
+        src_home=src_home,
+        timeout_s=timeout_s,
+        profile=profile,
+        toolsets=toolsets,
+        skills=skills,
+        platform=platform,
+        target_ui=target_ui,
+        target_command=target_command,
     )
 
     return _turn_result(
@@ -277,11 +498,18 @@ def run_scenario(
     timeout_s: int,
     src_home: Path | None = None,
     stop_on_error: bool = True,
+    profile: str = "default",
+    toolsets: str | None = None,
+    skills: str | list[str] | None = None,
+    platform: str | None = None,
+    target_ui: str = "cli",
+    target_command: str | list[str] | None = None,
 ) -> dict:
     """Drive a multi-turn scenario in one isolated Hermes session.
 
     ``turns`` is a list of objects with at least ``prompt``. Optional keys:
-    ``profile`` (defaults to ``default``), ``toolsets``, and ``timeout_s``.
+    ``profile`` (defaults to ``default``), ``toolsets``, ``skills``, and
+    ``timeout_s``.
     The return shape preserves the final turn fields for backwards-compatible
     scoring and adds ``turns``/``transcript`` for multi-turn judges.
     """
@@ -296,6 +524,7 @@ def run_scenario(
     retained_home = None
     results: list[dict] = []
     transcript: list[dict] = []
+    target_session_id: str | None = None
 
     try:
         for idx, turn in enumerate(turns, start=1):
@@ -307,8 +536,13 @@ def run_scenario(
                 home=home,
                 workdir=workdir,
                 timeout_s=int(turn.get("timeout_s") or timeout_s),
-                profile=str(turn.get("profile") or "default"),
-                toolsets=turn.get("toolsets"),
+                profile=str(turn.get("profile") or profile or "default"),
+                toolsets=turn.get("toolsets") or toolsets,
+                skills=turn.get("skills") or skills,
+                platform=platform,
+                target_ui=target_ui,
+                target_command=target_command,
+                resume_session_id=target_session_id,
             )
             side_effects = _artifact_manifest(workdir)
             result = _turn_result(
@@ -324,6 +558,8 @@ def run_scenario(
             )
             result["turn_index"] = idx
             result["profile"] = str(turn.get("profile") or "default")
+            if result.get("session_id"):
+                target_session_id = str(result["session_id"])
             results.append(result)
             transcript.append({"turn": idx, "user": prompt, "assistant": reply})
             if stop_on_error and (not result["stable"] or timed_out):

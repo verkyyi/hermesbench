@@ -1,7 +1,9 @@
 """HermesBench — single consolidated benchmark runner.
 
-    HERMES_RUN_LLM_EVALS=1 venv/bin/python -m hermesbench.run   # all use cases
-    venv/bin/python -m hermesbench.run --suite runtime_config,ambiguous_followup
+    HERMES_RUN_LLM_EVALS=1 venv/bin/python -m hermesbench.run   # default single recipe
+    venv/bin/python -m hermesbench.run --suite generic_context,mail_assistant
+    venv/bin/python -m hermesbench.run --scenario calendar_daily_brief
+    venv/bin/python -m hermesbench.run --full-bundle              # all use cases
     venv/bin/python -m hermesbench.run --json          # machine-readable
     venv/bin/python -m hermesbench.run --no-store      # don't persist
 
@@ -25,7 +27,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-from hermesbench import registry, report as report_mod, store, usecases
+from hermesbench import registry, report as report_mod
 
 
 def _git_sha() -> str | None:
@@ -81,6 +83,84 @@ def _profile_hash() -> str | None:
     return None
 
 
+def _target_selection() -> dict:
+    raw_ui = (
+        os.environ.get("HERMES_BENCH_TARGET_UI")
+        or os.environ.get("HERMES_BENCH_TARGET_INTERFACE")
+        or "cli"
+    ).strip() or "cli"
+    platform = (os.environ.get("HERMES_BENCH_TARGET_PLATFORM") or "").strip()
+    ui = raw_ui
+    if ui.startswith("platform:"):
+        platform = platform or ui.split(":", 1)[1].strip()
+        ui = "cli"
+    elif ui not in {"cli", "command"}:
+        platform = platform or ui
+        ui = "cli"
+    platform = platform or "cli"
+    return {
+        "ui": ui,
+        "requested_ui": raw_ui,
+        "profile": os.environ.get("HERMES_BENCH_TARGET_PROFILE") or "default",
+        "platform": platform,
+        "toolsets_override": os.environ.get("HERMES_BENCH_TARGET_TOOLSETS"),
+        "skills_override": os.environ.get("HERMES_BENCH_TARGET_SKILLS"),
+        "command_configured": bool(os.environ.get("HERMES_BENCH_TARGET_COMMAND")),
+    }
+
+
+def _hash_list(values: list[str]) -> str | None:
+    if not values:
+        return None
+    payload = "\n".join(sorted(values)).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()[:16]
+
+
+def _skill_inventory(home: str) -> dict:
+    root = Path(home) / "skills"
+    names: list[str] = []
+    if root.exists():
+        for skill_md in sorted(root.rglob("SKILL.md")):
+            try:
+                rel = skill_md.parent.relative_to(root).as_posix()
+            except ValueError:
+                continue
+            if not rel.startswith("."):
+                names.append(rel)
+    return {
+        "count": len(names),
+        "hash": _hash_list(names),
+        "sample": names[:20],
+        "truncated": len(names) > 20,
+    }
+
+
+def _capability_surface(config: dict, *, home: str) -> dict:
+    target = _target_selection()
+    platform = target["platform"]
+    platform_toolsets = config.get("platform_toolsets") if isinstance(config.get("platform_toolsets"), dict) else {}
+    selected_platform_toolsets = platform_toolsets.get(platform)
+    if not isinstance(selected_platform_toolsets, list):
+        selected_platform_toolsets = []
+    skills_cfg = config.get("skills") if isinstance(config.get("skills"), dict) else {}
+    platform_disabled = skills_cfg.get("platform_disabled") if isinstance(skills_cfg.get("platform_disabled"), dict) else {}
+    platform_allowed = skills_cfg.get("platform_allowed") if isinstance(skills_cfg.get("platform_allowed"), dict) else {}
+    return {
+        "target": target,
+        "tools": {
+            "root_toolsets": config.get("toolsets") if isinstance(config.get("toolsets"), list) else [],
+            "platform_toolsets": selected_platform_toolsets,
+            "platform_toolset_hash": _hash_list([str(x) for x in selected_platform_toolsets]),
+        },
+        "agent_skills": {
+            "inventory": _skill_inventory(home),
+            "globally_disabled": skills_cfg.get("disabled") if isinstance(skills_cfg.get("disabled"), list) else [],
+            "platform_disabled": platform_disabled.get(platform, []),
+            "platform_allowed": platform_allowed.get(platform, []),
+        },
+    }
+
+
 _SNAPSHOT_CONFIG_KEYS = {
     "api_mode",
     "disabled_toolsets",
@@ -121,6 +201,15 @@ def _redact(value):
     return value
 
 
+def _redact_env_value(key: str, value: str) -> str:
+    lowered = key.lower()
+    if any(part in lowered for part in _SECRET_KEY_PARTS):
+        return "<redacted>"
+    if key == "HERMES_BENCH_TARGET_COMMAND":
+        return "<configured>"
+    return value
+
+
 def _profile_snapshot() -> dict:
     """Best-effort redacted snapshot of benchmark-relevant profile settings."""
     home = os.environ.get("HERMES_HOME") or str(Path.home() / ".hermes")
@@ -133,7 +222,7 @@ def _profile_snapshot() -> dict:
         "config_path": str(cfg) if include_paths else "<hermes_home>/config.yaml",
         "config_hash": _profile_hash(),
         "bench_env": {
-            k: v for k, v in sorted(os.environ.items())
+            k: _redact_env_value(k, v) for k, v in sorted(os.environ.items())
             if k.startswith("HERMES_BENCH_") or k == "HERMES_RUN_LLM_EVALS"
         },
     }
@@ -149,6 +238,7 @@ def _profile_snapshot() -> dict:
             }
             snap["config"] = _redact(selected)
             snap["execution_surface"] = _execution_surface(data)
+            snap["capability_surface"] = _capability_surface(data, home=home)
     except Exception as exc:
         snap["config_error"] = f"{type(exc).__name__}: {exc}"[:200]
     return snap
@@ -267,9 +357,31 @@ def run_benchmark(*, ids: list[str] | None = None) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="hermesbench")
     ap.add_argument("--suite", help="comma-separated suite ids to restrict to")
+    ap.add_argument("--scenario", help="comma-separated scenario ids to restrict to")
+    ap.add_argument("--full-bundle", action="store_true", help="run all registered suites; opt-in because it is slow")
     ap.add_argument("--trials", type=int, help="trials per prompt case")
     ap.add_argument("--case-concurrency", type=int, help="parallel prompt cases within each suite")
     ap.add_argument("--suite-concurrency", type=int, help="parallel suites")
+    ap.add_argument(
+        "--target-ui",
+        "--target-interface",
+        dest="target_ui",
+        help=(
+            "target user interface: cli (default), command, or a platform name "
+            "such as telegram/weixin to simulate platform toolsets"
+        ),
+    )
+    ap.add_argument("--target-platform", help="platform name for platform-scoped toolsets/skills")
+    ap.add_argument("--target-profile", help="Hermes profile name to run as the target")
+    ap.add_argument("--target-toolsets", help="comma-separated target toolsets override")
+    ap.add_argument("--target-skills", help="comma-separated AgentSkills to preload")
+    ap.add_argument(
+        "--target-command",
+        help=(
+            "custom target UI command for --target-ui command; receives prompt "
+            "on stdin unless argv contains {prompt}"
+        ),
+    )
     ap.add_argument(
         "--high-rate",
         action="store_true",
@@ -281,51 +393,56 @@ def main(argv: list[str] | None = None) -> int:
         help="local suite JSON/YAML file or directory; may be repeated",
     )
     ap.add_argument("--list-suites", action="store_true", help="list registered suites and exit")
+    ap.add_argument("--list-scenarios", action="store_true", help="list scenario recipe ids and exit")
     ap.add_argument("--validate", action="store_true", help="validate bundled and local suites and exit")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--no-store", action="store_true", help="do not persist to the trend store")
     args = ap.parse_args(argv)
 
-    if args.high_rate:
-        os.environ.setdefault("HERMES_BENCH_SUITE_CONCURRENCY", "6")
-        os.environ.setdefault("HERMES_BENCH_CONCURRENCY", "6")
-        os.environ["HERMES_BENCH_HIGH_RATE"] = "1"
-    if args.trials is not None:
-        os.environ["HERMES_BENCH_TRIALS"] = str(max(1, args.trials))
-    if args.case_concurrency is not None:
-        os.environ["HERMES_BENCH_CONCURRENCY"] = str(max(1, args.case_concurrency))
-    if args.suite_concurrency is not None:
-        os.environ["HERMES_BENCH_SUITE_CONCURRENCY"] = str(max(1, args.suite_concurrency))
-
-    if args.suite_path:
-        existing = os.environ.get("HERMESBENCH_SUITE_PATH")
-        parts = [*(existing.split(os.pathsep) if existing else []), *args.suite_path]
-        os.environ["HERMESBENCH_SUITE_PATH"] = os.pathsep.join(p for p in parts if p)
+    from hermesbench import api
 
     if args.validate:
-        usecases.validate_dataset()
+        summary = api.validate(suite_path=args.suite_path)
         print(
-            f"ok: {len(usecases.all_cases())} cases, "
-            f"{len(usecases.categories())} prompt suites, "
-            f"{len(usecases.local_suite_files())} local suite files"
+            f"ok: {summary['cases']} cases, "
+            f"{summary['prompt_suites']} prompt suites, "
+            f"{len(summary['local_suite_files'])} local suite files"
         )
         return 0
 
     if args.list_suites:
-        for suite in registry.all_suites():
-            print(f"{suite.id}\t{suite.mode}\t{suite.interaction}\t{suite.category}")
+        for suite in api.list_suites(suite_path=args.suite_path):
+            print(f"{suite['id']}\t{suite['mode']}\t{suite['interaction']}\t{suite['category']}")
         return 0
 
-    ids = [s for s in (args.suite or "").split(",") if s] or None
-    report = run_benchmark(ids=ids)
+    if args.list_scenarios:
+        for scenario in api.list_scenarios(suite_path=args.suite_path):
+            print(f"{scenario['id']}\t{scenario['expectation']}\t{scenario['turn_count']}\t{scenario['suite_label']}")
+        return 0
 
     previous = None
-    if not args.no_store:
-        try:
-            store.save_run(report)
-            previous = store.previous_run(report["run_id"])
-        except Exception as exc:
-            print(f"warning: could not persist run: {exc}", file=sys.stderr)
+    report = api.run(
+        suites=args.suite,
+        scenarios=args.scenario,
+        full_bundle=args.full_bundle,
+        suite_path=args.suite_path,
+        trials=args.trials,
+        case_concurrency=args.case_concurrency,
+        suite_concurrency=args.suite_concurrency,
+        high_rate=args.high_rate,
+        target_ui=args.target_ui,
+        target_profile=args.target_profile,
+        target_platform=args.target_platform,
+        target_toolsets=args.target_toolsets,
+        target_skills=args.target_skills,
+        target_command=args.target_command,
+        persist=not args.no_store,
+        ignore_persist_errors=True,
+    )
+    if report.get("persist_warning"):
+        print(f"warning: could not persist run: {report['persist_warning']}", file=sys.stderr)
+    elif not args.no_store:
+        previous = api.previous_run(report["run_id"])
 
     if args.json:
         print(json.dumps(report, indent=2))

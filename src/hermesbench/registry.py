@@ -52,6 +52,7 @@ class Suite:
 
 
 _RUNNER = "hermesbench.suites.usecases:run_{}"
+_CASE_RUNNER = "hermesbench.suites.usecases:run_case_{}"
 _ALIASES = {
     "origin_return": "delegated_closure",
 }
@@ -108,12 +109,35 @@ def all_suites() -> list[Suite]:
 
 def by_id(suite_id: str) -> Suite | None:
     suite_id = _ALIASES.get(suite_id, suite_id)
+    case = usecases.case_by_id(suite_id)
+    if case:
+        return _scenario_suite(case)
     return next((s for s in all_suites() if s.id == suite_id), None)
 
 
+def _scenario_suite(case: dict) -> Suite:
+    category = str(case.get("category") or "")
+    label = usecases.category_label(category)
+    return Suite(
+        id=str(case["id"]),
+        category=f"{label} scenario",
+        mode=HYBRID,
+        weight=1.0,
+        runner=_CASE_RUNNER.format(case["id"]),
+        summary=f"Single scenario from {label}: {case.get('notes') or case.get('prompt') or case['id']}",
+        interaction=MULTI_TURN,
+    )
+
+
 def select(*, ids: list[str] | None = None) -> list[Suite]:
-    """Select suites for a run, optionally restricted to named ``ids``."""
+    """Select suites or individual scenario ids for a run."""
     if not ids:
         return all_suites()
     wanted = {_ALIASES.get(s, s) for s in ids}
-    return [s for s in all_suites() if s.id in wanted]
+    selected = [s for s in all_suites() if s.id in wanted]
+    selected_ids = {s.id for s in selected}
+    for case_id in sorted(wanted - selected_ids):
+        case = usecases.case_by_id(case_id)
+        if case:
+            selected.append(_scenario_suite(case))
+    return selected

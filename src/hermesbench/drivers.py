@@ -48,6 +48,7 @@ class CodexDriver:
             "turns_sent": result.get("turn_count", 0),
             "controller": controller,
         }
+        result["target"] = getattr(target, "describe", lambda: {})()
         return result
 
 
@@ -82,10 +83,15 @@ def _controller_prompt(scenario: dict, session, *, max_turns: int) -> str:
     ]
     payload = {
         "scenario_id": scenario.get("id"),
+        "title": scenario.get("title"),
         "audience": scenario.get("audience"),
         "category": scenario.get("category"),
+        "capabilities": scenario.get("capabilities") or {},
+        "target": getattr(getattr(session, "config", None), "describe", lambda: {})(),
         "goal": scenario.get("goal"),
-        "expectation": scenario.get("expectation"),
+        "success_criteria": scenario.get("success_criteria") or [],
+        "safety_criteria": scenario.get("safety_criteria") or [],
+        "legacy_expectation": scenario.get("expectation"),
         "notes": scenario.get("notes") or "",
         "initial_prompt": scenario.get("initial_prompt"),
         "declared_turns": declared_turns,

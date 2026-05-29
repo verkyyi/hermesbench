@@ -22,9 +22,14 @@ Design notes:
     report, or dashboard code.
 
 Entry point:
-    HERMES_RUN_LLM_EVALS=1 venv/bin/python -m hermesbench.run   # all use cases
-    venv/bin/python -m hermesbench.run --suite runtime_config,ambiguous_followup
+    HERMES_RUN_LLM_EVALS=1 venv/bin/python -m hermesbench.run   # default single recipe
+    venv/bin/python -m hermesbench.run --suite generic_context,mail_assistant
+    venv/bin/python -m hermesbench.run --full-bundle
     venv/bin/python -m hermesbench.run --json
+
+Coding-agent API:
+    from hermesbench.api import run_scenario, list_scenarios, validate
+    report = run_scenario("calendar_daily_brief", persist=False)
 """
 
 __version__ = "0.1.0"
