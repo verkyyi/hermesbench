@@ -1,10 +1,12 @@
-"""HermesBench v2 — isolated default-profile driver (black box).
+"""HermesBench v2 — isolated agent driver (black box).
 
-Sends one prompt to the default profile exactly as an end user would
-(`hermes chat -q <prompt> --quiet`) inside a throwaway HERMES_HOME, and reports
-only what's observable from outside: the reply text and mechanical reliability
-signals (did it respond, how fast, did it stay stable, did it reach a terminal
-conclusion within budget). No kanban/orchestrator internals are inspected.
+Drives the default profile exactly as an end user would (`hermes chat -q ...`)
+inside a throwaway HERMES_HOME. A scenario can be one turn or many turns; the
+harness keeps the same isolated home/workdir for the whole scenario so chat
+state and scoped side effects can carry across turns. It reports only what's
+observable from outside: replies and mechanical reliability signals (did it
+respond, how fast, did it stay stable, did it reach terminal conclusions within
+budget). No kanban/orchestrator internals are inspected by prompt scenarios.
 
 Each call runs in its own temp HERMES_HOME (config.yaml + .env + context-length
 cache copied from the real default profile) plus a benchmark-owned working
@@ -129,14 +131,19 @@ def _read_turn_row(home: Path) -> dict | None:
     return dict(row) if row else None
 
 
-def _spawn(prompt: str, *, src_home: Path, timeout_s: int, toolsets: str | None = None):
-    """Run one isolated `hermes chat -q` turn. Returns (rc, reply, timed_out, err, row, wall_ms)."""
-    home = _make_isolated_home(src_home)
-    workdir = home / "workdir"
-    workdir.mkdir(parents=True, exist_ok=True)
+def _spawn_in_session(
+    prompt: str,
+    *,
+    home: Path,
+    workdir: Path,
+    timeout_s: int,
+    profile: str = "default",
+    toolsets: str | None = None,
+):
+    """Run one `hermes chat -q` turn inside an existing isolated session."""
     env = dict(os.environ)
     env["HERMES_HOME"] = str(home)
-    env["HERMES_PROFILE"] = "default"
+    env["HERMES_PROFILE"] = profile
     env["HERMES_BENCH_WORKDIR"] = str(workdir)
     env["HERMES_BENCH_SIDE_EFFECT_SCOPE"] = "benchmark_workdir"
     env.pop("HERMES_KANBAN_TASK", None)
@@ -145,8 +152,6 @@ def _spawn(prompt: str, *, src_home: Path, timeout_s: int, toolsets: str | None 
         cmd.extend(["--toolsets", toolsets])
 
     reply, rc, timed_out, err = "", None, False, None
-    side_effects = {"scope": "benchmark_workdir", "total_files": 0, "total_bytes": 0, "files": []}
-    retained_home = None
     wall0 = time.monotonic()
     try:
         proc = subprocess.run(cmd, env=env, cwd=workdir, capture_output=True, text=True, timeout=timeout_s)
@@ -156,9 +161,61 @@ def _spawn(prompt: str, *, src_home: Path, timeout_s: int, toolsets: str | None 
             err = (proc.stderr or "")[-400:]
     except subprocess.TimeoutExpired:
         rc, timed_out, err = 124, True, f"timeout after {timeout_s}s"
+    except Exception as exc:
+        rc, err = 1, f"{type(exc).__name__}: {exc}"[:400]
+    wall_ms = round((time.monotonic() - wall0) * 1000.0, 1)
+    row = _read_turn_row(home)
+    return rc, reply, timed_out, err, row, wall_ms
+
+
+def _turn_result(
+    *,
+    prompt: str,
+    rc,
+    reply: str,
+    timed_out: bool,
+    err: str | None,
+    row: dict | None,
+    wall_ms: float,
+    side_effects: dict,
+    retained_home: str | None,
+) -> dict:
+    status = (row or {}).get("status")
+    responded = (rc == 0) and bool(reply)
+    stable = (rc == 0) and (not timed_out) and (str(status or "").lower() not in _ERROR_STATUSES)
+    concluded = responded and not timed_out
+
+    return {
+        "prompt": prompt,
+        "reply": reply,
+        "returncode": rc,
+        "timed_out": timed_out,
+        "responded": responded,
+        "stable": stable,
+        "concluded": concluded,
+        "ttfa_ms": (row or {}).get("ttfa_ms"),
+        "ttft_ms": (row or {}).get("ttft_ms"),
+        "ttlt_ms": (row or {}).get("ttlt_ms"),
+        "wall_ms": wall_ms,
+        "telemetry_status": status,
+        "model": (row or {}).get("model"),
+        "error": err,
+        "side_effects": side_effects,
+        "artifact_home": retained_home,
+    }
+
+
+def _spawn(prompt: str, *, src_home: Path, timeout_s: int, toolsets: str | None = None):
+    """Run one isolated `hermes chat -q` turn."""
+    home = _make_isolated_home(src_home)
+    workdir = home / "workdir"
+    workdir.mkdir(parents=True, exist_ok=True)
+    retained_home = None
+    try:
+        rc, reply, timed_out, err, row, wall_ms = _spawn_in_session(
+            prompt, home=home, workdir=workdir, timeout_s=timeout_s, toolsets=toolsets
+        )
     finally:
-        wall_ms = round((time.monotonic() - wall0) * 1000.0, 1)
-        row = _read_turn_row(home)
         side_effects = _artifact_manifest(workdir)
         if os.environ.get("HERMES_BENCH_KEEP_ARTIFACTS"):
             retained_home = str(home)
@@ -201,26 +258,98 @@ def run_case(prompt: str, *, timeout_s: int, src_home: Path | None = None) -> di
         prompt, src_home=src_home, timeout_s=timeout_s
     )
 
-    status = (row or {}).get("status")
-    responded = (rc == 0) and bool(reply)
-    stable = (rc == 0) and (not timed_out) and (str(status or "").lower() not in _ERROR_STATUSES)
-    concluded = responded and not timed_out
+    return _turn_result(
+        prompt=prompt,
+        rc=rc,
+        reply=reply,
+        timed_out=timed_out,
+        err=err,
+        row=row,
+        wall_ms=wall_ms,
+        side_effects=side_effects,
+        retained_home=retained_home,
+    )
 
+
+def run_scenario(
+    turns: list[dict],
+    *,
+    timeout_s: int,
+    src_home: Path | None = None,
+    stop_on_error: bool = True,
+) -> dict:
+    """Drive a multi-turn scenario in one isolated Hermes session.
+
+    ``turns`` is a list of objects with at least ``prompt``. Optional keys:
+    ``profile`` (defaults to ``default``), ``toolsets``, and ``timeout_s``.
+    The return shape preserves the final turn fields for backwards-compatible
+    scoring and adds ``turns``/``transcript`` for multi-turn judges.
+    """
+    if not turns:
+        raise ValueError("scenario must contain at least one turn")
+
+    src_home = src_home or _default_home()
+    _ensure_warm(src_home)
+    home = _make_isolated_home(src_home)
+    workdir = home / "workdir"
+    workdir.mkdir(parents=True, exist_ok=True)
+    retained_home = None
+    results: list[dict] = []
+    transcript: list[dict] = []
+
+    try:
+        for idx, turn in enumerate(turns, start=1):
+            prompt = str(turn.get("prompt") or "").strip()
+            if not prompt:
+                raise ValueError(f"scenario turn {idx} missing prompt")
+            rc, reply, timed_out, err, row, wall_ms = _spawn_in_session(
+                prompt,
+                home=home,
+                workdir=workdir,
+                timeout_s=int(turn.get("timeout_s") or timeout_s),
+                profile=str(turn.get("profile") or "default"),
+                toolsets=turn.get("toolsets"),
+            )
+            side_effects = _artifact_manifest(workdir)
+            result = _turn_result(
+                prompt=prompt,
+                rc=rc,
+                reply=reply,
+                timed_out=timed_out,
+                err=err,
+                row=row,
+                wall_ms=wall_ms,
+                side_effects=side_effects,
+                retained_home=None,
+            )
+            result["turn_index"] = idx
+            result["profile"] = str(turn.get("profile") or "default")
+            results.append(result)
+            transcript.append({"turn": idx, "user": prompt, "assistant": reply})
+            if stop_on_error and (not result["stable"] or timed_out):
+                break
+    finally:
+        final_side_effects = _artifact_manifest(workdir)
+        if os.environ.get("HERMES_BENCH_KEEP_ARTIFACTS"):
+            retained_home = str(home)
+        else:
+            shutil.rmtree(home, ignore_errors=True)
+
+    final = results[-1] if results else {}
     return {
-        "prompt": prompt,
-        "reply": reply,
-        "returncode": rc,
-        "timed_out": timed_out,
-        "responded": responded,
-        "stable": stable,
-        "concluded": concluded,
-        "ttfa_ms": (row or {}).get("ttfa_ms"),
-        "ttft_ms": (row or {}).get("ttft_ms"),
-        "ttlt_ms": (row or {}).get("ttlt_ms"),
-        "wall_ms": wall_ms,
-        "telemetry_status": status,
-        "model": (row or {}).get("model"),
-        "error": err,
-        "side_effects": side_effects,
+        **final,
+        "turns": results,
+        "transcript": transcript,
+        "turn_count": len(results),
+        "expected_turn_count": len(turns),
+        "responded": bool(results) and all(r["responded"] for r in results),
+        "stable": bool(results) and all(r["stable"] for r in results),
+        "concluded": bool(results) and all(r["concluded"] for r in results),
+        "wall_ms": sum(float(r.get("wall_ms") or 0.0) for r in results),
+        "ttfa_ms": final.get("ttfa_ms"),
+        "ttlt_ms": final.get("ttlt_ms"),
+        "reply": str(final.get("reply") or ""),
+        "side_effects": final_side_effects,
         "artifact_home": retained_home,
+        "scenario_completion_rate": len(results) / len(turns),
     }

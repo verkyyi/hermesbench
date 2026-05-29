@@ -147,6 +147,7 @@ def _profile_snapshot() -> dict:
 def _execute(suite: registry.Suite) -> dict:
     base = {
         "id": suite.id, "category": suite.category, "mode": suite.mode,
+        "interaction": getattr(suite, "interaction", registry.SINGLE_TURN),
         "weight": suite.weight, "summary": suite.summary,
         "score": None, "skipped": False,
         "skip_reason": None, "error": None, "duration_s": 0.0, "metrics": {},
@@ -269,7 +270,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.list_suites:
         for suite in registry.all_suites():
-            print(f"{suite.id}\t{suite.mode}\t{suite.category}")
+            print(f"{suite.id}\t{suite.mode}\t{suite.interaction}\t{suite.category}")
         return 0
 
     ids = [s for s in (args.suite or "").split(",") if s] or None

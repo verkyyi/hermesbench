@@ -19,6 +19,8 @@ small general-helper overflow package for normal assistant requests.
 ## What It Includes
 
 - **48 bundled prompt use cases** across 12 balanced categories.
+- **Harness-driven scenarios**: a use case can be one user turn or a multi-turn
+  conversation in one isolated Hermes session.
 - **4 audience packages**: technical operator, agent builder, knowledge worker,
   and general helper overflow.
 - **Score-only verdict**: closure failures, instability, inappropriate answers,
@@ -126,8 +128,18 @@ with provider credentials that can tolerate the burst.
 | General helper overflow | Normal assistant usage outside the current technical-user core | `daily_assistant`, `ambiguous_followup` |
 
 Runtime suites such as `gateway_ack_policy` and `origin_return` are registered
-separately because they need non-prompt harnesses. They skip cleanly when the
-corresponding Hermes Agent internal modules or opt-in flags are unavailable.
+separately because they need non-prompt harnesses. `origin_return` is the
+kanban/multi-profile runtime suite for delegated work: it verifies that work
+created from a front-desk origin can be picked up by the orchestrator path and
+still preserve the user return path. It skips cleanly when the corresponding
+Hermes Agent internal modules or opt-in flags are unavailable.
+
+```bash
+HERMES_RUN_LLM_EVALS=1 \
+HERMES_BENCH_ORIGIN_RETURN=1 \
+HERMES_BENCH_WORKER_PROFILES=orchestrator,worker-code,worker-research \
+hermesbench --suite origin_return
+```
 
 ## Local Suites
 
@@ -163,6 +175,15 @@ Local suite files can be JSON or YAML:
           "expectation": "clarify",
           "prompt": "Is the release safe to ship?",
           "notes": "No release evidence is provided; ask what to inspect."
+        },
+        {
+          "id": "clarify_then_verify",
+          "expectation": "task_done",
+          "turns": [
+            {"prompt": "Help me verify status."},
+            {"prompt": "The target is the benchmark website deployment."}
+          ],
+          "notes": "The harness keeps both turns in one isolated session."
         }
       ]
     }
@@ -172,6 +193,10 @@ Local suite files can be JSON or YAML:
 
 Local suites are not required to match the bundled 4-cases-per-category balance.
 They are for user-specific regression coverage.
+
+Prompt cases support either `prompt` for a single turn or `turns` for a
+multi-turn conversation. Runtime suites can go further and drive multiple
+Hermes profiles, kanban, gateways, or other auditable side-effect scopes.
 
 ## Side-Effect Policy
 

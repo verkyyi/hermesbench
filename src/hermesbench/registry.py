@@ -1,11 +1,13 @@
-"""Suite registry for HermesBench (v2 — black-box, default-profile, reliability-first).
+"""Suite registry for HermesBench (v2 — harness-driven, reliability-first).
 
-Each suite is one use-case *category*. Its `run()` drives the default profile as
-an end user (isolated turn), judges the reply, and returns a normalized
+Each suite is one use-case *category*. Its `run()` drives Hermes through a
+harness (single-turn, multi-turn, or runtime/multi-profile), judges the
+observable result, and returns a normalized
 ``{score: 0..100, metrics: {...}}`` (or ``{skipped: True, skip_reason}``).
-Suites evaluate purely from the user's perspective — no
-kanban/orchestrator internals — and weight reliability/responsiveness/closure
-above capability (see suites/usecases.py and METHODOLOGY.md).
+Prompt suites evaluate from the user's perspective and runtime suites may add
+auditable internal/runtime checks for behavior that is otherwise invisible, such
+as kanban origin-return preservation. All suites weight
+reliability/responsiveness/closure above capability.
 
 Most suites drive real agents, so model-backed suites self-skip when
 HERMES_RUN_LLM_EVALS is unset. Deterministic runtime-policy suites can still
@@ -27,6 +29,11 @@ AUTOMATED = "automated"
 LLM_JUDGE = "llm_judge"
 HYBRID = "hybrid"
 
+SINGLE_TURN = "single_turn"
+MULTI_TURN = "multi_turn"
+RUNTIME_POLICY = "runtime_policy"
+MULTI_PROFILE = "multi_profile"
+
 
 @dataclass(frozen=True)
 class Suite:
@@ -36,6 +43,7 @@ class Suite:
     weight: float
     runner: str  # "module:function" — imported lazily at execution time
     summary: str = ""
+    interaction: str = SINGLE_TURN
 
     def load(self) -> Callable[[], dict]:
         mod_name, _, fn_name = self.runner.partition(":")
@@ -63,6 +71,7 @@ def _prompt_suites() -> list[Suite]:
             runner=_RUNNER.format(cat),
             summary=f"Black-box {label} use cases ({package}) — "
                     "closure, stability, responsiveness, appropriateness.",
+            interaction=MULTI_TURN,
         ))
     return suites
 
@@ -76,6 +85,7 @@ def _runtime_suites() -> list[Suite]:
             weight=1.0,
             runner="hermesbench.suites.gateway:run_gateway_ack_policy",
             summary="Gateway pre-LLM acknowledgement policy and progress cadence.",
+            interaction=RUNTIME_POLICY,
         ),
         Suite(
             id="origin_return",
@@ -83,7 +93,8 @@ def _runtime_suites() -> list[Suite]:
             mode=HYBRID,
             weight=1.0,
             runner="hermesbench.suites.gateway:run_origin_return",
-            summary="Optional real-LLM check that delegated work preserves user return path.",
+            summary="Optional kanban/multi-profile check that delegated work preserves user return path.",
+            interaction=MULTI_PROFILE,
         ),
     ]
 

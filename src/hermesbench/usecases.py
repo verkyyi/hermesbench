@@ -18,8 +18,11 @@ They should measure the Hermes harness/configuration — routing, memory hygiene
 tool discipline, gateway behavior, closure, truthfulness, stability, and latency
 — not base-model contest ability.
 
-Each case is sent to the *default profile* as an end user would, judged purely
-on what comes back — no peeking at kanban/orchestrator internals.
+Each prompt case is sent to the *default profile* as an end user would, judged
+purely on what comes back — no peeking at kanban/orchestrator internals. A case
+may declare either one `prompt` or a `turns` list. Multi-turn prompt cases stay
+in one isolated Hermes session so conversation state and scoped side effects can
+carry across turns.
 
 A case declares its `expectation` — the closure the end user should get:
   - "answer"        a direct answer resolves it
@@ -579,7 +582,22 @@ def _coerce_local_bundle(data: Any, source: Path) -> tuple[list[dict], dict[str,
             case = dict(raw)
             case.setdefault("category", cid)
             case.setdefault("expectation", "answer")
-            for key in ("id", "prompt", "expectation", "category"):
+            has_prompt = bool(str(case.get("prompt") or "").strip())
+            has_turns = isinstance(case.get("turns"), list) and bool(case.get("turns"))
+            if not has_prompt and not has_turns:
+                raise ValueError(f"{source}: local case in {cid!r} missing prompt or turns")
+            if has_turns:
+                turns = []
+                for idx, raw_turn in enumerate(case["turns"], start=1):
+                    if not isinstance(raw_turn, dict):
+                        raise ValueError(f"{source}: turn {idx} in {case.get('id')!r} must be an object")
+                    prompt = str(raw_turn.get("prompt") or "").strip()
+                    if not prompt:
+                        raise ValueError(f"{source}: turn {idx} in {case.get('id')!r} missing prompt")
+                    turns.append(dict(raw_turn, prompt=prompt))
+                case["turns"] = turns
+                case.setdefault("prompt", "\n\n".join(t["prompt"] for t in turns))
+            for key in ("id", "expectation", "category"):
                 if not str(case.get(key) or "").strip():
                     raise ValueError(f"{source}: local case in {cid!r} missing {key}")
             case["id"] = str(case["id"])
@@ -658,6 +676,22 @@ def categories() -> list[str]:
 
 def cases_for(category: str) -> list[dict]:
     return [c for c in all_cases() if c["category"] == category]
+
+
+def case_turns(case: dict) -> list[dict]:
+    """Return normalized conversation turns for a case."""
+    turns = case.get("turns")
+    if isinstance(turns, list) and turns:
+        return [dict(t, prompt=str(t["prompt"])) for t in turns]
+    return [{"prompt": str(case.get("prompt") or "")}]
+
+
+def case_prompt_for_judge(case: dict) -> str:
+    """Human-readable user side of a case for judge prompts and reports."""
+    turns = case_turns(case)
+    if len(turns) == 1:
+        return turns[0]["prompt"]
+    return "\n\n".join(f"Turn {idx}: {turn['prompt']}" for idx, turn in enumerate(turns, start=1))
 
 
 def audience_packages() -> dict[str, dict]:

@@ -42,7 +42,18 @@ _SCHEMA_HINT = (
 )
 
 
-def _build_messages(case: dict, reply: str) -> list[dict]:
+def _format_transcript(transcript: list[dict] | None) -> str:
+    if not transcript:
+        return ""
+    lines: list[str] = []
+    for item in transcript:
+        idx = item.get("turn", len(lines) + 1)
+        lines.append(f"USER TURN {idx}:\n{item.get('user', '')}")
+        lines.append(f"ASSISTANT TURN {idx}:\n{item.get('assistant', '') or '(empty / no reply)'}")
+    return "\n\n".join(lines)
+
+
+def _build_messages(case: dict, reply: str, transcript: list[dict] | None = None) -> list[dict]:
     exp = case.get("expectation", "answer")
     guide = _EXPECTATION_GUIDE.get(exp, "")
     system = (
@@ -62,11 +73,14 @@ def _build_messages(case: dict, reply: str) -> list[dict]:
         f"Expected handling for this case: {guide}\n\n"
         f"Reply ONLY with a JSON object: {_SCHEMA_HINT}"
     )
-    user = (
-        f"USER PROMPT:\n{case.get('prompt','')}\n\n"
-        f"CASE NOTES:\n{case.get('notes','') or '(none)'}\n\n"
-        f"ASSISTANT REPLY:\n{reply if reply else '(empty / no reply)'}"
-    )
+    if transcript:
+        observed = f"CONVERSATION TRANSCRIPT:\n{_format_transcript(transcript)}"
+    else:
+        observed = (
+            f"USER PROMPT:\n{case.get('prompt','')}\n\n"
+            f"ASSISTANT REPLY:\n{reply if reply else '(empty / no reply)'}"
+        )
+    user = f"{observed}\n\nCASE NOTES:\n{case.get('notes','') or '(none)'}"
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
@@ -108,7 +122,7 @@ def _coerce(v: dict) -> dict:
     }
 
 
-def judge(case: dict, reply: str) -> dict:
+def judge(case: dict, reply: str, *, transcript: list[dict] | None = None) -> dict:
     """Return {conclusion_type, appropriate, coherent, reason, judge_error}.
 
     An empty reply is ruled `none`/0 without a model call. If the judge model
@@ -121,7 +135,7 @@ def judge(case: dict, reply: str) -> dict:
 
     from agent.auxiliary_client import call_llm
 
-    messages = _build_messages(case, reply)
+    messages = _build_messages(case, reply, transcript=transcript)
     last_err = None
     for attempt in range(2):
         try:

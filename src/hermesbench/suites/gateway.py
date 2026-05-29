@@ -9,6 +9,49 @@ from __future__ import annotations
 import os
 
 
+_TRUE = {"1", "true", "yes", "on"}
+
+
+def _requested_worker_profiles() -> list[str]:
+    raw = os.environ.get("HERMES_BENCH_WORKER_PROFILES", "")
+    return [p.strip() for p in raw.split(",") if p.strip()]
+
+
+def _profile_inventory() -> dict:
+    try:
+        from hermes_cli.profiles import list_profiles, profile_exists  # type: ignore
+    except Exception as exc:
+        requested = _requested_worker_profiles()
+        return {
+            "available": [],
+            "requested": requested,
+            "missing_requested": requested,
+            "inventory_error": f"{type(exc).__name__}: {exc}"[:200],
+        }
+
+    try:
+        infos = list_profiles()
+        available = sorted(str(getattr(info, "name", "") or "") for info in infos if getattr(info, "name", None))
+    except Exception as exc:
+        available = []
+        inventory_error = f"{type(exc).__name__}: {exc}"[:200]
+    else:
+        inventory_error = None
+
+    requested = _requested_worker_profiles()
+    missing = []
+    for name in requested:
+        try:
+            if not profile_exists(name):
+                missing.append(name)
+        except Exception:
+            missing.append(name)
+    out = {"available": available, "requested": requested, "missing_requested": missing}
+    if inventory_error:
+        out["inventory_error"] = inventory_error
+    return out
+
+
 def run_gateway_ack_policy() -> dict:
     """Score deterministic gateway first-feedback policy.
 
@@ -65,14 +108,17 @@ def run_gateway_ack_policy() -> dict:
 
 
 def run_origin_return() -> dict:
-    """Optional real-LLM origin-return check.
+    """Optional real-LLM kanban origin-return check.
 
-    This wraps the standalone origin-return eval. It is intentionally opt-in
-    because it spawns real agents and can take several minutes.
+    This wraps the standalone Hermes Agent origin-return eval. It is
+    intentionally opt-in because it spawns real agents and can take several
+    minutes. For multi-profile configurations, set
+    HERMES_BENCH_WORKER_PROFILES=orchestrator,worker-code,... so the run records
+    which profiles are part of the published baseline contract.
     """
     if not os.environ.get("HERMES_RUN_LLM_EVALS"):
         return {"skipped": True, "skip_reason": "HERMES_RUN_LLM_EVALS not set"}
-    if os.environ.get("HERMES_BENCH_ORIGIN_RETURN") not in {"1", "true", "yes", "on"}:
+    if os.environ.get("HERMES_BENCH_ORIGIN_RETURN") not in _TRUE:
         return {"skipped": True, "skip_reason": "HERMES_BENCH_ORIGIN_RETURN not set"}
 
     try:
@@ -88,19 +134,29 @@ def run_origin_return() -> dict:
     ok_b, msg_b = (False, "phase a did not produce a task")
     if task_id:
         ok_b, msg_b = origin.phase_b(task_id)
-    phase_scores = [1.0 if ok_a else 0.0, 1.0 if ok_b else 0.0]
-    score = 100.0 * sum(phase_scores) / len(phase_scores)
+    inventory = _profile_inventory()
+    missing = inventory.get("missing_requested") or []
+    profile_score = 1.0 if not missing else 0.0
+    # Preserve the original e2e behavior as the main score, but fold required
+    # profile disclosure into the same score-only verdict.
+    score = 100.0 * (
+        0.35 * (1.0 if ok_a else 0.0)
+        + 0.45 * (1.0 if ok_b else 0.0)
+        + 0.20 * profile_score
+    )
     return {
         "score": round(score, 2),
         "metrics": {
             "axis_scores": {
                 "closure": round(100.0 * (1.0 if ok_b else 0.0), 1),
-                "stability": 100.0,
+                "stability": round(100.0 * profile_score, 1),
                 "responsiveness": 100.0,
-                "appropriateness": round(100.0 * sum(phase_scores) / len(phase_scores), 1),
+                "appropriateness": round(100.0 * ((1.0 if ok_a else 0.0) + (1.0 if ok_b else 0.0)) / 2.0, 1),
                 "coherence": 100.0,
             },
+            "interaction": "multi_profile",
             "phase_a": {"ok": ok_a, "message": msg_a},
             "phase_b": {"ok": ok_b, "message": msg_b},
+            "profile_coverage": inventory,
         },
     }

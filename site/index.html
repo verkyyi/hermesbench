@@ -27,8 +27,8 @@
           <p class="lede">
             HermesBench measures whether a Hermes Agent setup reliably reaches
             useful, truthful, stable conclusions across daily technical-user
-            workflows. It is a public benchmark and a reusable local evaluation
-            harness.
+            workflows. It is a public benchmark and a reusable scenario harness
+            for single-turn, multi-turn, and opt-in multi-profile checks.
           </p>
           <div class="actions">
             <a class="button primary" href="#quickstart">Run it</a>
@@ -38,7 +38,7 @@
         <div class="scorecard" aria-label="Benchmark summary">
           <div>
             <span class="metric">48</span>
-            <span class="label">bundled prompt cases</span>
+            <span class="label">bundled scenario cases</span>
           </div>
           <div>
             <span class="metric">12</span>
@@ -107,7 +107,9 @@
           <p>
             Technical users are the current main population. General assistant
             use remains covered as overflow, so the benchmark does not become
-            tech-only.
+            tech-only. Cases can be single-turn or multi-turn; runtime suites
+            such as origin_return can exercise kanban/orchestrator profile
+            paths.
           </p>
         </div>
         <div class="grid">
@@ -158,7 +160,8 @@
             Public suites make scores comparable. Local suites make the
             framework useful for your own Hermes deployment. Load private JSON
             or YAML suites without changing the runner, store, report, or
-            dashboard code.
+            dashboard code. Use <code>prompt</code> for one turn or
+            <code>turns</code> for a multi-turn conversation.
           </p>
         </div>
         <pre><code>hermesbench --suite-path ./my-suites --list-suites

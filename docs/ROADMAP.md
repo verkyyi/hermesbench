@@ -32,12 +32,14 @@ thing "responsiveness" should mean here.
 ## P2 — coverage & trust
 
 **Status:** partially addressed. The prompt dataset grew from 9 to 48 cases
-across balanced audience-packaged configuration-quality categories, and
-`origin_return` is available as an opt-in e2e suite.
+across balanced audience-packaged configuration-quality categories, prompt
+cases can now be single-turn or multi-turn scenarios, and `origin_return` is
+available as an opt-in multi-profile e2e suite.
 
-**Async-delegated closure harness.** The current default prompt harness only sees the single
-front-desk turn, so it can't verify that *delegated* work (kanban → worker →
-async return) actually comes back to the user — the origin-return contract.
+**Async-delegated closure harness.** The default prompt harness now supports
+multi-turn `chat -q` scenarios, but it still can't verify that *async delegated*
+work (kanban → worker → gateway return) actually comes back to the user — the
+origin-return contract.
 - **Why:** "every prompt reaches a conclusion" is the headline contract, but the
   delegated path is exactly where closure historically broke.
 - **Approach:** `origin_return` now covers the origin subscription + self-park
@@ -48,8 +50,8 @@ async return) actually comes back to the user — the origin-return contract.
 
 **Grow the dataset.** 48 cases is a useful tripwire, not comprehensive coverage.
 - **Why:** broader coverage + smoother per-category scores.
-- **Approach:** continue adding prompts to `usecases.py` — more
-  scoped side-effect actions, over-delegation temptation, multi-part requests,
+- **Approach:** continue adding scenarios to `usecases.py` — more
+  scoped side-effect actions, over-delegation temptation, multi-turn requests,
   platform-specific return contracts, memory/tool edge cases, and safe refusal
   variety.
   The registry/store/dashboard pick up new categories automatically.

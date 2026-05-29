@@ -61,13 +61,30 @@ categories:
 Required:
 
 - `id`: globally unique across bundled and local cases
-- `prompt`: user prompt sent to Hermes
+- `prompt` or `turns`: a single user prompt, or a list of user turns sent to
+  Hermes in one isolated session
 - `expectation`: one of `answer`, `task_done`, `clarify`, `refuse`
 
 Recommended:
 
 - `notes`: judge-facing rubric notes
 - `category`: optional inside each case; defaults to the category id
+
+Multi-turn case:
+
+```yaml
+cases:
+  - id: clarify_then_verify
+    expectation: task_done
+    turns:
+      - prompt: Help me verify status.
+      - prompt: The target is the benchmark website deployment.
+    notes: The second turn supplies missing context; judge the whole transcript.
+```
+
+Each turn may also set `toolsets` or `timeout_s`. JSON/YAML prompt suites are
+for default-profile conversations; use opt-in runtime suites for named-profile
+collaboration.
 
 ## Side Effects
 
@@ -89,6 +106,23 @@ Unsafe for default suites:
 - change cloud infrastructure
 
 Put unsafe/live workflows behind explicit opt-in runtime suites.
+
+## Kanban And Multi-Profile Runs
+
+For Hermes configurations that rely on kanban and worker profiles, use the
+runtime suite:
+
+```bash
+HERMES_RUN_LLM_EVALS=1 \
+HERMES_BENCH_ORIGIN_RETURN=1 \
+HERMES_BENCH_WORKER_PROFILES=orchestrator,worker-code,worker-research \
+hermesbench --suite origin_return
+```
+
+`HERMES_BENCH_WORKER_PROFILES` records the orchestrator/worker profile contract
+for the run and folds missing requested profiles into the score. Public
+baselines that exercise delegated or multi-worker execution should publish or
+redact every involved profile.
 
 ## Design Advice
 

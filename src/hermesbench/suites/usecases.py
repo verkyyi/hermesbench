@@ -1,7 +1,8 @@
 """HermesBench v2 use-case suites — one per category.
 
-For each case in a category we drive the default profile in an isolated turn
-(harness), then judge the reply (judge). The category score weights reliability
+For each case in a category we drive the default profile in an isolated scenario
+(harness), then judge the final reply/transcript (judge). A scenario may be a
+single turn or a multi-turn conversation. The category score weights reliability
 far above capability:
 
     score = 100 · (0.40·closure + 0.20·stable + 0.15·responsiveness + 0.25·appropriate)
@@ -81,12 +82,21 @@ def _score(
 
 
 def _run_trial(case: dict, b: dict) -> dict:
-    m = harness.run_case(case["prompt"], timeout_s=int(b["conclude_s"]) + 30)
-    v = judge_mod.judge(case, m["reply"])
+    turns = usecases.case_turns(case)
+    if len(turns) == 1:
+        m = harness.run_case(turns[0]["prompt"], timeout_s=int(b["conclude_s"]) + 30)
+        transcript = [{"turn": 1, "user": turns[0]["prompt"], "assistant": m.get("reply", "")}]
+    else:
+        m = harness.run_scenario(turns, timeout_s=int(b["conclude_s"]) + 30)
+        transcript = m.get("transcript") or []
+    judge_case = dict(case)
+    judge_case["prompt"] = usecases.case_prompt_for_judge(case)
+    v = judge_mod.judge(judge_case, m["reply"], transcript=transcript if len(transcript) > 1 else None)
     genuine = bool(m["concluded"]) and v["conclusion_type"] != "none"
     return {
         "case": case["id"],
         "expectation": case.get("expectation"),
+        "turn_count": len(turns),
         "mech": m,
         "judge": v,
         "genuine_conclusion": genuine,
@@ -158,6 +168,8 @@ def _run_category(category: str) -> dict:
         "metrics": {
             "trials": n,
             "cases": len(cases),
+            "turns_planned": sum(len(usecases.case_turns(c)) for c in cases) * TRIALS,
+            "multi_turn_cases": sum(1 for c in cases if len(usecases.case_turns(c)) > 1),
             "base_score": round(base_score, 2),
             "axis_scores": {
                 "closure": round(100.0 * closure_rate, 1),

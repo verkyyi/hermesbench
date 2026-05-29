@@ -1,13 +1,13 @@
-"""HermesBench — black-box reliability benchmark for the default profile.
+"""HermesBench — harness-driven reliability benchmark for Hermes Agent.
 
-Drives the default-profile agent as an end user would (isolated `hermes chat -q`
-turns), judges the replies with an LLM, and scores reliability/responsiveness/
-closure above capability. It never inspects internal mechanics (kanban,
-orchestrator) — it's architecture-agnostic on purpose. Persists runs to a
-SQLite trend store and can emit JSON for dashboards or public reporting.
+Drives Hermes as an end user would (isolated `hermes chat -q` scenarios),
+judges replies/transcripts with an LLM, and scores reliability/responsiveness/
+closure above capability. Prompt suites stay black-box; explicit runtime suites
+can evaluate auditable kanban/multi-profile contracts. Persists runs to a SQLite
+trend store and can emit JSON for dashboards or public reporting.
 
 Design notes:
-  - Black-box, default-profile, end-user perspective only.
+  - Harness-driven single-turn and multi-turn scenarios.
   - Reliability > capability; **every prompt must reach a genuine conclusion**
     (answer / refusal / clarification) — closure is the headline contract.
   - Hybrid grading: mechanical reliability signals (responded / latency /
