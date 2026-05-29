@@ -21,6 +21,7 @@ repository and link it from the benchmark result.
 | Run ID | `hb-20260529T081506Z` |
 | Overall score | `89.78` |
 | Observed runtime | `~4m 0s` |
+| Evaluator driver | `static` |
 | Profile hash | `46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377` |
 | HermesBench git SHA | `c14f160b89a5828af70344df290f66d127bafed3` |
 | Prompt cases | `48` |
@@ -32,7 +33,7 @@ repository and link it from the benchmark result.
 Command:
 
 ```bash
-HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
 ```
 
 ## Runtime Shape

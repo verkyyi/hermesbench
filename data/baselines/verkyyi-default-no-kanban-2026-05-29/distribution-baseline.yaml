@@ -13,7 +13,8 @@ benchmark:
   trials_per_case: 1
   suite_concurrency: 4
   case_concurrency: 8
-  command: HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+  evaluator_driver: static
+  command: HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
 profile_fingerprint:
   hermesbench_git_sha: c14f160b89a5828af70344df290f66d127bafed3
   profile_hash: 4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4

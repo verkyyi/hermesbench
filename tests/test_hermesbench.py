@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
-from hermesbench import checks, harness, registry, run as run_mod, scenarios, scoring, usecases
+from hermesbench import checks, drivers, harness, registry, run as run_mod, scenarios, scoring, usecases
+from hermesbench import agentic_bridge
 from hermesbench.suites import gateway as gateway_mod
 from hermesbench.suites import usecases as suite_mod
 
@@ -192,6 +194,7 @@ def test_execution_surface_classification():
 
 def test_case_normalizes_to_driver_target_agnostic_scenario(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
+    monkeypatch.delenv("HERMES_BENCH_DRIVER", raising=False)
     case = {
         "id": "demo",
         "category": "code_workflow",
@@ -201,9 +204,129 @@ def test_case_normalizes_to_driver_target_agnostic_scenario(monkeypatch):
     }
     scenario = scenarios.from_case(case)
     assert scenario["initial_prompt"] == "Fix the fixture."
-    assert scenario["driver"]["kind"] == "static"
+    assert scenario["driver"]["kind"] == "codex"
     assert scenario["turns"] == [{"prompt": "Fix the fixture."}]
     assert "target_surfaces" not in scenario
+
+
+def test_static_driver_can_be_selected_by_run_config(monkeypatch):
+    monkeypatch.setenv("HERMES_BENCH_DRIVER", "static")
+    scenario = scenarios.from_case({
+        "id": "demo",
+        "category": "code_workflow",
+        "prompt": "Say hi.",
+    })
+    assert isinstance(drivers.build_driver(scenario), drivers.StaticDriver)
+
+
+def test_codex_driver_records_agentic_closure(monkeypatch, tmp_path: Path):
+    class FakeSession:
+        control_dir = tmp_path
+        home = tmp_path
+        bridge_command = ["python", "-m", "hermesbench.agentic_bridge", "send", "state", "--prompt"]
+        status_command = ["python", "-m", "hermesbench.agentic_bridge", "status", "state"]
+
+        def finish(self, *, controller=None):
+            return {
+                "reply": "target reply",
+                "responded": True,
+                "stable": True,
+                "concluded": True,
+                "turn_count": 2,
+                "transcript": [
+                    {"turn": 1, "user": "first", "assistant": "need detail"},
+                    {"turn": 2, "user": "detail", "assistant": "target reply"},
+                ],
+                "side_effects": {"scope": "benchmark_workdir", "files": []},
+                "wall_ms": 10.0,
+            }
+
+    class FakeTarget:
+        def start_agentic_session(self, *, timeout_s, max_turns):
+            assert max_turns == 3
+            return FakeSession()
+
+    def fake_controller(**kwargs):
+        return {
+            "returncode": 0,
+            "timed_out": False,
+            "decision": {
+                "scenario_closed": True,
+                "closure_type": "completed",
+                "turns_sent": 2,
+                "driver_reply": "scenario closed",
+                "reason": "target completed after follow-up",
+            },
+        }
+
+    monkeypatch.delenv("HERMES_BENCH_AGENTIC_MAX_TURNS", raising=False)
+    monkeypatch.setattr(drivers, "_run_codex_controller", fake_controller)
+    scenario = scenarios.from_case({"id": "demo", "category": "code_workflow", "prompt": "first"})
+    out = drivers.run(scenario, FakeTarget(), timeout_s=30)
+    assert out["driver"]["kind"] == "codex"
+    assert out["driver"]["turns_sent"] == 2
+    assert out["driver_scenario_closed"] is True
+    assert out["driver_reply"] == "scenario closed"
+
+
+def test_codex_controller_uses_top_level_approval_flag(monkeypatch, tmp_path: Path):
+    class FakeSession:
+        control_dir = tmp_path
+        home = tmp_path / "home"
+        bridge_command = ["python", "-m", "hermesbench.agentic_bridge", "send", "state", "--prompt"]
+        status_command = ["python", "-m", "hermesbench.agentic_bridge", "status", "state"]
+
+    FakeSession.home.mkdir()
+    seen = {}
+
+    def fake_run(cmd, **kwargs):
+        seen["cmd"] = cmd
+        out_path = tmp_path / "codex-final.json"
+        out_path.write_text(json.dumps({
+            "done": True,
+            "scenario_closed": True,
+            "closure_type": "completed",
+            "turns_sent": 1,
+            "reason": "closed",
+        }), encoding="utf-8")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(drivers.subprocess, "run", fake_run)
+    out = drivers._run_codex_controller(
+        scenario=scenarios.from_case({"id": "demo", "category": "code_workflow", "prompt": "first"}),
+        session=FakeSession(),
+        timeout_s=10,
+        max_turns=3,
+    )
+    cmd = seen["cmd"]
+    assert cmd[:4] == ["codex", "--ask-for-approval", "never", "exec"]
+    assert out["decision"]["scenario_closed"] is True
+
+
+def test_agentic_bridge_records_target_turn(monkeypatch, tmp_path: Path):
+    home = tmp_path / "home"
+    workdir = home / "workdir"
+    workdir.mkdir(parents=True)
+    state = tmp_path / "state.json"
+    state.write_text(json.dumps({
+        "home": str(home),
+        "workdir": str(workdir),
+        "timeout_s": 10,
+        "max_turns": 2,
+        "turns": [],
+        "transcript": [],
+    }), encoding="utf-8")
+
+    def fake_spawn(prompt, *, home, workdir, timeout_s, profile="default", toolsets=None):
+        assert prompt == "hello"
+        return 0, "reply", False, None, {"status": "ok", "model": "fake"}, 5.0
+
+    monkeypatch.setattr(harness, "_spawn_in_session", fake_spawn)
+    out = agentic_bridge.send_turn(state, prompt="hello")
+    saved = json.loads(state.read_text(encoding="utf-8"))
+    assert out["ok"] is True
+    assert saved["turns"][0]["reply"] == "reply"
+    assert saved["transcript"][0]["user"] == "hello"
 
 
 def test_deterministic_checks_and_scoring_dominate():

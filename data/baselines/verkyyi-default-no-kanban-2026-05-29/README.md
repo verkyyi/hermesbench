@@ -14,6 +14,7 @@ skills, local allowlists, credentials, memories, sessions, and state.
 | Run ID | `hb-20260529T082033Z` |
 | Overall score | `91.76` |
 | Observed runtime | `~4m 50s` |
+| Evaluator driver | `static` |
 | Profile hash | `4080cb90cb53240eb3ba53a210f9f57ed05a0c26f558ed81db37dc885c0cd9e4` |
 | HermesBench git SHA | `c14f160b89a5828af70344df290f66d127bafed3` |
 | Prompt cases | `48` |
@@ -25,7 +26,7 @@ skills, local allowlists, credentials, memories, sessions, and state.
 Command:
 
 ```bash
-HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
 ```
 
 The run used a temporary copied profile with `auth.json`, `.env`,

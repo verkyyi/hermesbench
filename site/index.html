@@ -50,7 +50,7 @@
           </div>
           <div>
             <span class="metric">1</span>
-            <span class="label">final score</span>
+            <span class="label">agentic driver</span>
           </div>
         </div>
       </section>
@@ -74,6 +74,7 @@
                 <th>Rank</th>
                 <th>Configuration</th>
                 <th>Surface</th>
+                <th>Evaluator</th>
                 <th>Hermes profile</th>
                 <th>Score</th>
                 <th>Runtime</th>
@@ -88,6 +89,7 @@
                 <td>1</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
                 <td>Direct/no-kanban</td>
+                <td>static</td>
                 <td>redacted distribution-style</td>
                 <td>91.76</td>
                 <td>~4m 50s</td>
@@ -100,6 +102,7 @@
                 <td>2</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
                 <td>Kanban delegation</td>
+                <td>static</td>
                 <td>redacted distribution-style</td>
                 <td>89.78</td>
                 <td>~4m 0s</td>
@@ -112,12 +115,13 @@
           </table>
         </div>
         <p class="note">
-          Baseline command: <code>HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1</code>.
-          Both rows run the same framework-agnostic prompt suites. The kanban
-          row enables hermes-cli + kanban plus kanban-orchestrator-routing; the
-          direct row removes kanban and keeps hermes-cli, agentfeeds, and
-          break-glass-cli. <code>delegated_closure</code> is opt-in and skipped
-          in both standard baselines.
+          Baseline command: <code>HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1</code>.
+          Both rows run the same framework-agnostic prompt suites with the
+          pinned <code>static</code> evaluator driver. The kanban row enables
+          hermes-cli + kanban plus kanban-orchestrator-routing; the direct row
+          removes kanban and keeps hermes-cli, agentfeeds, and break-glass-cli.
+          <code>delegated_closure</code> is opt-in and skipped in both standard
+          baselines.
         </p>
       </section>
 
@@ -257,6 +261,7 @@ hermesbench --list-suites
 hermesbench --validate
 HERMES_RUN_LLM_EVALS=1 hermesbench
 HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
 HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store</code></pre>
       </section>
 

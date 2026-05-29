@@ -60,12 +60,20 @@ def _run_trial(case: dict, b: dict) -> dict:
     v = judge_mod.judge(judge_case, m["reply"], transcript=transcript if len(transcript) > 1 else None)
     check_result = checks.run_checks(scenario, m)
     resp = _responsiveness(m.get("ttfa_ms"), m.get("wall_ms"), b["reply_target_s"])
+    driver_decision = m.get("driver_decision") if isinstance(m.get("driver_decision"), dict) else {}
+    driver_closed = driver_decision.get("scenario_closed")
+    scoring_execution = dict(m)
+    if driver_closed is False:
+        scoring_execution["concluded"] = False
     scored = scoring.score_case(
-        execution=m,
+        execution=scoring_execution,
         check_result=check_result,
         judge=v,
         responsiveness=resp,
     )
+    genuine_conclusion = bool(m["concluded"]) and v["conclusion_type"] != "none"
+    if driver_closed is not None:
+        genuine_conclusion = genuine_conclusion and bool(driver_closed)
     return {
         "case": case["id"],
         "expectation": case.get("expectation"),
@@ -77,7 +85,8 @@ def _run_trial(case: dict, b: dict) -> dict:
         "mech": m,
         "judge": v,
         "checks": check_result,
-        "genuine_conclusion": bool(m["concluded"]) and v["conclusion_type"] != "none",
+        "driver_decision": driver_decision,
+        "genuine_conclusion": genuine_conclusion,
         "responsiveness": resp,
         "score": scored,
     }
@@ -104,6 +113,11 @@ def _run_category(category: str) -> dict:
     semantic_closure_rate = sum(1 for r in results if r["genuine_conclusion"]) / n
     stable_rate = sum(1 for r in results if r["mech"]["stable"]) / n
     responded_rate = sum(1 for r in results if r["mech"]["responded"]) / n
+    driver_decisions = [r["driver_decision"] for r in results if r["driver_decision"]]
+    driver_closed_rate = (
+        sum(1 for d in driver_decisions if d.get("scenario_closed")) / len(driver_decisions)
+        if driver_decisions else None
+    )
     resp_mean = sum(r["responsiveness"] for r in results) / n
     artifact_mean = sum(r["score"]["axes"]["artifact_correctness"] for r in results) / n
     scope_mean = sum(r["score"]["axes"]["scope_discipline"] for r in results) / n
@@ -146,9 +160,20 @@ def _run_category(category: str) -> dict:
             "trials": n,
             "cases": len(cases),
             "turns_planned": sum(len(usecases.case_turns(c)) for c in cases) * TRIALS,
+            "driver_turn_budget": sum(
+                (r["mech"].get("driver") or {}).get("max_turns", r["turn_count"])
+                for r in results
+            ),
+            "turns_sent": sum(
+                (r["mech"].get("driver") or {}).get("turns_sent", r["mech"].get("turn_count", 0))
+                for r in results
+            ),
             "multi_turn_cases": sum(1 for c in cases if len(usecases.case_turns(c)) > 1),
             "scenario_model": "driver_target",
             "driver_kinds": sorted({r["scenario"]["driver"] for r in results}),
+            "driver_scenario_closed_rate": (
+                round(driver_closed_rate, 3) if driver_closed_rate is not None else None
+            ),
             "deterministic_weight_share": scoring.score_case(
                 execution={"concluded": True, "stable": True},
                 check_result={"score": 1.0, "scope_ok": True},

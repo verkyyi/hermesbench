@@ -167,9 +167,10 @@ transcript ───────────────────────
   an `expectation` (the closure the user should get). A scenario may be a single
   `initial_prompt`/`prompt` or a multi-turn `turns` list. Cases do not declare
   target frameworks or surfaces.
-- **`drivers.py`** — orchestrates scenarios. The default `static` driver replays
-  declared turns; future drivers can be deterministic state machines or bounded
-  agent controllers.
+- **`drivers.py`** — orchestrates scenarios. The default `codex` driver uses
+  Codex headless mode as a bounded evaluator-side controller that can ask
+  natural follow-up turns and report whether the scenario closed. The `static`
+  driver remains available for exact replay and baseline reproduction.
 - **`targets.py`** — talks to the target agent framework. The first adapter is
   Hermes CLI; direct vs kanban is profile/run configuration, not case data.
 - **`harness.py`** — lower-level isolated Hermes process/session execution.
@@ -219,18 +220,22 @@ id: clarify_then_verify
 expectation: task_done
 initial_prompt: Help me verify status.
 driver:
-  kind: static
-  max_turns: 1
+  kind: codex
+  max_turns: 3
 checks:
   - type: artifact_exists
     path: hb_note.txt
 ```
 
 Run configuration chooses the driver and target. Today the default driver is
-`static`, and the default target adapter is Hermes CLI. Agent-driven controller
-drivers such as Codex or Claude Code can be added behind the same driver
-interface; they must not solve the task for the target, only provide bounded
-user turns, observations, and check output.
+`codex`, and the default target adapter is Hermes CLI. The Codex driver runs
+`codex exec` as an evaluator-side controller, gives it a small bridge command
+for sending user turns to the target, and requires a final JSON decision:
+whether the scenario closed, what closure type it observed, how many turns it
+sent, and an optional driver-facing reply. The controller must not solve the
+task for the target; it only provides bounded user turns, observations, and
+closure judgement. Use `--driver static` when a run must replay declared turns
+exactly.
 
 For each prompt case the harness runs, in its **own throwaway `HERMES_HOME`**
 (config + creds copied from the default profile) and a benchmark-owned working

@@ -7,8 +7,133 @@ framework. Cases and drivers stay target-agnostic.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
+import os
+import shutil
+import sys
+import tempfile
+from pathlib import Path
 
 from hermesbench import harness
+
+
+@dataclass
+class HermesAgenticSession:
+    """Prepared Hermes target session for out-of-process evaluator drivers."""
+
+    home: Path
+    workdir: Path
+    control_dir: Path
+    state_path: Path
+    timeout_s: int
+    max_turns: int
+
+    @classmethod
+    def create(cls, *, timeout_s: int, max_turns: int) -> "HermesAgenticSession":
+        src_home = harness._default_home()
+        harness._ensure_warm(src_home)
+        home = harness._make_isolated_home(src_home)
+        workdir = home / "workdir"
+        workdir.mkdir(parents=True, exist_ok=True)
+        control_dir = Path(tempfile.mkdtemp(prefix="hb-codex-driver-"))
+        state_path = control_dir / "session.json"
+        state = {
+            "version": 1,
+            "target": "hermes-cli",
+            "home": str(home),
+            "workdir": str(workdir),
+            "timeout_s": int(timeout_s),
+            "turn_timeout_s": int(timeout_s),
+            "max_turns": int(max_turns),
+            "turns": [],
+            "transcript": [],
+        }
+        state_path.write_text(json.dumps(state, indent=2, sort_keys=True), encoding="utf-8")
+        return cls(
+            home=home,
+            workdir=workdir,
+            control_dir=control_dir,
+            state_path=state_path,
+            timeout_s=timeout_s,
+            max_turns=max_turns,
+        )
+
+    @property
+    def bridge_command(self) -> list[str]:
+        return [
+            os.environ.get("HERMES_BENCH_PYTHON") or sys.executable,
+            "-m",
+            "hermesbench.agentic_bridge",
+            "send",
+            str(self.state_path),
+            "--prompt",
+        ]
+
+    @property
+    def status_command(self) -> list[str]:
+        return [
+            os.environ.get("HERMES_BENCH_PYTHON") or sys.executable,
+            "-m",
+            "hermesbench.agentic_bridge",
+            "status",
+            str(self.state_path),
+        ]
+
+    def finish(self, *, controller: dict | None = None) -> dict:
+        state = json.loads(self.state_path.read_text(encoding="utf-8")) if self.state_path.exists() else {}
+        results = list(state.get("turns") or [])
+        transcript = list(state.get("transcript") or [])
+        final_side_effects = harness._artifact_manifest(self.workdir)
+        retained_home = None
+        if os.environ.get("HERMES_BENCH_KEEP_ARTIFACTS"):
+            retained_home = str(self.home)
+        else:
+            shutil.rmtree(self.home, ignore_errors=True)
+            shutil.rmtree(self.control_dir, ignore_errors=True)
+
+        if not results:
+            return {
+                "prompt": "",
+                "reply": "",
+                "returncode": None,
+                "timed_out": bool((controller or {}).get("timed_out")),
+                "responded": False,
+                "stable": False,
+                "concluded": False,
+                "ttfa_ms": None,
+                "ttft_ms": None,
+                "ttlt_ms": None,
+                "wall_ms": (controller or {}).get("wall_ms"),
+                "telemetry_status": None,
+                "model": None,
+                "error": (controller or {}).get("error") or "agentic driver sent no target turns",
+                "side_effects": final_side_effects,
+                "artifact_home": retained_home,
+                "turns": [],
+                "transcript": [],
+                "turn_count": 0,
+                "expected_turn_count": self.max_turns,
+                "scenario_completion_rate": 0.0,
+            }
+
+        final = results[-1]
+        return {
+            **final,
+            "turns": results,
+            "transcript": transcript,
+            "turn_count": len(results),
+            "expected_turn_count": self.max_turns,
+            "responded": all(r.get("responded") for r in results),
+            "stable": all(r.get("stable") for r in results),
+            "concluded": all(r.get("concluded") for r in results),
+            "wall_ms": sum(float(r.get("wall_ms") or 0.0) for r in results),
+            "ttfa_ms": final.get("ttfa_ms"),
+            "ttlt_ms": final.get("ttlt_ms"),
+            "reply": str(final.get("reply") or ""),
+            "side_effects": final_side_effects,
+            "artifact_home": retained_home,
+            "scenario_completion_rate": len(results) / max(1, self.max_turns),
+        }
 
 
 @dataclass
@@ -27,6 +152,9 @@ class HermesCliTarget:
             result["scenario_completion_rate"] = 1.0
             return result
         return harness.run_scenario(turns, timeout_s=timeout_s)
+
+    def start_agentic_session(self, *, timeout_s: int, max_turns: int) -> HermesAgenticSession:
+        return HermesAgenticSession.create(timeout_s=timeout_s, max_turns=max_turns)
 
 
 def build_target() -> HermesCliTarget:

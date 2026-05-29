@@ -44,9 +44,10 @@ case spec -> driver adapter -> target adapter -> deterministic checks -> judge -
 
 - **Case spec**: goal, `initial_prompt`/`prompt`/`turns`, optional fixture,
   deterministic checks, and scoring intent.
-- **Driver adapter**: orchestrates the scenario. The bundled default is
-  `static`, which sends the declared prompt/turns. Later drivers can be Codex,
-  Claude Code, or deterministic state machines.
+- **Driver adapter**: orchestrates the scenario. The default is `codex`, which
+  uses Codex headless mode as a bounded evaluator-side controller. It sends the
+  initial prompt, may ask natural follow-up turns, and reports whether the
+  scenario is closed. Use `--driver static` to replay declared turns exactly.
 - **Target adapter**: talks to the agent under test. The current public adapter
   is Hermes CLI; direct/no-kanban vs kanban delegation is run/profile config,
   not case data.
@@ -61,15 +62,16 @@ are framework-agnostic and run on both surfaces; the leaderboard exposes the
 surface because Hermes with kanban and Hermes without kanban have materially
 different configuration surfaces.
 
-| configuration | execution surface | score | runtime | profile hash | bench git | run id |
-|---|---|---:|---:|---|---|---|
-| `verkyyi/default-no-kanban` | Direct/no-kanban | `91.76` | `~4m 50s` | `4080cb90` | `c14f160` | `hb-20260529T082033Z` |
-| `verkyyi/default` | Kanban delegation | `89.78` | `~4m 0s` | `46baed47` | `c14f160` | `hb-20260529T081506Z` |
+| configuration | target surface | evaluator | score | runtime | profile hash | bench git | run id |
+|---|---|---|---:|---:|---|---|---|
+| `verkyyi/default-no-kanban` | Direct/no-kanban | `static` | `91.76` | `~4m 50s` | `4080cb90` | `c14f160` | `hb-20260529T082033Z` |
+| `verkyyi/default` | Kanban delegation | `static` | `89.78` | `~4m 0s` | `46baed47` | `c14f160` | `hb-20260529T081506Z` |
 
 Both baselines use `gpt-5.5` via `openai-codex`, Honcho memory, high-rate mode,
-and one trial per prompt case. The kanban baseline has `hermes-cli` + `kanban`
-toolsets and `kanban-orchestrator-routing`; the no-kanban baseline removes the
-kanban toolset, kanban config block, and kanban routing plugin. The opt-in
+one trial per prompt case, and the pinned `static` evaluator driver. The kanban
+baseline has `hermes-cli` + `kanban` toolsets and
+`kanban-orchestrator-routing`; the no-kanban baseline removes the kanban
+toolset, kanban config block, and kanban routing plugin. The opt-in
 `delegated_closure` suite is not included in either baseline score.
 
 Baseline files:
@@ -125,6 +127,9 @@ HERMES_RUN_LLM_EVALS=1 hermesbench
 # Faster high-rate run. Use when your provider/key can handle the burst.
 HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 
+# Replay declared turns exactly instead of using the agentic Codex driver.
+HERMES_RUN_LLM_EVALS=1 hermesbench --driver static --high-rate --trials 1
+
 # Run only selected suites.
 HERMES_RUN_LLM_EVALS=1 hermesbench --suite runtime_config,ambiguous_followup
 
@@ -137,11 +142,24 @@ Concurrency controls:
 - `--trials N` or `HERMES_BENCH_TRIALS`
 - `--case-concurrency N` or `HERMES_BENCH_CONCURRENCY`
 - `--suite-concurrency N` or `HERMES_BENCH_SUITE_CONCURRENCY`
+- `--driver codex|static` or `HERMES_BENCH_DRIVER`
 - `--high-rate`, which defaults to suite concurrency 4 and case concurrency 8
   unless the explicit flags above are supplied
 
 High-rate mode can create many simultaneous Hermes and judge calls. Use it only
 with provider credentials that can tolerate the burst.
+
+The default `codex` evaluator driver uses `codex exec` and may send follow-up
+turns until it decides the scenario is closed or reaches its turn budget. Useful
+driver controls:
+
+- `HERMES_BENCH_AGENTIC_MAX_TURNS`: default dynamic budget for cases without an
+  explicit `driver.max_turns` is 3
+- `HERMES_BENCH_CODEX_MODEL` / `HERMES_BENCH_CODEX_PROFILE`: pin the evaluator
+  controller model/profile
+- `HERMES_BENCH_CODEX_TIMEOUT_S`: cap the controller wall time
+- `HERMES_BENCH_CODEX_BYPASS_SANDBOX=1`: opt into Codex's bypass mode for an
+  externally sandboxed runner
 
 ## Bundled Suite Packages
 

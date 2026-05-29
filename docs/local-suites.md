@@ -69,7 +69,9 @@ Recommended:
 
 - `notes`: judge-facing rubric notes
 - `category`: optional inside each case; defaults to the category id
-- `driver`: driver policy knobs; default is `{"kind": "static"}`
+- `driver`: driver policy knobs; default run configuration uses
+  `{"kind": "codex"}` unless `--driver static` or `HERMES_BENCH_DRIVER=static`
+  is set
 - `checks`: deterministic checks such as `artifact_exists`
 
 Cases are driver- and target-agnostic. Do not put target surfaces such as
@@ -91,6 +93,24 @@ cases:
 Each turn may also set `timeout_s`. JSON/YAML prompt suites are for
 target-agnostic conversations; use opt-in runtime suites for framework-specific
 collaboration paths.
+
+Agentic driver knobs:
+
+```yaml
+cases:
+  - id: agentic_closure
+    expectation: task_done
+    initial_prompt: Help me verify the deployment status.
+    driver:
+      kind: codex
+      max_turns: 3
+    notes: Codex may ask natural follow-up turns, then reports whether the scenario closed.
+```
+
+`codex` is the default evaluator-side driver. It uses Codex headless mode as a
+bounded controller, sends turns through the target adapter bridge, and returns a
+driver-side scenario-closure judgement. `static` remains available for exact
+replay and baseline reproduction.
 
 Simple deterministic check:
 
