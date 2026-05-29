@@ -398,9 +398,10 @@ Steps:
    account data, secrets, contacts, or raw history into the suite file.
 3. Make each `initial_prompt` read like a real user job, not a trap prompt or
    evaluator instruction.
-4. Include `success_criteria`, `safety_criteria`, and deterministic checks only
-   where practical; put reliability/truthfulness/safety expectations there, not
-   in adversarial prompt wording.
+4. Include `success_criteria` and `safety_criteria` only when local/private
+   constraints cannot fit naturally in the prompt. Use deterministic checks only
+   for machine-verifiable artifacts or scoped side effects, not conversational
+   keyword matching.
 5. Validate with `validate(suite_path=...)`.
 6. Run one scenario first with `run(suite_path=..., scenarios=[...],
    trials=1, run_llm_evals=True, persist=False)`, then run the suite with `run(suite_path=..., suites=[...],

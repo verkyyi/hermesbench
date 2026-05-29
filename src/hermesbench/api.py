@@ -148,7 +148,6 @@ def list_scenarios(
                 # Backward-compatible aliases.
                 "suite_id": case["category"],
                 "suite_label": usecases.category_label(str(case["category"])),
-                "expectation": case.get("expectation"),
                 "turn_count": len(usecases.case_turns(case)),
                 "summary": case.get("notes") or case.get("prompt") or "",
             }

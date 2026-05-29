@@ -19,6 +19,11 @@ _SECRET_KEY_RE = re.compile(
     r"private[_-]?key|refresh[_-]?token|secret|session[_-]?cookie|token)",
     re.IGNORECASE,
 )
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}(?!\d)")
+_SECRET_URL_PARAM_RE = re.compile(
+    r"(?i)([?&](?:api[_-]?key|auth|code|password|secret|sig|signature|token)=)[^&\s]+"
+)
 
 
 def _connect(path: Path) -> sqlite3.Connection:
@@ -68,9 +73,26 @@ def _redact_value(value: Any, *, max_chars: int = 240) -> Any:
         return [_redact_value(item) for item in value[:20]]
     if isinstance(value, str):
         text = value
+        text = _EMAIL_RE.sub("<redacted:email>", text)
+        text = _PHONE_RE.sub("<redacted:phone>", text)
         text = re.sub(r"\b(?:sk|ghp|gho|xoxb|xoxp|AKIA)[A-Za-z0-9_\-]{12,}\b", "<redacted:token>", text)
+        text = _SECRET_URL_PARAM_RE.sub(r"\1<redacted>", text)
         return text[:max_chars] + ("..." if len(text) > max_chars else "")
     return value
+
+
+def _tool_arguments(call: dict) -> Any:
+    function = call.get("function") if isinstance(call.get("function"), dict) else {}
+    raw = function.get("arguments", call.get("arguments"))
+    if raw in (None, ""):
+        return {}
+    parsed = _json_loads(raw, None)
+    return parsed if parsed is not None else raw
+
+
+def _tool_result(content: Any) -> Any:
+    parsed = _json_loads(content, None)
+    return parsed if parsed is not None else content
 
 
 def _tool_name_from_call(call: Any) -> str | None:
@@ -97,25 +119,41 @@ def _extract_tool_calls_from_message(row: dict) -> list[dict]:
             "source": "state_db.messages.tool_calls",
             "tool_call_id": str(call.get("id") or "") if isinstance(call, dict) else "",
             "status": "observed",
-            "args_retention": "omitted_public_safe",
+            "args": _redact_value(_tool_arguments(call)) if isinstance(call, dict) else {},
+            "args_retention": "included_redacted",
             "result_retention": "omitted_public_safe",
         })
     return calls
 
 
-def _parse_trajectory_tool_names(value: str) -> list[str]:
-    names: list[str] = []
+def _parse_trajectory_tool_records(value: str, *, source: str) -> list[dict]:
+    records: list[dict] = []
     for block in re.findall(r"<tool_call>\s*(.*?)\s*</tool_call>", value or "", flags=re.DOTALL):
         payload = _json_loads(block, {})
         name = _tool_name_from_call(payload)
         if name:
-            names.append(name)
+            records.append({
+                "name": name,
+                "source": source,
+                "status": "observed",
+                "args": _redact_value(_tool_arguments(payload) if isinstance(payload, dict) else {}),
+                "args_retention": "included_redacted",
+                "result_retention": "omitted_public_safe",
+            })
     for block in re.findall(r"<tool_response>\s*(.*?)\s*</tool_response>", value or "", flags=re.DOTALL):
         payload = _json_loads(block, {})
         name = _tool_name_from_call(payload)
         if name:
-            names.append(name)
-    return names
+            records.append({
+                "name": name,
+                "source": source,
+                "tool_call_id": str(payload.get("tool_call_id") or "") if isinstance(payload, dict) else "",
+                "status": "observed_result",
+                "args_retention": "omitted_public_safe",
+                "result": _redact_value(payload.get("content") if isinstance(payload, dict) else payload),
+                "result_retention": "included_redacted",
+            })
+    return records
 
 
 def _dedupe_tools(tools: list[dict]) -> list[dict]:
@@ -276,7 +314,8 @@ def _read_state_db(home: Path, session_id: str | None) -> tuple[dict, dict | Non
                                 "tool_call_id": str(msg.get("tool_call_id") or ""),
                                 "status": "observed_result",
                                 "args_retention": "omitted_public_safe",
-                                "result_retention": "omitted_public_safe",
+                                "result": _redact_value(_tool_result(msg.get("content"))),
+                                "result_retention": "included_redacted",
                             })
             return source, session, messages, _dedupe_tools(tools)
     except sqlite3.Error as exc:
@@ -310,14 +349,10 @@ def _read_trajectories(workdir: Path) -> tuple[dict, list[dict], list[dict]]:
                 for msg in conversations:
                     if not isinstance(msg, dict):
                         continue
-                    for name in _parse_trajectory_tool_names(str(msg.get("value") or "")):
-                        tools.append({
-                            "name": name,
-                            "source": f"trajectory:{path.name}",
-                            "status": "observed",
-                            "args_retention": "omitted_public_safe",
-                            "result_retention": "omitted_public_safe",
-                        })
+                    tools.extend(_parse_trajectory_tool_records(
+                        str(msg.get("value") or ""),
+                        source=f"trajectory:{path.name}",
+                    ))
                 entries.append({
                     "path": str(path),
                     "model": entry.get("model"),
@@ -462,8 +497,9 @@ def extract(home: str | Path, workdir: str | Path, *, session_id: str | None = N
         },
         "kanban": kanban,
         "retention": {
-            "raw_tool_args": "omitted_public_safe",
-            "raw_tool_results": "omitted_public_safe",
+            "raw_tool_args": "included_after_standard_privacy_filter",
+            "raw_tool_results": "included_after_standard_privacy_filter",
+            "tool_privacy_filter": "standard_public_safe_v1",
             "raw_kanban_payloads": "omitted_public_safe",
             "raw_trajectory": "omitted_unless_opted_in",
         },
