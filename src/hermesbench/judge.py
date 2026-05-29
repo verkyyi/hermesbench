@@ -57,6 +57,54 @@ def _format_transcript(transcript: list[dict] | None) -> str:
     return "\n\n".join(lines)
 
 
+def _format_observability(obs: dict | None) -> str:
+    if not isinstance(obs, dict) or not obs:
+        return ""
+    sources = obs.get("sources") or {}
+    turn = obs.get("turn") or {}
+    tools = obs.get("tools") or []
+    skills = obs.get("skills") or []
+    kanban = obs.get("kanban") or {}
+
+    def source_state(name: str) -> str:
+        source = sources.get(name) or {}
+        if not isinstance(source, dict):
+            return "unknown"
+        if source.get("available"):
+            return "available"
+        return f"missing ({source.get('reason') or 'not available'})"
+
+    lines = [
+        "OBSERVED EXECUTION EVIDENCE:",
+        f"- telemetry_db: {source_state('telemetry_db')}",
+        f"- state_db: {source_state('state_db')}",
+        f"- trajectory: {source_state('trajectory')}",
+        f"- kanban: {source_state('kanban')}",
+    ]
+    if obs.get("session_id"):
+        lines.append(f"- session_id: {obs.get('session_id')}")
+    for key in ("model", "provider", "status", "turn_class", "tool_count", "ttfa_ms", "ttlt_ms"):
+        if turn.get(key) is not None:
+            lines.append(f"- {key}: {turn.get(key)}")
+    if tools:
+        lines.append("- tools_used: " + ", ".join(sorted({str(t.get("name")) for t in tools if isinstance(t, dict) and t.get("name")})))
+    else:
+        lines.append("- tools_used: none recorded")
+    if skills:
+        lines.append("- skills_used: " + ", ".join(str(s) for s in skills))
+    else:
+        lines.append("- skills_used: none recorded")
+    if isinstance(kanban, dict):
+        lines.append(f"- kanban_used: {bool(kanban.get('used'))}")
+        if kanban.get("tasks_created") is not None:
+            lines.append(f"- kanban_tasks_created: {kanban.get('tasks_created')}")
+        if kanban.get("profiles"):
+            lines.append("- kanban_profiles: " + ", ".join(str(p) for p in kanban.get("profiles") or []))
+        if kanban.get("status_counts"):
+            lines.append("- kanban_status_counts: " + json.dumps(kanban.get("status_counts"), sort_keys=True))
+    return "\n".join(lines)
+
+
 def _build_messages(case: dict, reply: str, transcript: list[dict] | None = None) -> list[dict]:
     exp = case.get("expectation", "answer")
     guide = _EXPECTATION_GUIDE.get(exp, "")
@@ -97,7 +145,9 @@ def _build_messages(case: dict, reply: str, transcript: list[dict] | None = None
             f"USER PROMPT:\n{case.get('prompt','')}\n\n"
             f"ASSISTANT REPLY:\n{reply if reply else '(empty / no reply)'}"
         )
-    user = f"{observed}\n\nCASE NOTES:\n{case.get('notes','') or '(none)'}"
+    evidence = _format_observability(case.get("observability"))
+    evidence_block = f"\n\n{evidence}" if evidence else ""
+    user = f"{observed}{evidence_block}\n\nCASE NOTES:\n{case.get('notes','') or '(none)'}"
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 

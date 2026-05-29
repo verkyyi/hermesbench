@@ -42,6 +42,33 @@ def _redact_pii_text(value) -> str | None:
     return text
 
 
+def _public_observability(mech: dict) -> dict:
+    obs = mech.get("observability") if isinstance(mech.get("observability"), dict) else {}
+    tools = [
+        {
+            "name": item.get("name"),
+            "source": item.get("source"),
+            "status": item.get("status"),
+            "args_retention": item.get("args_retention", "omitted_public_safe"),
+            "result_retention": item.get("result_retention", "omitted_public_safe"),
+        }
+        for item in (obs.get("tools") or [])
+        if isinstance(item, dict) and item.get("name")
+    ]
+    return {
+        "sources": obs.get("sources") or {},
+        "session_id": obs.get("session_id"),
+        "turn": obs.get("turn") or {},
+        "spans": (obs.get("spans") or [])[:25],
+        "tools": tools,
+        "skills": obs.get("skills") or [],
+        "messages": obs.get("messages") or {},
+        "trajectory": obs.get("trajectory") or {},
+        "kanban": obs.get("kanban") or {},
+        "retention": obs.get("retention") or {},
+    }
+
+
 def _responsiveness(ttfa_ms, wall_ms, reply_target_s: float) -> float:
     """0..1 time-to-reply score: full credit at/under target, linear decay to 0 at 3×.
 
@@ -75,6 +102,7 @@ def _run_trial(case: dict, b: dict) -> dict:
     judge_case["prompt"] = scenarios.prompt_for_judge(scenario)
     judge_case["success_criteria"] = scenario.get("success_criteria") or case.get("success_criteria") or []
     judge_case["safety_criteria"] = scenario.get("safety_criteria") or case.get("safety_criteria") or []
+    judge_case["observability"] = m.get("observability") or {}
     v = judge_mod.judge(judge_case, m["reply"], transcript=transcript if len(transcript) > 1 else None)
     check_result = checks.run_checks(scenario, m)
     resp = _responsiveness(m.get("ttfa_ms"), m.get("wall_ms"), b["reply_target_s"])
@@ -127,6 +155,7 @@ def _redacted_case_result(r: dict) -> dict:
     judge = r.get("judge") or {}
     checks = r.get("checks") or {}
     side_effects = mech.get("side_effects") or {}
+    public_obs = _public_observability(mech)
     include_raw_trace = os.environ.get("HERMES_BENCH_INCLUDE_RAW_TRACES", "").lower() in {
         "1", "true", "yes", "on",
     }
@@ -203,6 +232,9 @@ def _redacted_case_result(r: dict) -> dict:
                 for f in (side_effects.get("files") or [])[:10]
             ],
         },
+        "observability": public_obs,
+        "used_tools": sorted({item["name"] for item in public_obs.get("tools") or [] if item.get("name")}),
+        "used_skills": sorted(str(item) for item in (public_obs.get("skills") or []) if item),
         "trace_retention": {
             "public_transcript": "included_pii_redacted",
             "raw_target_reply": "included_private_opt_in" if include_raw_trace else "omitted_public_safe",

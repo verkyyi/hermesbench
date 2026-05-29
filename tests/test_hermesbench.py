@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import json
 import os
+import sqlite3
 import subprocess
 from pathlib import Path
 
-from hermesbench import api, checks, drivers, harness, public_artifacts, registry, run as run_mod, scenarios, scoring, targets, usecases
+from hermesbench import api, checks, drivers, harness, observability, public_artifacts, registry, run as run_mod, scenarios, scoring, targets, usecases
 from hermesbench import agentic_bridge
 from hermesbench.suites import gateway as gateway_mod
 from hermesbench.suites import usecases as suite_mod
@@ -397,6 +398,11 @@ def test_programmatic_api_single_scenario_baseline_summarizes_capabilities(monke
                         },
                         "tool_calls": [{"function": {"name": "web_search"}}],
                         "skills_used": ["agentfeeds"],
+                        "observability": {
+                            "tools": [{"name": "web_search", "source": "state_db.messages.tool_calls"}],
+                            "skills": ["agentfeeds"],
+                            "sources": {"state_db": {"available": True}},
+                        },
                         "trace_retention": {
                             "public_transcript": "included_pii_redacted",
                             "raw_transcript": "omitted_public_safe",
@@ -424,9 +430,155 @@ def test_programmatic_api_single_scenario_baseline_summarizes_capabilities(monke
         "skills": ["agentfeeds"],
         "recorded": True,
     }
+    assert summary["case_results"][0]["observability"]["sources"]["state_db"]["available"] is True
     assert summary["case_results"][0]["public_transcript"][0]["assistant"] == "Which task do you mean?"
     assert summary["transcripts"][0]["trace_retention"]["raw_transcript"] == "omitted_public_safe"
     assert summary["checks"]["failed"] == []
+
+
+def test_observability_extracts_upstream_state_telemetry_and_trajectory(tmp_path: Path):
+    home = tmp_path / "home"
+    workdir = tmp_path / "workdir"
+    home.mkdir()
+    workdir.mkdir()
+
+    with sqlite3.connect(home / "telemetry.db") as conn:
+        conn.executescript("""
+            CREATE TABLE turns (
+                id TEXT PRIMARY KEY,
+                session_id TEXT,
+                started_at_ms INTEGER,
+                ended_at_ms INTEGER,
+                platform TEXT,
+                profile TEXT,
+                model TEXT,
+                provider TEXT,
+                turn_class TEXT,
+                status TEXT,
+                ttfa_ms REAL,
+                ttlt_ms REAL,
+                output_chars INTEGER,
+                tool_count INTEGER,
+                attributes_json TEXT
+            );
+            CREATE TABLE spans (
+                id TEXT PRIMARY KEY,
+                turn_id TEXT,
+                name TEXT,
+                start_ms INTEGER,
+                end_ms INTEGER,
+                status TEXT,
+                attributes_json TEXT
+            );
+        """)
+        conn.execute(
+            "INSERT INTO turns VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            ("turn-1", "sess-1", 1, 2, "cli", "default", "model-x", "provider-y", "tool_using", "ok", 12.0, 34.0, 56, 1, '{"safe":true}'),
+        )
+        conn.execute(
+            "INSERT INTO spans VALUES (?,?,?,?,?,?,?)",
+            ("span-1", "turn-1", "turn.total", 1, 2, "ok", "{}"),
+        )
+
+    with sqlite3.connect(home / "state.db") as conn:
+        conn.executescript("""
+            CREATE TABLE sessions (
+                id TEXT PRIMARY KEY,
+                source TEXT,
+                model TEXT,
+                started_at REAL,
+                message_count INTEGER,
+                tool_call_count INTEGER,
+                api_call_count INTEGER
+            );
+            CREATE TABLE messages (
+                id INTEGER PRIMARY KEY,
+                session_id TEXT,
+                role TEXT,
+                content TEXT,
+                tool_call_id TEXT,
+                tool_calls TEXT,
+                tool_name TEXT,
+                timestamp REAL,
+                finish_reason TEXT
+            );
+        """)
+        conn.execute("INSERT INTO sessions VALUES (?,?,?,?,?,?,?)", ("sess-1", "hermesbench", "model-x", 1.0, 3, 1, 1))
+        conn.execute(
+            "INSERT INTO messages VALUES (?,?,?,?,?,?,?,?,?)",
+            (1, "sess-1", "assistant", "", None, '[{"id":"call-1","function":{"name":"terminal","arguments":"{}"}}]', None, 1.0, "tool_calls"),
+        )
+        conn.execute(
+            "INSERT INTO messages VALUES (?,?,?,?,?,?,?,?,?)",
+            (2, "sess-1", "tool", "{}", "call-1", None, "terminal", 2.0, None),
+        )
+
+    (workdir / "trajectory_samples.jsonl").write_text(json.dumps({
+        "conversations": [
+            {"from": "gpt", "value": "<tool_call>\n{\"name\":\"read_file\",\"arguments\":{\"path\":\"x\"}}\n</tool_call>"},
+            {"from": "tool", "value": "<tool_response>\n{\"tool_call_id\":\"call-2\",\"name\":\"read_file\",\"content\":\"ok\"}\n</tool_response>"},
+        ],
+        "model": "model-x",
+        "completed": True,
+    }) + "\n", encoding="utf-8")
+
+    out = observability.extract(home, workdir, session_id="sess-1")
+    assert out["sources"]["telemetry_db"]["available"] is True
+    assert out["sources"]["state_db"]["available"] is True
+    assert out["sources"]["trajectory"]["available"] is True
+    assert out["turn"]["model"] == "model-x"
+    assert out["turn"]["tool_count"] == 1
+    assert {tool["name"] for tool in out["tools"]} == {"terminal", "read_file"}
+    assert out["session"]["tool_call_count"] == 1
+    assert "<isolated_home>" in out["sources"]["state_db"]["path"]
+
+
+def test_observability_handles_missing_surfaces(tmp_path: Path):
+    home = tmp_path / "home"
+    workdir = tmp_path / "workdir"
+    home.mkdir()
+    workdir.mkdir()
+    out = observability.extract(home, workdir)
+    assert out["sources"]["telemetry_db"]["available"] is False
+    assert out["sources"]["state_db"]["available"] is False
+    assert out["sources"]["trajectory"]["available"] is False
+    assert out["tools"] == []
+
+
+def test_observability_extracts_schema_adaptive_kanban_metadata(tmp_path: Path):
+    home = tmp_path / "home"
+    workdir = tmp_path / "workdir"
+    home.mkdir()
+    workdir.mkdir()
+    with sqlite3.connect(home / "kanban.db") as conn:
+        conn.executescript("""
+            CREATE TABLE tasks (
+                id TEXT PRIMARY KEY,
+                status TEXT,
+                assignee TEXT
+            );
+            CREATE TABLE task_links (
+                parent_id TEXT,
+                child_id TEXT
+            );
+            CREATE TABLE events (
+                kind TEXT,
+                message TEXT
+            );
+        """)
+        conn.execute("INSERT INTO tasks VALUES (?,?,?)", ("T-1", "done", "orchestrator"))
+        conn.execute("INSERT INTO tasks VALUES (?,?,?)", ("T-2", "done", "worker-code"))
+        conn.execute("INSERT INTO task_links VALUES (?,?)", ("T-1", "T-2"))
+        conn.execute("INSERT INTO events VALUES (?,?)", ("complete", "synthesis complete"))
+
+    out = observability.extract(home, workdir)
+    assert out["sources"]["kanban"]["available"] is True
+    assert out["kanban"]["used"] is True
+    assert out["kanban"]["tasks_created"] == 2
+    assert out["kanban"]["status_counts"] == {"done": 2}
+    assert out["kanban"]["profiles"] == ["orchestrator", "worker-code"]
+    assert out["kanban"]["handoffs"] == [{"from": "T-1", "to": "T-2", "status": "linked"}]
+    assert out["kanban"]["synthesis_observed"] is True
 
 
 def test_programmatic_api_single_scenario_baseline_rejects_unknown_scenario(monkeypatch):

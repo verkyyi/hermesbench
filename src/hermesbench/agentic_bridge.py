@@ -16,6 +16,7 @@ import tempfile
 from pathlib import Path
 
 from hermesbench import harness
+from hermesbench import observability
 
 
 def _load(path: Path) -> dict:
@@ -85,6 +86,7 @@ def send_turn(
         resume_session_id=state.get("target_session_id"),
     )
     side_effects = harness._artifact_manifest(workdir)
+    obs = observability.extract(home, workdir, session_id=(row or {}).get("session_id") or state.get("target_session_id"))
     result = harness._turn_result(
         prompt=prompt,
         rc=rc,
@@ -95,6 +97,7 @@ def send_turn(
         wall_ms=wall_ms,
         side_effects=side_effects,
         retained_home=None,
+        observability_data=obs,
     )
     result["turn_index"] = len(turns) + 1
     result["profile"] = effective_profile

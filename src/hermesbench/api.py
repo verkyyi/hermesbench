@@ -262,8 +262,12 @@ def _collect_observed_usage(value) -> dict:
     def walk(node) -> None:
         if isinstance(node, dict):
             for key, item in node.items():
-                if key in {"used_tools", "tools_used"} and isinstance(item, list):
-                    tools.extend(str(v) for v in item if isinstance(v, str))
+                if key in {"used_tools", "tools_used", "tools"} and isinstance(item, list):
+                    for value in item:
+                        if isinstance(value, str):
+                            tools.append(value)
+                        elif isinstance(value, dict) and value.get("name"):
+                            tools.append(str(value["name"]))
                 elif key == "tool_calls" and isinstance(item, list):
                     for call in item:
                         if isinstance(call, str):
@@ -275,7 +279,7 @@ def _collect_observed_usage(value) -> dict:
                                 name = function.get("name")
                             if name:
                                 tools.append(str(name))
-                elif key in {"used_skills", "skills_used", "agent_skills_used"} and isinstance(item, list):
+                elif key in {"used_skills", "skills_used", "agent_skills_used", "skills"} and isinstance(item, list):
                     skills.extend(str(v) for v in item if isinstance(v, str))
                 walk(item)
         elif isinstance(node, list):
@@ -426,6 +430,9 @@ def summarize_report(report: dict) -> dict:
                 "driver_decision": case.get("driver_decision") or {},
                 "judge": case.get("judge") or {},
                 "checks": case.get("checks") or {},
+                "observability": case.get("observability") or {},
+                "used_tools": case.get("used_tools") or [],
+                "used_skills": case.get("used_skills") or [],
                 "trace_retention": case.get("trace_retention") or {},
                 "public_transcript": case.get("public_transcript") or [],
             }

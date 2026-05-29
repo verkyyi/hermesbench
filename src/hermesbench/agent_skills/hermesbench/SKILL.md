@@ -255,6 +255,14 @@ Important report fields:
 - `suites[*].metrics.top_axis_scores`: capability/truthfulness,
   reliability/safety, efficiency/UX.
 - `suites[*].metrics.axis_scores`: six sub-axes plus compatibility aliases.
+- `suites[*].metrics.case_results[*].observability`: public-safe execution
+  evidence extracted only from upstream Hermes surfaces inside the isolated
+  benchmark home/workdir. Sources are schema-adaptive and may include
+  `telemetry.db`, `state.db`, upstream trajectory JSONL, and upstream kanban
+  SQLite metadata when present.
+- `suites[*].metrics.case_results[*].used_tools` and `used_skills`: observed
+  names extracted from public-safe observability metadata. Empty means not
+  recorded, not necessarily unused.
 - `harness.profile_snapshot.capability_surface`: target UI, target profile,
   selected platform, toolsets, AgentSkills inventory hash/count,
   disabled/allowed skill filters.
@@ -262,6 +270,10 @@ Important report fields:
 
 Outcome reached is stricter than "the agent replied." The driver and judge must
 see a valid terminal answer, refusal, clarification, or scoped artifact result.
+
+Observability is upstream-surface-only. Do not depend on local Hermes patches or
+private worktree fields. If a DB/table/column is absent, report the source as
+unavailable instead of treating that as a run failure.
 
 ## Common User-Facing Workflows
 
@@ -310,6 +322,9 @@ Steps:
    was not recorded rather than inferring it from transcript text. Do not print
    unredacted raw transcripts unless the run explicitly opted into raw trace
    retention.
+   When observability is present, include which upstream evidence sources were
+   available (`telemetry.db`, `state.db`, trajectory JSONL, kanban metadata) and
+   use that evidence to explain truthfulness/capability scores.
 7. Avoid dumping `recent_runs()` or large raw reports for a one-recipe result.
    Use `baseline["summary"]` or `summarize_report(report)` so the result shape
    is stable and fast to inspect.

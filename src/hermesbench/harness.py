@@ -31,6 +31,8 @@ import threading
 import time
 from pathlib import Path
 
+from hermesbench import observability
+
 _ERROR_STATUSES = {"error", "failed", "failure", "exception"}
 
 _SIDE_EFFECT_SCOPE = """
@@ -77,7 +79,29 @@ def _make_isolated_home(src_home: Path) -> Path:
                 (home / name).chmod(0o600)
             except OSError:
                 pass
+    if os.environ.get("HERMES_BENCH_ENABLE_TRAJECTORIES", "").lower() in {"1", "true", "yes", "on"}:
+        _enable_upstream_trajectories(home / "config.yaml")
     return home
+
+
+def _enable_upstream_trajectories(config_path: Path) -> None:
+    """Enable upstream Hermes trajectory saving in the isolated config copy."""
+    if not config_path.exists():
+        return
+    try:
+        import yaml  # type: ignore
+
+        data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+        if not isinstance(data, dict):
+            return
+        agent_cfg = data.get("agent")
+        if not isinstance(agent_cfg, dict):
+            agent_cfg = {}
+        agent_cfg["save_trajectories"] = True
+        data["agent"] = agent_cfg
+        config_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    except Exception:
+        return
 
 
 def _scope_prompt(prompt: str) -> str:
@@ -360,6 +384,7 @@ def _turn_result(
     wall_ms: float,
     side_effects: dict,
     retained_home: str | None,
+    observability_data: dict | None = None,
 ) -> dict:
     status = (row or {}).get("status")
     responded = (rc == 0) and bool(reply)
@@ -384,6 +409,7 @@ def _turn_result(
         "error": err,
         "side_effects": side_effects,
         "artifact_home": retained_home,
+        "observability": observability_data or {},
     }
 
 
@@ -404,6 +430,8 @@ def _spawn(
     workdir = home / "workdir"
     workdir.mkdir(parents=True, exist_ok=True)
     retained_home = None
+    obs = {}
+    rc, reply, timed_out, err, row, wall_ms = 1, "", False, "target spawn did not complete", {}, 0.0
     try:
         rc, reply, timed_out, err, row, wall_ms = _spawn_in_session(
             prompt,
@@ -419,11 +447,15 @@ def _spawn(
         )
     finally:
         side_effects = _artifact_manifest(workdir)
+        try:
+            obs = observability.extract(home, workdir, session_id=(row or {}).get("session_id"))
+        except Exception:
+            obs = {}
         if os.environ.get("HERMES_BENCH_KEEP_ARTIFACTS"):
             retained_home = str(home)
         else:
             shutil.rmtree(home, ignore_errors=True)
-    return rc, reply, timed_out, err, row, wall_ms, side_effects, retained_home
+    return rc, reply, timed_out, err, row, wall_ms, side_effects, retained_home, obs
 
 
 def _ensure_warm(src_home: Path) -> None:
@@ -467,7 +499,7 @@ def run_case(
     """
     src_home = src_home or _default_home()
     _ensure_warm(src_home)
-    rc, reply, timed_out, err, row, wall_ms, side_effects, retained_home = _spawn(
+    rc, reply, timed_out, err, row, wall_ms, side_effects, retained_home, obs = _spawn(
         prompt,
         src_home=src_home,
         timeout_s=timeout_s,
@@ -489,6 +521,7 @@ def run_case(
         wall_ms=wall_ms,
         side_effects=side_effects,
         retained_home=retained_home,
+        observability_data=obs,
     )
 
 
@@ -545,6 +578,7 @@ def run_scenario(
                 resume_session_id=target_session_id,
             )
             side_effects = _artifact_manifest(workdir)
+            obs = observability.extract(home, workdir, session_id=(row or {}).get("session_id") or target_session_id)
             result = _turn_result(
                 prompt=prompt,
                 rc=rc,
@@ -555,6 +589,7 @@ def run_scenario(
                 wall_ms=wall_ms,
                 side_effects=side_effects,
                 retained_home=None,
+                observability_data=obs,
             )
             result["turn_index"] = idx
             result["profile"] = str(turn.get("profile") or "default")
