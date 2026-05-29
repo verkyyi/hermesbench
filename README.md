@@ -18,7 +18,7 @@ travel, reports, and optional power-user integrations.
 
 ## What It Includes
 
-- **48 bundled prompt use cases** across 9 job-area categories.
+- **27 bundled workflow recipes** across 9 job-area categories.
 - **Harness-driven scenarios**: a use case can be one user turn or a multi-turn
   conversation in one isolated Hermes session.
 - **Driver/target separation**: recipes define user goals and success/safety
@@ -28,9 +28,9 @@ travel, reports, and optional power-user integrations.
 - **Score-only verdict**: missed outcomes, instability, incomplete/false
   answers, and latency regressions are folded into one score plus axis
   diagnostics.
-- **Scoped side effects**: default prompt suites can write only inside a
-  benchmark-owned working directory; live user data and external actions are
-  opt-in only.
+- **Explicit side-effect boundaries**: recipes are marked read-only,
+  benchmark-local-write, or external-write-boundary. External changes require
+  confirmation and should not be performed by bundled recipes.
 - **Local suites**: users can add private JSON/YAML suites without changing
   HermesBench code.
 - **Transparent public artifacts**: scenario recipes and public leaderboard

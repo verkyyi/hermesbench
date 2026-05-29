@@ -39,8 +39,8 @@ build_public_artifacts()
 
 Current bundled public benchmark shape:
 
-- 48 scenario recipes
-- 12 prompt suites
+- 27 workflow recipes
+- 9 job-area categories
 - 5 audience packages
 - Agent-driven evaluator by default
 - Default user-facing run is one scenario recipe: calendar_daily_brief

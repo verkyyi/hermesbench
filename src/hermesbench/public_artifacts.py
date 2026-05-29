@@ -161,7 +161,8 @@ def build_task_catalog() -> dict:
             "checks": case.get("checks") or [],
             "capabilities": usecases.capabilities(category),
             "budget": usecases.budget(category),
-            "side_effect_scope": "benchmark_workdir",
+            "effect_level": str(case.get("effect_level") or "read_only"),
+            "side_effect_scope": str(case.get("side_effect_scope") or "benchmark_workdir"),
             "tags": [
                 category_label,
                 "agent-driven",

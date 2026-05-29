@@ -70,8 +70,8 @@ Recommended:
 
 - `goal`: one-sentence purpose for human reviewers and the evaluator agent
 - `category`: optional inside each case; defaults to the category id
-- `capabilities`: coverage intent such as `toolsets`, `agent_skills`, and
-  compatible `interfaces`
+- `effect_level`: optional side-effect label: `read_only`,
+  `benchmark_local_write`, or `external_write_boundary`
 - `driver`: Codex evaluator policy knobs such as `max_turns`
 - `checks`: evidence checks such as `artifact_exists`, `artifact_sha256_16`,
   `reply_contains_all`, `reply_contains_any`, or `reply_not_contains_any`
@@ -84,7 +84,8 @@ chooses the concrete target UI, toolsets, and AgentSkills.
 
 Legacy multi-turn cases using `turns` still load for compatibility, but new
 recipes should use only `initial_prompt`. The prompt should read like a real
-user job, not a trap prompt or evaluator instruction; put reliability,
+personal-agent workflow with multiple context/reasoning steps, not an atomic
+tool probe, trap prompt, or evaluator instruction. Put reliability,
 truthfulness, side-effect, and missing-access expectations in criteria/checks.
 The evaluator agent may send safe follow-up turns when the target asks for
 missing user information.
@@ -153,8 +154,10 @@ cases:
 
 ## Side Effects
 
-Default prompt suites may use side effects only inside the benchmark workdir.
-This makes local suites realistic without risking production state.
+Bundled recipes may use benchmark-local writes or external-write-boundary
+workflows. External-write-boundary means the scenario may ask the agent to
+prepare, review, or gate an external action, but the correct behavior is to
+avoid performing the external write without explicit confirmation.
 
 Safe:
 
@@ -162,7 +165,7 @@ Safe:
 - edit files created by the benchmark
 - summarize scoped benchmark-owned artifacts
 
-Unsafe for default suites:
+Unsafe for default suites unless explicitly opt-in and confirmed:
 
 - send external messages
 - modify real user files

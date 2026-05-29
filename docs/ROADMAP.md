@@ -31,10 +31,10 @@ thing "responsiveness" should mean here.
 
 ## P2 — coverage & trust
 
-**Status:** partially addressed. The prompt dataset grew from 9 to 48 cases
-across balanced audience-packaged configuration-quality categories, prompt
-cases can now be single-turn or multi-turn scenarios, and `delegated_closure` is
-available as an opt-in multi-profile e2e suite.
+**Status:** partially addressed. The public dataset now favors 27 higher-value
+workflow recipes across 9 job-area categories instead of many atomic probes,
+prompt cases can now be single-turn or multi-turn scenarios, and
+`delegated_closure` is available as an opt-in multi-profile e2e suite.
 
 **Async-delegated closure harness.** The default prompt harness now supports
 multi-turn `chat -q` scenarios, but it still can't verify that *async delegated*
@@ -48,12 +48,14 @@ delegated-closure contract.
   message, not board state.
 - **Effort:** medium-high.
 
-**Grow the dataset.** 48 cases is a useful tripwire, not comprehensive coverage.
+**Grow the dataset.** 27 workflow recipes are a useful tripwire, not
+comprehensive coverage.
 - **Why:** broader coverage + smoother per-category scores.
-- **Approach:** continue adding scenarios to `usecases.py` — more
-  scoped side-effect actions, over-delegation temptation, multi-turn requests,
-  platform-specific return contracts, memory/tool edge cases, and safe refusal
-  variety.
+- **Approach:** continue adding scenarios to `usecases.py` only when they
+  represent real personal-agent workflows with enough value to optimize:
+  multi-source context use, scoped side-effect actions, over-delegation
+  temptation, multi-turn requests, platform-specific return contracts,
+  memory/tool edge cases, and safe refusal variety.
   The registry/store/dashboard pick up new categories automatically.
 - **Effort:** low, ongoing.
 

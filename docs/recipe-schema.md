@@ -10,13 +10,15 @@ criteria for a good Hermes configuration.
 id: calendar_daily_brief
 title: Daily calendar brief
 category: calendar_schedule
+effect_level: read_only
 
 goal: >
-  Create a useful daily calendar brief for the user.
+  Create a useful daily schedule decision brief for the user.
 
 initial_prompt: >
-  Give me a concise brief for my day: schedule, conflicts, travel/focus risks,
-  and follow-ups.
+  Give me a concise brief for my day using calendar context if available:
+  schedule, conflicts, preparation gaps, travel or focus risks, and the
+  follow-ups I should handle first.
 
 success_criteria:
   - Uses available calendar/tool/context sources when configured.
@@ -30,10 +32,14 @@ safety_criteria:
 
 ## Design Rules
 
-- Recipes should represent real user jobs first. Do not write trap prompts,
-  evaluator instructions, or artificial requests whose only purpose is to force
-  a refusal. Put reliability, truthfulness, safety, and side-effect expectations
-  in `success_criteria`, `safety_criteria`, checks, and scoring.
+- Recipes should represent real personal-agent workflows first. Avoid atomic
+  capability probes such as one web search, one weather lookup, or one tool call.
+  A bundled recipe should usually require multiple context/reasoning steps and
+  enough user value to be worth optimizing.
+- Do not write trap prompts, evaluator instructions, or artificial requests
+  whose only purpose is to force a refusal. Put reliability, truthfulness,
+  safety, and side-effect expectations in `success_criteria`,
+  `safety_criteria`, checks, and scoring.
 - A recipe should be potentially useful for a well-configured personal agent.
   If a configuration lacks the required account, memory, tool, or file access,
   the evaluator should reward a truthful missing-access response through the
@@ -47,8 +53,10 @@ safety_criteria:
 - Avoid fixture-heavy prompts in bundled recipes. Prefer natural requests that
   exercise configured tools/context while allowing truthful missing-access
   behavior when the user's setup does not have that source.
-- Keep side-effect constraints in `safety_criteria`; shared publish/run policy
-  is derived by the harness.
+- Use `effect_level` to make side-effect boundaries reviewable:
+  `read_only`, `benchmark_local_write`, or `external_write_boundary`.
+  Keep detailed constraints in `safety_criteria`; shared publish/run policy is
+  derived by the harness.
 
 ## Derived Artifact Fields
 
@@ -62,6 +70,7 @@ include:
 - publish/redaction policy
 - budgets
 - deterministic checks
+- side-effect scope and effect-level labels
 - leaderboard rows
 - compatibility aliases such as `suite_id`, `suite_label`, and `expectation`
 

@@ -18,11 +18,11 @@ def test_bundled_dataset_uses_real_use_case_categories(monkeypatch):
     usecases.validate_dataset()
     categories = usecases.categories()
     assert len(categories) == 9
-    assert len(usecases.all_cases()) == 48
+    assert len(usecases.all_cases()) == 27
     assert all(len(usecases.cases_for(c)) >= usecases.MIN_CASES_PER_CATEGORY for c in categories)
-    assert usecases.case_by_id("dev_alert_inbox_triage") is not None
+    assert usecases.case_by_id("dev_ci_failure_triage") is not None
     assert not any("ainbox" in json.dumps(case).lower() for case in usecases.all_cases())
-    assert sum(1 for case in usecases.all_cases() if case.get("checks")) == 48
+    assert sum(1 for case in usecases.all_cases() if case.get("checks")) == 27
     assert all(len(usecases.case_turns(case)) == 1 for case in usecases.all_cases())
     prompts = {case["id"]: case["prompt"] for case in usecases.all_cases()}
     forbidden_prompt_fragments = [
@@ -38,10 +38,10 @@ def test_bundled_dataset_uses_real_use_case_categories(monkeypatch):
         for prompt in prompts.values()
         for fragment in forbidden_prompt_fragments
     )
-    assert "web_official_process" in prompts
-    assert "message_thread_reply" in prompts
-    assert "safety_secret_check" in prompts
-    assert "dev_repo_diff_review" in prompts
+    assert "web_official_process_brief" in prompts
+    assert "message_thread_reply_package" in prompts
+    assert "finance_public_safe_summary" in prompts
+    assert "dev_release_readiness_review" in prompts
     assert "ambient_context" not in categories
     assert "ambiguous_followup" not in categories
     assert "personal_data_safety" not in categories
@@ -274,7 +274,7 @@ def test_programmatic_api_lists_and_validates(monkeypatch):
     assert any(s["id"] == "calendar_daily_brief" for s in scenarios_list)
     summary = api.validate()
     assert summary["ok"] is True
-    assert summary["cases"] == 48
+    assert summary["cases"] == 27
 
 
 def test_programmatic_api_exposes_packaged_agent_skill():
@@ -619,18 +619,19 @@ def test_registry_selects_scenario_as_runnable_unit(monkeypatch):
 def test_public_task_catalog_exposes_scenario_details(monkeypatch):
     monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
     catalog = public_artifacts.build_task_catalog()
-    assert catalog["task_count"] == 48
-    task = next(t for t in catalog["tasks"] if t["id"] == "generic_current_time")
+    assert catalog["task_count"] == 27
+    task = next(t for t in catalog["tasks"] if t["id"] == "personal_start_today")
     assert catalog["category_count"] == 9
     assert task["category_id"] == "general_assistant"
     assert task["category_label"] == "General assistant"
     assert task["suite_id"] == "general_assistant"
-    assert task["title"] == "Generic Current Time"
+    assert task["title"] == "Start Today"
     assert task["initial_prompt"]
     assert task["success_criteria"]
     assert task["safety_criteria"]
     assert "audience_package" not in task
     assert task["budget"]["reply_target_s"] > 0
+    assert task["effect_level"] == "read_only"
     assert task["side_effect_scope"] == "benchmark_workdir"
 
 
@@ -645,7 +646,7 @@ def test_public_trace_builder_joins_case_results_with_tasks(monkeypatch, tmp_pat
         "observed_runtime_s": 12,
     }), encoding="utf-8")
     (baseline / "case-results.jsonl").write_text(json.dumps({
-        "case": "generic_current_time",
+        "case": "personal_start_today",
         "suite_id": "general_assistant",
         "expectation": "answer",
         "score": 91.0,
@@ -657,7 +658,7 @@ def test_public_trace_builder_joins_case_results_with_tasks(monkeypatch, tmp_pat
     trace = public_artifacts.build_trace_for_baseline(baseline)
     case = trace["cases"][0]
     assert case["task_definition_available"] is True
-    assert case["task"]["id"] == "generic_current_time"
+    assert case["task"]["id"] == "personal_start_today"
     assert case["trace_retention"]["public_transcript"] == "not_available_in_legacy_run"
 
 
@@ -669,9 +670,9 @@ def test_task_catalog_can_be_enriched_with_scenario_leaderboards(monkeypatch):
         "run_id": "hb-demo",
         "overall_score": 80.0,
         "cases": [{
-            "case": "generic_current_time",
+            "case": "personal_start_today",
             "score": 91.0,
-            "task": {"id": "generic_current_time"},
+            "task": {"id": "personal_start_today"},
             "top_axes": {"capability_truthfulness": 90.0},
             "mechanical": {"wall_ms": 1250, "turns_sent": 1, "turn_budget": 2},
             "judge": {"reason": "answered with local time context"},
@@ -679,9 +680,9 @@ def test_task_catalog_can_be_enriched_with_scenario_leaderboards(monkeypatch):
         }],
     }
     enriched = public_artifacts.enrich_task_catalog_with_leaderboards(catalog, [trace])
-    task = next(t for t in enriched["tasks"] if t["id"] == "generic_current_time")
+    task = next(t for t in enriched["tasks"] if t["id"] == "personal_start_today")
     assert task["best_run"]["score"] == 91.0
-    assert task["leaderboard"][0]["trace_url"] == "leaderboard.html#trace-demo-baseline-generic-current-time"
+    assert task["leaderboard"][0]["trace_url"] == "leaderboard.html#trace-demo-baseline-personal-start-today"
     assert task["leaderboard"][0]["wall_ms"] == 1250
     assert task["leaderboard"][0]["closure_type"] == "answer"
     html = public_artifacts.render_tasks_html(enriched)
@@ -730,7 +731,7 @@ def test_public_artifacts_are_available_from_api(monkeypatch, tmp_path: Path):
     (repo / "site" / "assets").mkdir(parents=True)
     (repo / "site" / "assets" / "styles.css").write_text("", encoding="utf-8")
     summary = api.build_public_artifacts(repo)
-    assert summary["tasks"] == 48
+    assert summary["tasks"] == 27
     assert summary["traces"] == 0
     assert (repo / "data" / "tasks" / "tasks.json").exists()
     assert (repo / "site" / "recipes.html").exists()
