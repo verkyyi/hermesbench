@@ -375,6 +375,15 @@ def test_programmatic_api_single_scenario_baseline_summarizes_capabilities(monke
                         },
                         "tool_calls": [{"function": {"name": "web_search"}}],
                         "skills_used": ["agentfeeds"],
+                        "trace_retention": {
+                            "public_transcript": "included_pii_redacted",
+                            "raw_transcript": "omitted_public_safe",
+                        },
+                        "public_transcript": [{
+                            "turn": 1,
+                            "user": "Any progress?",
+                            "assistant": "Which task do you mean?",
+                        }],
                     }],
                 },
             }],
@@ -393,6 +402,8 @@ def test_programmatic_api_single_scenario_baseline_summarizes_capabilities(monke
         "skills": ["agentfeeds"],
         "recorded": True,
     }
+    assert summary["case_results"][0]["public_transcript"][0]["assistant"] == "Which task do you mean?"
+    assert summary["transcripts"][0]["trace_retention"]["raw_transcript"] == "omitted_public_safe"
     assert summary["checks"]["failed"] == []
 
 

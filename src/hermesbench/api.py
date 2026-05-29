@@ -426,8 +426,19 @@ def summarize_report(report: dict) -> dict:
                 "driver_decision": case.get("driver_decision") or {},
                 "judge": case.get("judge") or {},
                 "checks": case.get("checks") or {},
+                "trace_retention": case.get("trace_retention") or {},
+                "public_transcript": case.get("public_transcript") or [],
             }
             for case in case_results
+        ],
+        "transcripts": [
+            {
+                "case": case.get("case"),
+                "trace_retention": case.get("trace_retention") or {},
+                "public_transcript": case.get("public_transcript") or [],
+            }
+            for case in case_results
+            if case.get("public_transcript") or case.get("trace_retention")
         ],
     }
 

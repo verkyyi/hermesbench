@@ -305,9 +305,11 @@ Steps:
 6. Summarize `overall_score`, top axes, six sub-axes, runtime, target UI,
    target profile, profile snapshot labels/tags, configured tools/toolsets,
    configured AgentSkills inventory/filter tags, observed tools/skills when the
-   report exposes telemetry, skipped suites, and the most important failed
-   cases. If observed tool/skill usage is empty, say it was not recorded rather
-   than inferring it from transcript text.
+   report exposes telemetry, redacted public transcript, skipped suites, and the
+   most important failed cases. If observed tool/skill usage is empty, say it
+   was not recorded rather than inferring it from transcript text. Do not print
+   unredacted raw transcripts unless the run explicitly opted into raw trace
+   retention.
 7. Avoid dumping `recent_runs()` or large raw reports for a one-recipe result.
    Use `baseline["summary"]` or `summarize_report(report)` so the result shape
    is stable and fast to inspect.
