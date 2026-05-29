@@ -36,6 +36,24 @@ Command:
 HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 ```
 
+## Score Breakdown
+
+| group | score |
+|---|---:|
+| Deterministic aggregate | 99.1 |
+| LLM-judged aggregate | 76.2 |
+| Closure | 100.0 |
+| Stability | 100.0 |
+| Scope discipline | 100.0 |
+| Responsiveness | 92.5 |
+| Appropriateness | 73.0 |
+| Coherence | 82.6 |
+
+The deterministic aggregate uses closure, artifact correctness, stability,
+scope discipline, and responsiveness. The LLM-judged aggregate uses
+appropriateness and coherence. Both aggregates are normalized within their
+group using HermesBench scoring weights.
+
 ## Runtime Shape
 
 | field | value |

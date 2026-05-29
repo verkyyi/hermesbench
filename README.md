@@ -57,22 +57,18 @@ case spec -> driver adapter -> target adapter -> deterministic checks -> judge -
 ## Published Baselines
 
 The first public baselines are redacted distribution-style snapshots of the same
-local Hermes default profile family across two execution surfaces. The use cases
-are framework-agnostic and run on both surfaces; the leaderboard exposes the
-surface because Hermes with kanban and Hermes without kanban have materially
-different configuration surfaces.
+local Hermes default profile family. The leaderboard focuses on score-related
+diagnostics and keeps reproducibility metadata in the linked baseline files.
 
-| configuration | target surface | evaluator | score | runtime | profile hash | bench git | run id |
-|---|---|---|---:|---:|---|---|---|
-| `verkyyi/default-no-kanban` | Direct/no-kanban | `codex` | `92.34` | `~3m 46s` | `aa14b22a` | `3a3893f` | `hb-20260529T095156Z` |
-| `verkyyi/default` | Kanban delegation | `codex` | `88.82` | `~5m 12s` | `e460b216` | `3a3893f` | `hb-20260529T094614Z` |
+| configuration | score | deterministic | closure | stability | scope | responsiveness | LLM-judged | appropriateness | coherence | coverage | profile snapshot |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
+| `verkyyi/default-no-kanban` | `92.34` | `99.1` | `100.0` | `100.0` | `100.0` | `92.5` | `76.2` | `73.0` | `82.6` | `13/14` | `direct`, `gpt-5.5`, `honcho`, `3 plugins` |
+| `verkyyi/default` | `88.82` | `96.8` | `96.2` | `96.2` | `100.0` | `88.0` | `75.1` | `72.1` | `81.2` | `13/14` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins` |
 
-These checked-in rows use the current agent-driven prompt suites with the Codex
-evaluator driver, default agentic turn budget 2, and high-rate concurrency
-6/6. The kanban baseline has `hermes-cli` + `kanban` toolsets and
-`kanban-orchestrator-routing`; the no-kanban baseline removes the kanban
-toolset, kanban config block, and kanban routing plugin. The opt-in
-`delegated_closure` suite is not included in either baseline score.
+`deterministic` aggregates closure, artifact correctness, stability, scope
+discipline, and responsiveness using HermesBench scoring weights. `LLM-judged`
+aggregates appropriateness and coherence. The opt-in `delegated_closure` suite
+is not included in either baseline score.
 
 Baseline files:
 

@@ -21,6 +21,33 @@ benchmark:
   turns_sent: 48
   turn_budget: 96
   command: HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+  score_breakdown:
+    deterministic: 99.1
+    llm_judged: 76.2
+    axes:
+      closure: 100.0
+      artifact_correctness: 100.0
+      stability: 100.0
+      scope_discipline: 100.0
+      responsiveness: 92.5
+      appropriateness: 73.0
+      coherence: 82.6
+    coverage:
+      scored_suites: 13
+      registered_suites: 14
+      label: 13/14
+    groups:
+      deterministic_axes:
+      - closure
+      - artifact_correctness
+      - stability
+      - scope_discipline
+      - responsiveness
+      llm_judged_axes:
+      - appropriateness
+      - coherence
+      aggregation: weighted by HermesBench scoring weights, normalized within each
+        group
 profile_fingerprint:
   hermesbench_git_sha: 3a3893f36d7b7dc4aa172fe29b7b864bf4c34891
   profile_hash: aa14b22a09265270b2552e98e6eaeade250578745443c14168c838cb8beec599

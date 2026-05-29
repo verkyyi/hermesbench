@@ -61,64 +61,90 @@
           <h2>Leaderboard</h2>
           <p>
             Published runs should identify the Hermes profile distribution or a
-            redacted distribution-style baseline, the execution surface, profile
-            hash, HermesBench git hash, exact command, and runtime. Prompt use
-            cases are framework-agnostic; the surface shows whether kanban
-            delegation was available.
+            redacted distribution-style baseline. The main table keeps the
+            comparison score-focused: deterministic reliability signals are
+            separated from LLM-judged semantic signals, while exact run IDs,
+            hashes, commands, and raw env vars live in the linked baseline
+            files.
           </p>
         </div>
         <div class="table-wrap">
-          <table>
+          <table class="leaderboard">
             <thead>
               <tr>
-                <th>Rank</th>
-                <th>Configuration</th>
-                <th>Surface</th>
-                <th>Evaluator</th>
-                <th>Hermes profile</th>
-                <th>Score</th>
-                <th>Runtime</th>
-                <th>Profile hash</th>
-                <th>Bench git</th>
-                <th>Model</th>
-                <th>Cost/run</th>
+                <th rowspan="2">Rank</th>
+                <th rowspan="2">Configuration</th>
+                <th rowspan="2">Score</th>
+                <th colspan="5">Deterministic metrics</th>
+                <th colspan="3">LLM-judged metrics</th>
+                <th rowspan="2">Coverage</th>
+                <th rowspan="2">Profile snapshot</th>
+              </tr>
+              <tr>
+                <th>Det.</th>
+                <th>Closure</th>
+                <th>Stability</th>
+                <th>Scope</th>
+                <th>Resp.</th>
+                <th>LLM</th>
+                <th>Appr.</th>
+                <th>Coh.</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>1</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-no-kanban-2026-05-29">verkyyi/default no-kanban</a></td>
-                <td>Direct/no-kanban</td>
-                <td>codex</td>
-                <td>redacted distribution-style</td>
                 <td>92.34</td>
-                <td>~3m 46s</td>
-                <td><code>aa14b22a</code></td>
-                <td><code>3a3893f</code></td>
-                <td>gpt-5.5 / openai-codex</td>
-                <td>&lt;$10 target</td>
+                <td>99.1</td>
+                <td>100.0</td>
+                <td>100.0</td>
+                <td>100.0</td>
+                <td>92.5</td>
+                <td>76.2</td>
+                <td>73.0</td>
+                <td>82.6</td>
+                <td>13/14</td>
+                <td>
+                  <span class="tag-list">
+                    <span>direct</span>
+                    <span>gpt-5.5</span>
+                    <span>honcho</span>
+                    <span>3 plugins</span>
+                  </span>
+                </td>
               </tr>
               <tr>
                 <td>2</td>
                 <td><a href="https://github.com/verkyyi/hermesbench/tree/main/data/baselines/verkyyi-default-2026-05-29">verkyyi/default baseline</a></td>
-                <td>Kanban delegation</td>
-                <td>codex</td>
-                <td>redacted distribution-style</td>
                 <td>88.82</td>
-                <td>~5m 12s</td>
-                <td><code>e460b216</code></td>
-                <td><code>3a3893f</code></td>
-                <td>gpt-5.5 / openai-codex</td>
-                <td>&lt;$10 target</td>
+                <td>96.8</td>
+                <td>96.2</td>
+                <td>96.2</td>
+                <td>100.0</td>
+                <td>88.0</td>
+                <td>75.1</td>
+                <td>72.1</td>
+                <td>81.2</td>
+                <td>13/14</td>
+                <td>
+                  <span class="tag-list">
+                    <span>kanban</span>
+                    <span>gpt-5.5</span>
+                    <span>honcho</span>
+                    <span>4 plugins</span>
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="note">
-          These rows use agent-driven prompt suites with the Codex evaluator
-          driver, default turn budget 2, and high-rate suite/case concurrency
-          6/6. The bundled prompt cases stay framework-agnostic; the surface
-          column exposes whether kanban delegation was available.
+          Deterministic aggregates closure, artifact correctness, stability,
+          scope discipline, and responsiveness using HermesBench scoring
+          weights. LLM-judged aggregates appropriateness and coherence. The
+          linked baseline files retain run IDs, hashes, commands, runtime, and
+          raw profile fingerprints for reproducibility.
         </p>
       </section>
 
