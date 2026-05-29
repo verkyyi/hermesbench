@@ -64,12 +64,26 @@ hermesbench
 # Full model-backed prompt run.
 HERMES_RUN_LLM_EVALS=1 hermesbench
 
+# Faster high-rate run. Use when your provider/key can handle the burst.
+HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
+
 # Run only selected suites.
 HERMES_RUN_LLM_EVALS=1 hermesbench --suite runtime_config,ambiguous_followup
 
 # JSON output, no persistence.
 HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store
 ```
+
+Concurrency controls:
+
+- `--trials N` or `HERMES_BENCH_TRIALS`
+- `--case-concurrency N` or `HERMES_BENCH_CONCURRENCY`
+- `--suite-concurrency N` or `HERMES_BENCH_SUITE_CONCURRENCY`
+- `--high-rate`, which defaults to suite concurrency 4 and case concurrency 8
+  unless the explicit flags above are supplied
+
+High-rate mode can create many simultaneous Hermes and judge calls. Use it only
+with provider credentials that can tolerate the burst.
 
 ## Bundled Suite Packages
 

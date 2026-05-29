@@ -21,6 +21,7 @@ import os
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -171,10 +172,30 @@ def _execute(suite: registry.Suite) -> dict:
     return base
 
 
+def _suite_concurrency() -> int:
+    try:
+        return max(1, int(os.environ.get("HERMES_BENCH_SUITE_CONCURRENCY", "1")))
+    except ValueError:
+        return 1
+
+
+def _execute_suites(suites: list[registry.Suite]) -> list[dict]:
+    workers = min(len(suites) or 1, _suite_concurrency())
+    if workers <= 1:
+        return [_execute(s) for s in suites]
+
+    results: list[dict | None] = [None] * len(suites)
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futs = {pool.submit(_execute, suite): idx for idx, suite in enumerate(suites)}
+        for fut in as_completed(futs):
+            results[futs[fut]] = fut.result()
+    return [r for r in results if r is not None]
+
+
 def run_benchmark(*, ids: list[str] | None = None) -> dict:
     suites = registry.select(ids=ids)
 
-    results = [_execute(s) for s in suites]
+    results = _execute_suites(suites)
 
     ran = [r for r in results if not r["skipped"] and r["score"] is not None]
     if ran:
@@ -202,6 +223,14 @@ def run_benchmark(*, ids: list[str] | None = None) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="hermesbench")
     ap.add_argument("--suite", help="comma-separated suite ids to restrict to")
+    ap.add_argument("--trials", type=int, help="trials per prompt case")
+    ap.add_argument("--case-concurrency", type=int, help="parallel prompt cases within each suite")
+    ap.add_argument("--suite-concurrency", type=int, help="parallel suites")
+    ap.add_argument(
+        "--high-rate",
+        action="store_true",
+        help="fast preset: suite concurrency 4 and case concurrency 8 unless explicitly set",
+    )
     ap.add_argument(
         "--suite-path",
         action="append",
@@ -212,6 +241,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--no-store", action="store_true", help="do not persist to the trend store")
     args = ap.parse_args(argv)
+
+    if args.high_rate:
+        os.environ.setdefault("HERMES_BENCH_SUITE_CONCURRENCY", "4")
+        os.environ.setdefault("HERMES_BENCH_CONCURRENCY", "8")
+        os.environ["HERMES_BENCH_HIGH_RATE"] = "1"
+    if args.trials is not None:
+        os.environ["HERMES_BENCH_TRIALS"] = str(max(1, args.trials))
+    if args.case_concurrency is not None:
+        os.environ["HERMES_BENCH_CONCURRENCY"] = str(max(1, args.case_concurrency))
+    if args.suite_concurrency is not None:
+        os.environ["HERMES_BENCH_SUITE_CONCURRENCY"] = str(max(1, args.suite_concurrency))
 
     if args.suite_path:
         existing = os.environ.get("HERMESBENCH_SUITE_PATH")

@@ -325,7 +325,10 @@ secrets, raw `.env`, memory contents, chats, and local filesystem paths by
 default. Set `HERMESBENCH_INCLUDE_PATHS=1` only for private debugging.
 
 Trials default to 2 per case (`HERMES_BENCH_TRIALS`); concurrency
-`HERMES_BENCH_CONCURRENCY` (default 4). More trials = a steadier estimate on a
+`HERMES_BENCH_CONCURRENCY` (default 4) controls prompt cases within a suite, and
+`HERMES_BENCH_SUITE_CONCURRENCY` (default 1) controls suites across the run.
+`--high-rate` sets suite concurrency 4 and case concurrency 8 unless explicit
+flags override it. More trials = a steadier estimate on a
 non-deterministic system, at more tokens/time.
 
 ---
