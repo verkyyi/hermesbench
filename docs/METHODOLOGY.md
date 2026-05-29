@@ -158,16 +158,23 @@ redacted **profile snapshot** of benchmark-relevant config; see §7.
 ## 2. Structure
 
 ```
-usecases (dataset) ─┐
-harness (drive) ────┼─► suites (one per category) ─► runner ─► store ─► report / JSON
-judge (LLM verdict)─┘
+case spec ─► driver adapter ─► target adapter ─► deterministic checks ─┐
+                                                                        ├─► suite score
+transcript ─────────────────────────────────────────► LLM judge ────────┘
 ```
 
 - **`usecases.py`** — the dataset: scenarios grouped into categories, each with
   an `expectation` (the closure the user should get). A scenario may be a single
-  `prompt` or a multi-turn `turns` list.
-- **`harness.py`** — drives the default profile in an isolated single-turn or
-  multi-turn session and returns the transcript + mechanical signals.
+  `initial_prompt`/`prompt` or a multi-turn `turns` list. Cases do not declare
+  target frameworks or surfaces.
+- **`drivers.py`** — orchestrates scenarios. The default `static` driver replays
+  declared turns; future drivers can be deterministic state machines or bounded
+  agent controllers.
+- **`targets.py`** — talks to the target agent framework. The first adapter is
+  Hermes CLI; direct vs kanban is profile/run configuration, not case data.
+- **`harness.py`** — lower-level isolated Hermes process/session execution.
+- **`checks.py`** — deterministic artifact/scope checks.
+- **`scoring.py`** — deterministic-first case scoring.
 - **`judge.py`** — an LLM rules on the parts only judgement can assess.
 - **`suites/usecases.py`** — one `run()` per category: drive + judge across
   trials, aggregate to `{score, metrics}`.
@@ -182,16 +189,18 @@ run without model credentials.
 
 ---
 
-## 3. Grading: mechanical core + LLM judge
+## 3. Grading: deterministic core + bounded LLM judge
 
 A subtlety: "reliability > capability" and "embrace LLM judgement" are in mild
 tension — the reliability signals (responded? how fast? crashed? concluded?) are
 exactly what you want measured **deterministically**, not by a judge. So every
-suite is **hybrid**:
+suite is **hybrid**, but deterministic evidence dominates:
 
-- **Mechanical** (from the harness, deterministic): `responded`, time-to-first-
+- **Mechanical** (from the target adapter, deterministic): `responded`, time-to-first-
   answer (`ttfa_ms`), total latency (`ttlt_ms`), `stable` (no crash/timeout/
   error), `concluded` (a terminal reply arrived within budget).
+- **Artifact/scope checks** (from `checks.py`, deterministic): file manifests,
+  command/check outcomes, allowed side-effect scope, fixture expectations.
 - **LLM-judged** (from `judge.py`): `conclusion_type` ∈
   {`completed`, `rejected`, `clarification`, **`none`**}, `appropriate` (0–1,
   vs the case's expectation), `coherent` (0–1).
@@ -201,7 +210,27 @@ reply (mechanical) *and* the judge ruling it isn't a stall (`none`).
 
 ---
 
-## 4. The black-box harness
+## 4. Driver and target harness
+
+The case definition is intentionally simple and target-agnostic:
+
+```yaml
+id: clarify_then_verify
+expectation: task_done
+initial_prompt: Help me verify status.
+driver:
+  kind: static
+  max_turns: 1
+checks:
+  - type: artifact_exists
+    path: hb_note.txt
+```
+
+Run configuration chooses the driver and target. Today the default driver is
+`static`, and the default target adapter is Hermes CLI. Agent-driven controller
+drivers such as Codex or Claude Code can be added behind the same driver
+interface; they must not solve the task for the target, only provide bounded
+user turns, observations, and check output.
 
 For each prompt case the harness runs, in its **own throwaway `HERMES_HOME`**
 (config + creds copied from the default profile) and a benchmark-owned working
@@ -304,41 +333,40 @@ Add cases by editing `usecases.py` (and a budget + label for a new category).
 
 ## 7. Scoring, verdict, and the fingerprint
 
-**Per category** (over all its prompts × trials), weighting reliability far
-above capability:
+**Per case**, scoring is deterministic-first:
 
 ```
-score = 100 · (0.40·closure_rate + 0.20·stable_rate
-               + 0.15·responsiveness_mean + 0.25·appropriate_mean)
+base =
+  0.25·closure
++ 0.20·artifact_correctness
++ 0.15·stability
++ 0.15·scope_discipline
++ 0.10·responsiveness
++ 0.10·appropriateness
++ 0.05·coherence
+
+final = base · closure_gate · stability_gate · scope_gate · semantic_gate
 ```
 
-- `closure_rate` — fraction of trials reaching a genuine conclusion (mechanical
-  concluded **and** judge ≠ `none`).
-- `stable_rate` — fraction with no crash/timeout/error.
-- `responsiveness_mean` — per trial, a time-to-reply score: 1.0 at/under the
+- `closure`, `stability`, `scope_discipline`, `artifact_correctness`, and
+  `responsiveness` are deterministic.
+- `appropriateness`, `coherence`, and `semantic_gate` come from the judge.
+- `responsiveness` is a time-to-reply score: 1.0 at/under the
   category's `reply_target_s`, decaying linearly to 0 at 3×. Uses telemetry
   `ttfa_ms` when present, else wall-clock. **`reply_target_s` is calibrated to
   the observed warm-steady-state p50**, so this score sits ~0.9 at baseline and
   measures *drift* — a latency regression drops it; the absolute latency is
   always reported separately as `wall_p50_ms`. A **per-process warm-up turn**
   (one throwaway tool-free turn before the measured ones, under a lock) absorbs
-  cold-start so the score reflects warm latency — important because the 04:00
+  cold-start so the score reflects warm latency — important because scheduled
   cron runs cold. Disable with `HERMES_BENCH_WARMUP=0`.
-- `appropriate_mean` — judge appropriateness over trials with a valid verdict.
-
-That weighted value is the **base score**. The final score then applies
-score-only penalties:
-
-```
-final_score = base_score
-              · closure_rate
-              · stable_rate
-              · min(1, appropriate_mean / appropriateness_target)
-```
 
 This preserves a single result while keeping closure non-negotiable in practice:
 a category with a missed conclusion or crash cannot keep a high score just
-because other axes looked good. The default `appropriateness_target` is `0.7`.
+because other axes looked good.
+
+**Per-suite score** is the mean of its case/trial scores. Metrics still expose
+axis means, deterministic check failures, judge errors, and sampled failures.
 
 **Overall score** = weighted mean of the categories that ran; suite errors score
 0, while skipped suites drop out. **Fingerprint** per run:

@@ -21,6 +21,8 @@ small general-helper overflow package for normal assistant requests.
 - **48 bundled prompt use cases** across 12 balanced categories.
 - **Harness-driven scenarios**: a use case can be one user turn or a multi-turn
   conversation in one isolated Hermes session.
+- **Driver/target separation**: cases define user goals, fixtures, checks, and
+  scoring intent; run configuration chooses the driver and target agent adapter.
 - **4 audience packages**: technical operator, agent builder, knowledge worker,
   and general helper overflow.
 - **Score-only verdict**: closure failures, instability, inappropriate answers,
@@ -31,6 +33,25 @@ small general-helper overflow package for normal assistant requests.
 - **Local suites**: users can add private JSON/YAML suites without changing
   HermesBench code.
 - **Trend store**: runs persist to `$HERMES_HOME/hermesbench.db`.
+
+## Framework Shape
+
+HermesBench now treats a case as a target-agnostic scenario:
+
+```text
+case spec -> driver adapter -> target adapter -> deterministic checks -> judge -> score
+```
+
+- **Case spec**: goal, `initial_prompt`/`prompt`/`turns`, optional fixture,
+  deterministic checks, and scoring intent.
+- **Driver adapter**: orchestrates the scenario. The bundled default is
+  `static`, which sends the declared prompt/turns. Later drivers can be Codex,
+  Claude Code, or deterministic state machines.
+- **Target adapter**: talks to the agent under test. The current public adapter
+  is Hermes CLI; direct/no-kanban vs kanban delegation is run/profile config,
+  not case data.
+- **Scorer**: uses deterministic evidence first and LLM judgement only for
+  semantic appropriateness/coherence.
 
 ## Published Baselines
 
@@ -177,7 +198,7 @@ Local suite files can be JSON or YAML:
         {
           "id": "release_unknown",
           "expectation": "clarify",
-          "prompt": "Is the release safe to ship?",
+          "initial_prompt": "Is the release safe to ship?",
           "notes": "No release evidence is provided; ask what to inspect."
         },
         {
@@ -201,6 +222,8 @@ They are for user-specific regression coverage.
 Prompt cases support either `prompt` for a single turn or `turns` for a
 multi-turn conversation. Runtime suites can go further and drive multiple
 Hermes profiles, kanban, gateways, or other auditable side-effect scopes.
+Cases must not declare target surfaces such as direct/kanban; those are run
+configuration and leaderboard metadata.
 
 ## Side-Effect Policy
 
@@ -220,16 +243,20 @@ Profile snapshots redact secrets and local paths by default. Set
 
 ## Scoring
 
-Per suite, HermesBench combines mechanical and judged signals:
+Per suite, HermesBench combines deterministic and judged signals:
 
 - closure
+- artifact correctness
 - stability
+- scope discipline
 - responsiveness
 - appropriateness
 - coherence
 
-The final score is the only product-facing verdict. Axis scores explain why the
-score moved.
+Closure, stability, artifact checks, scope discipline, and responsiveness are
+deterministic. Appropriateness and coherence come from the LLM judge. The final
+score is the only product-facing verdict; axis scores explain why the score
+moved.
 
 ## Documentation
 

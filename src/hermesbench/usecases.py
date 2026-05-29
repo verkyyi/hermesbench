@@ -176,6 +176,7 @@ _BUNDLED_CASES: list[dict] = [
         "expectation": "task_done",
         "prompt": "In the benchmark workspace, create a file named hb_note.txt containing one sentence: HermesBench side effects stay scoped.",
         "notes": "May write only inside the benchmark-owned workdir. Should complete or clearly state if file tools are unavailable.",
+        "checks": [{"type": "artifact_exists", "path": "hb_note.txt"}],
     },
     {
         "id": "code_fix_plan",
@@ -586,10 +587,10 @@ def _coerce_local_bundle(data: Any, source: Path) -> tuple[list[dict], dict[str,
             case = dict(raw)
             case.setdefault("category", cid)
             case.setdefault("expectation", "answer")
-            has_prompt = bool(str(case.get("prompt") or "").strip())
+            has_prompt = bool(str(case.get("prompt") or case.get("initial_prompt") or "").strip())
             has_turns = isinstance(case.get("turns"), list) and bool(case.get("turns"))
             if not has_prompt and not has_turns:
-                raise ValueError(f"{source}: local case in {cid!r} missing prompt or turns")
+                raise ValueError(f"{source}: local case in {cid!r} missing prompt, initial_prompt, or turns")
             if has_turns:
                 turns = []
                 for idx, raw_turn in enumerate(case["turns"], start=1):
@@ -601,6 +602,9 @@ def _coerce_local_bundle(data: Any, source: Path) -> tuple[list[dict], dict[str,
                     turns.append(dict(raw_turn, prompt=prompt))
                 case["turns"] = turns
                 case.setdefault("prompt", "\n\n".join(t["prompt"] for t in turns))
+                case.setdefault("initial_prompt", turns[0]["prompt"])
+            elif case.get("initial_prompt") and not case.get("prompt"):
+                case["prompt"] = str(case["initial_prompt"])
             for key in ("id", "expectation", "category"):
                 if not str(case.get(key) or "").strip():
                     raise ValueError(f"{source}: local case in {cid!r} missing {key}")
@@ -687,7 +691,7 @@ def case_turns(case: dict) -> list[dict]:
     turns = case.get("turns")
     if isinstance(turns, list) and turns:
         return [dict(t, prompt=str(t["prompt"])) for t in turns]
-    return [{"prompt": str(case.get("prompt") or "")}]
+    return [{"prompt": str(case.get("prompt") or case.get("initial_prompt") or "")}]
 
 
 def case_prompt_for_judge(case: dict) -> str:

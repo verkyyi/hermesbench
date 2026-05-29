@@ -61,14 +61,20 @@ categories:
 Required:
 
 - `id`: globally unique across bundled and local cases
-- `prompt` or `turns`: a single user prompt, or a list of user turns sent to
-  Hermes in one isolated session
+- `initial_prompt`, `prompt`, or `turns`: a single user prompt, or a list of
+  user turns sent by the driver in one isolated session
 - `expectation`: one of `answer`, `task_done`, `clarify`, `refuse`
 
 Recommended:
 
 - `notes`: judge-facing rubric notes
 - `category`: optional inside each case; defaults to the category id
+- `driver`: driver policy knobs; default is `{"kind": "static"}`
+- `checks`: deterministic checks such as `artifact_exists`
+
+Cases are driver- and target-agnostic. Do not put target surfaces such as
+direct/kanban, profile names, or model/provider details in a case. Those belong
+to the run configuration and benchmark snapshot.
 
 Multi-turn case:
 
@@ -82,9 +88,21 @@ cases:
     notes: The second turn supplies missing context; judge the whole transcript.
 ```
 
-Each turn may also set `toolsets` or `timeout_s`. JSON/YAML prompt suites are
-for default-profile conversations; use opt-in runtime suites for named-profile
-collaboration.
+Each turn may also set `timeout_s`. JSON/YAML prompt suites are for
+target-agnostic conversations; use opt-in runtime suites for framework-specific
+collaboration paths.
+
+Simple deterministic check:
+
+```yaml
+cases:
+  - id: scoped_file_created
+    expectation: task_done
+    initial_prompt: Create hb_note.txt in the benchmark workspace.
+    checks:
+      - type: artifact_exists
+        path: hb_note.txt
+```
 
 ## Side Effects
 

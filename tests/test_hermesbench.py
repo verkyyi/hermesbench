@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from hermesbench import harness, registry, run as run_mod, usecases
+from hermesbench import checks, harness, registry, run as run_mod, scenarios, scoring, usecases
 from hermesbench.suites import gateway as gateway_mod
 from hermesbench.suites import usecases as suite_mod
 
@@ -188,3 +188,52 @@ def test_execution_surface_classification():
     assert run_mod._execution_surface({
         "plugins": {"enabled": ["kanban-orchestrator-routing"]},
     })["kanban_enabled"] is True
+
+
+def test_case_normalizes_to_driver_target_agnostic_scenario(monkeypatch):
+    monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
+    case = {
+        "id": "demo",
+        "category": "code_workflow",
+        "expectation": "task_done",
+        "initial_prompt": "Fix the fixture.",
+        "checks": [{"type": "artifact_exists", "path": "done.txt"}],
+    }
+    scenario = scenarios.from_case(case)
+    assert scenario["initial_prompt"] == "Fix the fixture."
+    assert scenario["driver"]["kind"] == "static"
+    assert scenario["turns"] == [{"prompt": "Fix the fixture."}]
+    assert "target_surfaces" not in scenario
+
+
+def test_deterministic_checks_and_scoring_dominate():
+    execution = {
+        "concluded": True,
+        "stable": True,
+        "side_effects": {
+            "scope": "benchmark_workdir",
+            "files": [{"path": "done.txt"}],
+        },
+    }
+    scenario = {"checks": [{"type": "artifact_exists", "path": "done.txt"}]}
+    check_result = checks.run_checks(scenario, execution)
+    assert check_result["score"] == 1.0
+
+    scored = scoring.score_case(
+        execution=execution,
+        check_result=check_result,
+        judge={"conclusion_type": "completed", "appropriate": 0.5, "coherent": 0.5},
+        responsiveness=1.0,
+    )
+    assert scored["deterministic_weight_share"] == 0.85
+    assert scored["score"] > 80
+
+    failed = checks.run_checks({"checks": [{"type": "artifact_exists", "path": "missing.txt"}]}, execution)
+    failed_score = scoring.score_case(
+        execution=execution,
+        check_result=failed,
+        judge={"conclusion_type": "completed", "appropriate": 1.0, "coherent": 1.0},
+        responsiveness=1.0,
+    )
+    assert failed_score["axes"]["artifact_correctness"] == 0.0
+    assert failed_score["score"] < scored["score"]

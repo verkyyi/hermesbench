@@ -1,19 +1,18 @@
 """HermesBench — harness-driven reliability benchmark for Hermes Agent.
 
-Drives Hermes as an end user would (isolated `hermes chat -q` scenarios),
-judges replies/transcripts with an LLM, and scores reliability/responsiveness/
-closure above capability. Prompt suites stay black-box; explicit runtime suites
-can evaluate auditable kanban/multi-profile contracts. Persists runs to a SQLite
-trend store and can emit JSON for dashboards or public reporting.
+Runs driver/target-agnostic scenarios against a target agent adapter, judges
+replies/transcripts with an LLM only where semantics are needed, and scores
+deterministic evidence first: closure, artifact checks, stability, scoped side
+effects, and responsiveness. Prompt suites stay black-box; explicit runtime
+suites can evaluate auditable kanban/multi-profile contracts. Persists runs to
+a SQLite trend store and can emit JSON for dashboards or public reporting.
 
 Design notes:
-  - Harness-driven single-turn and multi-turn scenarios.
+  - Cases define goals/prompts/fixtures/checks; run config chooses driver/target.
   - Reliability > capability; **every prompt must reach a genuine conclusion**
     (answer / refusal / clarification) — closure is the headline contract.
-  - Hybrid grading: mechanical reliability signals (responded / latency /
-    stable / concluded) + an LLM judge (conclusion-type / appropriate /
-    coherent). No pass/fail tier concept; all prompt suites drive real agents
-    and self-skip without HERMES_RUN_LLM_EVALS.
+  - Deterministic-first hybrid grading: mechanical reliability + artifact/scope
+    checks dominate; LLM judge covers conclusion-type / appropriate / coherent.
   - Harness pinned: each run records git sha, model id, profile hash, profile
     snapshot, and scoped side-effect artifact manifests (the "harness effect" —
     same weights swing 10-50pts across harnesses).

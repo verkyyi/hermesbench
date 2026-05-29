@@ -207,8 +207,10 @@
             Public suites make scores comparable. Local suites make the
             framework useful for your own Hermes deployment. Load private JSON
             or YAML suites without changing the runner, store, report, or
-            dashboard code. Use <code>prompt</code> for one turn or
-            <code>turns</code> for a multi-turn conversation.
+            dashboard code. Cases define prompts, fixtures, checks, and driver
+            policy; run configuration chooses the target agent. Use
+            <code>initial_prompt</code> for one turn or <code>turns</code> for a
+            multi-turn conversation.
           </p>
         </div>
         <pre><code>hermesbench --suite-path ./my-suites --list-suites
@@ -258,16 +260,20 @@ HERMES_RUN_LLM_EVALS=1 hermesbench --json --no-store</code></pre>
         </div>
         <div class="pill-row">
           <span>Closure</span>
+          <span>Artifact correctness</span>
           <span>Stability</span>
+          <span>Scope discipline</span>
           <span>Responsiveness</span>
           <span>Appropriateness</span>
           <span>Coherence</span>
         </div>
         <p>
-          HermesBench prefers truthful, stable, bounded behavior over raw task
-          capability. Hard external-agent capability benchmarks remain useful,
-          but HermesBench asks a different question: is this Hermes runtime
-          configuration reliable enough to use every day?
+          HermesBench scores deterministic evidence first: terminal outcome,
+          artifact checks, stability, scoped side effects, and latency. The LLM
+          judge is bounded to semantic appropriateness and coherence. Hard
+          external-agent capability benchmarks remain useful, but HermesBench
+          asks whether this runtime configuration is reliable enough to use
+          every day.
         </p>
       </section>
     </main>
