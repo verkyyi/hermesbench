@@ -45,6 +45,7 @@ Hermes default profile.
 | Memory | `honcho`, enabled |
 | Toolsets | `hermes-cli`, `kanban` |
 | Plugins | `agentfeeds`, `kanban-orchestrator-routing`, `break-glass-cli` |
+| Worker profiles | present locally, not exercised in this baseline |
 | Command | `HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1` |
 
 Baseline files:
@@ -56,6 +57,9 @@ Baseline files:
 HermesBench baseline submissions should ideally link an installable Hermes
 profile distribution repo. Redacted distribution-style baselines are acceptable
 when the profile contains private/local state that cannot be published.
+If a baseline exercises kanban delegation or multi-worker execution, every
+involved orchestrator/worker profile must be included as an installable
+distribution or as a redacted distribution-style snapshot.
 
 ## Install
 

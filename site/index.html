@@ -94,7 +94,9 @@
         <p class="note">
           Baseline command: <code>HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1</code>.
           Memory: Honcho enabled. Toolsets: hermes-cli, kanban. Plugins:
-          agentfeeds, kanban-orchestrator-routing, break-glass-cli.
+          agentfeeds, kanban-orchestrator-routing, break-glass-cli. Worker
+          profiles were present locally but not exercised because origin_return
+          was skipped.
         </p>
       </section>
 
@@ -173,7 +175,10 @@ HERMES_RUN_LLM_EVALS=1 hermesbench \
             HermesBench results are most useful when tied to a Hermes profile
             distribution: a git repo containing the agent's distribution.yaml,
             SOUL, config, skills, cron, and MCP wiring. Credentials, memories,
-            sessions, state, logs, and local files stay private.
+            sessions, state, logs, and local files stay private. If a result
+            exercises delegated or multi-worker execution, every involved
+            worker profile must be published or redacted as part of the
+            baseline.
           </p>
         </div>
         <pre><code>hermes profile install github.com/you/my-agent --alias

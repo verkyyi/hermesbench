@@ -65,11 +65,35 @@ Never publish:
 - local filesystem paths
 - personal account identifiers
 
+## Multi-Profile / Worker Baselines
+
+If a HermesBench result exercises kanban delegation, origin return, or any
+multi-worker execution path, the baseline must publish every profile involved in
+that measured path:
+
+- front-desk/default profile
+- orchestrator profile
+- each worker profile that can receive work
+- any routing/delegation profile used by the suite
+
+Publishing can happen in either form:
+
+- preferred: link each profile as an installable Hermes profile distribution
+  repository
+- acceptable for private/local profiles: include a redacted distribution-style
+  snapshot for each profile
+
+If kanban is merely enabled in config but no delegated/multi-worker suite ran,
+the baseline should say that explicitly and list worker profiles as "present but
+not exercised" rather than implying they contributed to the score.
+
 ## Submission Checklist
 
 - The result includes `score.json`.
 - The runtime configuration is either linked as a profile distribution repo or
   summarized as a redacted distribution-style baseline.
+- Any worker profiles involved in measured delegated execution are published or
+  redacted individually.
 - The exact command and benchmark version are recorded.
 - The result says whether high-rate mode was used.
 - The result says which suites were skipped.

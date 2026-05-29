@@ -18,7 +18,22 @@
     "profile_hash": "46baed471e56051cba87b3cb67ac1d75c7a2bb97668570c51645832f34608377",
     "memory_provider": "honcho",
     "toolsets": ["hermes-cli", "kanban"],
-    "plugins_enabled": ["agentfeeds", "kanban-orchestrator-routing", "break-glass-cli"]
+    "plugins_enabled": ["agentfeeds", "kanban-orchestrator-routing", "break-glass-cli"],
+    "worker_profile_coverage": {
+      "kanban_enabled": true,
+      "multi_worker_execution_exercised": false,
+      "origin_return_suite": "skipped: HERMES_BENCH_ORIGIN_RETURN not set",
+      "locally_present_profiles": [
+        "orchestrator",
+        "worker",
+        "worker-code",
+        "worker-fast",
+        "worker-ops",
+        "worker-report",
+        "worker-research"
+      ],
+      "published_worker_profiles": []
+    }
   },
   "suite_scores": {
     "runtime_config": 68.38,

@@ -40,6 +40,21 @@ runtime_config:
     default_assignee: orchestrator
     auto_decompose: true
     max_spawn: 20
+worker_profile_coverage:
+  kanban_enabled: true
+  multi_worker_execution_exercised: false
+  origin_return_suite: "skipped: HERMES_BENCH_ORIGIN_RETURN not set"
+  reason: "This baseline measured the default/front-desk profile prompt suites and deterministic gateway ack policy. It did not run the async delegated worker path."
+  locally_present_profiles:
+    - orchestrator
+    - worker
+    - worker-code
+    - worker-fast
+    - worker-ops
+    - worker-report
+    - worker-research
+  published_worker_profiles: []
+  publication_policy: "If a baseline runs delegated/multi-worker suites, every involved orchestrator/worker profile must be published as an installable profile distribution or as a redacted distribution-style profile snapshot."
 redaction:
   installable_distribution: false
   reason: "This baseline publishes benchmark-relevant runtime shape, not the full private profile distribution."

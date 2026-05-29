@@ -43,6 +43,30 @@ HERMES_RUN_LLM_EVALS=1 hermesbench --high-rate --trials 1
 | Kanban | dispatch in gateway, orchestrator profile, auto-decompose |
 | Gateway | recent-file trust enabled for 600 seconds |
 
+## Worker Profile Coverage
+
+Kanban was enabled in this runtime configuration, and local worker-style
+profiles were present:
+
+- `orchestrator`
+- `worker`
+- `worker-code`
+- `worker-fast`
+- `worker-ops`
+- `worker-report`
+- `worker-research`
+
+However, this baseline did **not** exercise multi-worker execution. The measured
+run used the default/front-desk prompt suites plus deterministic
+`gateway_ack_policy`; `origin_return` was skipped because
+`HERMES_BENCH_ORIGIN_RETURN` was not set.
+
+Because worker profiles were not part of the measured path, their full profile
+configs are not published in this baseline. If a future baseline runs delegated
+or multi-worker suites, every involved orchestrator/worker profile must be
+published as an installable Hermes profile distribution or as a redacted
+distribution-style profile snapshot.
+
 ## Suite Scores
 
 | suite | score |
