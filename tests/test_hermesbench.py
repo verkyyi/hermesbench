@@ -22,7 +22,12 @@ def test_bundled_dataset_uses_real_use_case_categories(monkeypatch):
     assert all(len(usecases.cases_for(c)) >= usecases.MIN_CASES_PER_CATEGORY for c in categories)
     assert usecases.case_by_id("dev_ci_failure_triage") is not None
     assert not any("ainbox" in json.dumps(case).lower() for case in usecases.all_cases())
-    assert sum(1 for case in usecases.all_cases() if case.get("checks")) == 27
+    assert sum(1 for case in usecases.all_cases() if case.get("checks")) == 1
+    assert all(
+        check.get("type") == "artifact_exists"
+        for case in usecases.all_cases()
+        for check in case.get("checks", [])
+    )
     assert all(len(usecases.case_turns(case)) == 1 for case in usecases.all_cases())
     prompts = {case["id"]: case["prompt"] for case in usecases.all_cases()}
     forbidden_prompt_fragments = [
@@ -506,11 +511,11 @@ def test_observability_extracts_upstream_state_telemetry_and_trajectory(tmp_path
         conn.execute("INSERT INTO sessions VALUES (?,?,?,?,?,?,?)", ("sess-1", "hermesbench", "model-x", 1.0, 3, 1, 1))
         conn.execute(
             "INSERT INTO messages VALUES (?,?,?,?,?,?,?,?,?)",
-            (1, "sess-1", "assistant", "", None, '[{"id":"call-1","function":{"name":"terminal","arguments":"{}"}}]', None, 1.0, "tool_calls"),
+            (1, "sess-1", "assistant", "", None, '[{"id":"call-1","function":{"name":"terminal","arguments":"{\\"command\\":\\"echo user@example.com\\"}"}}]', None, 1.0, "tool_calls"),
         )
         conn.execute(
             "INSERT INTO messages VALUES (?,?,?,?,?,?,?,?,?)",
-            (2, "sess-1", "tool", "{}", "call-1", None, "terminal", 2.0, None),
+            (2, "sess-1", "tool", "{\"output\":\"call 415-555-1212\"}", "call-1", None, "terminal", 2.0, None),
         )
 
     (workdir / "trajectory_samples.jsonl").write_text(json.dumps({
@@ -529,6 +534,11 @@ def test_observability_extracts_upstream_state_telemetry_and_trajectory(tmp_path
     assert out["turn"]["model"] == "model-x"
     assert out["turn"]["tool_count"] == 1
     assert {tool["name"] for tool in out["tools"]} == {"terminal", "read_file"}
+    terminal_call = next(tool for tool in out["tools"] if tool["name"] == "terminal" and tool["status"] == "observed")
+    terminal_result = next(tool for tool in out["tools"] if tool["name"] == "terminal" and tool["status"] == "observed_result")
+    assert terminal_call["args"]["command"] == "echo <redacted:email>"
+    assert terminal_result["result"]["output"] == "call <redacted:phone>"
+    assert out["retention"]["tool_privacy_filter"] == "standard_public_safe_v1"
     assert out["session"]["tool_call_count"] == 1
     assert "<isolated_home>" in out["sources"]["state_db"]["path"]
 
@@ -627,8 +637,9 @@ def test_public_task_catalog_exposes_scenario_details(monkeypatch):
     assert task["suite_id"] == "general_assistant"
     assert task["title"] == "Start Today"
     assert task["initial_prompt"]
-    assert task["success_criteria"]
-    assert task["safety_criteria"]
+    assert task["success_criteria"] == []
+    assert task["safety_criteria"] == []
+    assert "expectation" not in task
     assert "audience_package" not in task
     assert task["budget"]["reply_target_s"] > 0
     assert task["effect_level"] == "read_only"
