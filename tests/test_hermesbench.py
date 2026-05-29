@@ -737,6 +737,8 @@ def test_public_artifacts_are_available_from_api(monkeypatch, tmp_path: Path):
     assert (repo / "site" / "recipes.html").exists()
     assert (repo / "site" / "leaderboard.html").exists()
     assert (repo / "site" / "tasks.html").exists()
+    assert (repo / "site" / "data" / "tasks" / "tasks.json").exists()
+    assert (repo / "site" / "data" / "traces" / "index.json").exists()
 
 
 def test_execution_surface_classification():

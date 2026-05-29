@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from html import escape
 import json
 from pathlib import Path
+import shutil
 from typing import Any
 
 from hermesbench import usecases
@@ -47,6 +48,13 @@ def _write_json(path: Path, data: Any) -> None:
 def _write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def _mirror_tree(src: Path, dst: Path) -> None:
+    if dst.exists():
+        shutil.rmtree(dst)
+    if src.exists():
+        shutil.copytree(src, dst)
 
 
 def _anchor(value: Any) -> str:
@@ -913,6 +921,8 @@ def build_public_artifacts(repo_root: Path) -> dict:
     _write_text(site_root / "leaderboard.html", render_traces_html(index, traces))
     _write_text(site_root / "tasks.html", _redirect_page("Recipes", "recipes.html"))
     _write_text(site_root / "traces.html", _redirect_page("Leaderboard", "leaderboard.html"))
+    _mirror_tree(tasks_root, site_root / "data" / "tasks")
+    _mirror_tree(traces_root, site_root / "data" / "traces")
     return {
         "tasks": catalog["task_count"],
         "traces": index["trace_count"],
