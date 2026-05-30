@@ -16,6 +16,8 @@ from pathlib import Path
 import shutil
 from typing import Any
 
+import yaml
+
 from hermesbench import usecases
 
 SCHEMA_VERSION = 3
@@ -47,7 +49,8 @@ def _write_json(path: Path, data: Any) -> None:
 
 def _write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    normalized = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+    path.write_text(normalized, encoding="utf-8")
 
 
 def _mirror_tree(src: Path, dst: Path) -> None:
@@ -210,6 +213,7 @@ def build_trace_for_baseline(baseline_dir: Path, task_catalog: dict | None = Non
     catalog = task_catalog or build_task_catalog()
     tasks_by_id = _task_map(catalog)
     manifest = _read_json(baseline_dir / "run-manifest.json")
+    score = _read_json(baseline_dir / "score.json") if (baseline_dir / "score.json").exists() else {}
     rows = _read_jsonl(baseline_dir / "case-results.jsonl")
     cases: list[dict] = []
     for idx, row in enumerate(rows, start=1):
@@ -249,6 +253,10 @@ def build_trace_for_baseline(baseline_dir: Path, task_catalog: dict | None = Non
         "observed_runtime_s": manifest.get("observed_runtime_s"),
         "command": manifest.get("command"),
         "environment": manifest.get("environment") or {},
+        "score_breakdown": score.get("score_breakdown") or {},
+        "suite_scores": score.get("suite_scores") or {},
+        "skipped_suites": manifest.get("skipped_suites") or score.get("skipped_suites") or [],
+        "profile": score.get("profile") or {},
         "profile_fingerprint": manifest.get("profile_fingerprint") or {},
         "redaction": {
             "policy": "public_safe_by_default",
@@ -287,6 +295,223 @@ def build_trace_index(baselines_root: Path, traces_root: Path) -> dict:
         "generated_at": _now(),
         "trace_count": len(traces),
         "traces": traces,
+    }
+
+
+def _as_list(value: Any) -> list[Any]:
+    if isinstance(value, list):
+        return value
+    if value in (None, ""):
+        return []
+    return [value]
+
+
+def _string_list(value: Any) -> list[str]:
+    return [str(item) for item in _as_list(value) if str(item).strip()]
+
+
+def _read_yaml(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data if isinstance(data, dict) else {}
+
+
+def _distribution_metadata(baseline_dir: Path) -> dict:
+    score = _read_json(baseline_dir / "score.json") if (baseline_dir / "score.json").exists() else {}
+    profile = score.get("profile") or {}
+    snapshot_path = baseline_dir / "profile-snapshot.redacted.yaml"
+    distribution = profile.get("distribution") or profile.get("profile_distribution") or {}
+    if distribution:
+        return {
+            "form": "installable_distribution",
+            "repo_url": distribution.get("repo_url") or distribution.get("url"),
+            "version": distribution.get("version"),
+            "commit": distribution.get("commit") or distribution.get("sha"),
+            "snapshot": snapshot_path.as_posix() if snapshot_path.exists() else None,
+        }
+    return {
+        "form": "redacted_distribution_style" if snapshot_path.exists() else "profile_fingerprint_only",
+        "repo_url": None,
+        "version": None,
+        "commit": None,
+        "snapshot": f"data/baselines/{baseline_dir.name}/profile-snapshot.redacted.yaml" if snapshot_path.exists() else None,
+    }
+
+
+def _suite_score_rows(suite_scores: dict) -> list[dict]:
+    rows = [
+        {"suite_id": str(suite_id), "score": score}
+        for suite_id, score in (suite_scores or {}).items()
+        if score is not None
+    ]
+    return sorted(rows, key=lambda row: (float(row.get("score") or 0.0), row["suite_id"]), reverse=True)
+
+
+def _scenario_score_rows(trace: dict, *, reverse: bool) -> list[dict]:
+    rows = []
+    for case in trace.get("cases") or []:
+        if case.get("score") is None:
+            continue
+        case_id = str(case.get("case") or "")
+        baseline_id = str(trace.get("baseline_id") or "")
+        rows.append({
+            "case": case_id,
+            "suite_id": case.get("suite_id"),
+            "title": ((case.get("task") or {}).get("title")) or case_id,
+            "score": case.get("score"),
+            "trace_url": f"leaderboard.html#trace-{_anchor(baseline_id)}-{_anchor(case_id)}",
+        })
+    return sorted(rows, key=lambda row: (float(row.get("score") or 0.0), row["case"]), reverse=reverse)
+
+
+def _suite_was_exercised(trace: dict, suite_id: str) -> bool:
+    return any(case.get("suite_id") == suite_id for case in trace.get("cases") or [])
+
+
+def _suite_was_skipped(trace: dict, suite_id: str) -> bool:
+    return any(item.get("suite_id") == suite_id for item in trace.get("skipped_suites") or [])
+
+
+def _profile_roles(profile: dict, snapshot: dict, trace: dict) -> list[dict]:
+    surface = profile.get("execution_surface") or snapshot.get("execution_surface") or {}
+    capability = snapshot.get("capability_surface") or {}
+    target = capability.get("target") or {}
+    config = snapshot.get("config") or {}
+    kanban = config.get("kanban") or {}
+    plugins = _string_list(profile.get("plugins_enabled") or ((config.get("plugins") or {}).get("enabled")))
+    target_profile = str(target.get("profile") or profile.get("target_profile") or "default")
+    delegated_exercised = _suite_was_exercised(trace, "delegated_closure")
+    delegated_skipped = _suite_was_skipped(trace, "delegated_closure")
+
+    roles = [{
+        "role": "front_desk",
+        "profile": target_profile,
+        "status": "exercised" if trace.get("case_count") else "present_not_exercised",
+        "evidence": "prompt benchmark cases route through this target profile",
+    }]
+
+    kanban_enabled = bool(surface.get("kanban_enabled")) or "kanban" in _string_list(profile.get("toolsets")) or "kanban-orchestrator-routing" in plugins
+    if kanban_enabled:
+        orchestrator = str(kanban.get("orchestrator_profile") or kanban.get("default_assignee") or "orchestrator")
+        status = "exercised" if delegated_exercised else "present_not_exercised"
+        roles.append({
+            "role": "orchestrator",
+            "profile": orchestrator,
+            "status": status,
+            "evidence": "delegated_closure suite exercised" if delegated_exercised else "kanban configured; delegated_closure not exercised",
+        })
+        roles.append({
+            "role": "routing_delegation",
+            "profile": "kanban-orchestrator-routing" if "kanban-orchestrator-routing" in plugins else orchestrator,
+            "status": status,
+            "evidence": "routing plugin/toolset present" + (" and exercised" if delegated_exercised else " but multi-profile suite skipped"),
+        })
+
+    requested_workers = _string_list(
+        ((trace.get("score_breakdown") or {}).get("profile_coverage") or {}).get("requested")
+    )
+    worker_status = "exercised" if delegated_exercised else "present_not_exercised"
+    for worker in requested_workers:
+        roles.append({
+            "role": "worker",
+            "profile": worker,
+            "status": worker_status,
+            "evidence": "requested worker profile in delegated closure coverage",
+        })
+
+    if kanban_enabled and delegated_skipped and not requested_workers:
+        roles.append({
+            "role": "worker",
+            "profile": "not_published",
+            "status": "present_not_exercised",
+            "evidence": "kanban enabled, but no worker profile list was published for this run",
+        })
+
+    return roles
+
+
+def build_profile_architecture_index(baselines_root: Path, traces: list[dict]) -> dict:
+    """Return public profile/distribution architecture metadata linked to scores."""
+    trace_by_baseline = {trace.get("baseline_id"): trace for trace in traces}
+    architectures: list[dict] = []
+    for baseline_dir in baseline_dirs(baselines_root):
+        trace = trace_by_baseline.get(baseline_dir.name)
+        if not trace:
+            continue
+        manifest = _read_json(baseline_dir / "run-manifest.json")
+        score = _read_json(baseline_dir / "score.json") if (baseline_dir / "score.json").exists() else {}
+        profile = score.get("profile") or trace.get("profile") or {}
+        snapshot = _read_yaml(baseline_dir / "profile-snapshot.redacted.yaml")
+        surface = profile.get("execution_surface") or snapshot.get("execution_surface") or {}
+        skills = profile.get("agent_skills") or (((snapshot.get("capability_surface") or {}).get("agent_skills") or {}).get("inventory")) or {}
+        suite_scores = _suite_score_rows(score.get("suite_scores") or trace.get("suite_scores") or {})
+        high = _scenario_score_rows(trace, reverse=True)[:5]
+        low = _scenario_score_rows(trace, reverse=False)[:5]
+        architectures.append({
+            "baseline_id": baseline_dir.name,
+            "run_id": manifest.get("run_id") or trace.get("run_id"),
+            "timestamp_utc": manifest.get("timestamp_utc") or trace.get("timestamp_utc"),
+            "overall_score": manifest.get("overall_score") or trace.get("overall_score"),
+            "execution_surface": {
+                "id": surface.get("id") or "direct",
+                "label": surface.get("label") or _label_text(surface.get("id") or "direct"),
+                "kanban_enabled": bool(surface.get("kanban_enabled")),
+                "prompt_case_contract": surface.get("prompt_case_contract") or "framework_agnostic",
+            },
+            "distribution": _distribution_metadata(baseline_dir),
+            "profile_fingerprint": manifest.get("profile_fingerprint") or trace.get("profile_fingerprint") or {},
+            "profile_hash": profile.get("profile_hash") or (manifest.get("profile_fingerprint") or {}).get("profile_hash"),
+            "model_provider": profile.get("model_provider"),
+            "model": profile.get("model"),
+            "memory": {
+                "provider": profile.get("memory_provider"),
+                "enabled": profile.get("memory_enabled"),
+            },
+            "toolsets": _string_list(profile.get("toolsets")),
+            "plugins_enabled": _string_list(profile.get("plugins_enabled")),
+            "agent_skills": {
+                "count": skills.get("count"),
+                "hash": skills.get("hash"),
+                "sample": _string_list(skills.get("sample"))[:12],
+                "truncated": bool(skills.get("truncated")),
+            },
+            "roles": _profile_roles(profile, snapshot, trace),
+            "related_scores": {
+                "overall": manifest.get("overall_score") or trace.get("overall_score"),
+                "score_breakdown": score.get("score_breakdown") or trace.get("score_breakdown") or {},
+                "suite_scores": suite_scores,
+                "top_suites": suite_scores[:5],
+                "improvement_suites": sorted(suite_scores, key=lambda row: (float(row.get("score") or 0.0), row["suite_id"]))[:5],
+                "top_scenarios": high,
+                "improvement_scenarios": low,
+                "leaderboard_url": f"leaderboard.html#trace-{_anchor(baseline_dir.name)}",
+                "trace_json": f"data/traces/{baseline_dir.name}/trace.json",
+            },
+            "benchmark_loop": {
+                "benchmark": "Run HermesBench against an installed profile distribution or the current target profile.",
+                "current_performance": "Use overall, suite, axis, and scenario scores from related_scores.",
+                "improve_from_high_scores": "Sort profile architectures by target suite/scenario score and reuse the public distribution shape.",
+            },
+            "source_files": {
+                "baseline": f"data/baselines/{baseline_dir.name}",
+                "trace_json": f"data/traces/{baseline_dir.name}/trace.json",
+                "score_json": f"data/baselines/{baseline_dir.name}/score.json",
+            },
+        })
+
+    architectures = sorted(
+        architectures,
+        key=lambda item: (float(item.get("overall_score") or 0.0), str(item.get("baseline_id") or "")),
+        reverse=True,
+    )
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "generated_at": _now(),
+        "profile_count": len(architectures),
+        "source": "public HermesBench baselines plus profile distribution snapshots",
+        "distribution_contract": "docs/profile-distribution-baselines.md",
+        "profiles": architectures,
     }
 
 
@@ -390,6 +615,203 @@ def _turns_label(row: dict) -> str:
 
 def _md_cell(value: Any, limit: int = 180) -> str:
     return _short(value, limit).replace("|", "\\|").replace("\n", " ")
+
+
+def _label_text(value: Any) -> str:
+    text = str(value or "").replace("_", " ").replace("-", " ").strip()
+    return text[:1].upper() + text[1:] if text else "-"
+
+
+def _fmt_bool(value: Any) -> str:
+    if value is True:
+        return "Yes"
+    if value is False:
+        return "No"
+    return "-"
+
+
+def _render_metric_cards(items: list[tuple[str, Any, str | None]]) -> str:
+    cards = []
+    for label, value, note in items:
+        cards.append(f"""
+          <div>
+            <span class="metric">{escape(_score(value))}</span>
+            <span class="label">{escape(label)}</span>
+            {f'<span class="metric-note">{escape(note)}</span>' if note else ''}
+          </div>
+        """)
+    return "".join(cards)
+
+
+def _render_score_breakdown(trace: dict) -> str:
+    breakdown = trace.get("score_breakdown") or {}
+    top_axes = breakdown.get("top_axes") or {}
+    axes = breakdown.get("axes") or {}
+    coverage = breakdown.get("coverage") or {}
+    rows = []
+    for label, value in [
+        ("Capability / truthfulness", top_axes.get("capability_truthfulness")),
+        ("Reliability / safety", top_axes.get("reliability_safety")),
+        ("Efficiency / UX", top_axes.get("efficiency_ux")),
+        ("Task fulfillment", axes.get("task_fulfillment")),
+        ("Evidence / truthfulness", axes.get("evidence_truthfulness")),
+        ("Outcome reached", axes.get("outcome_reached")),
+        ("Runtime / scope safety", axes.get("runtime_scope_safety")),
+        ("Responsiveness", axes.get("responsiveness")),
+        ("Communication quality", axes.get("communication_quality")),
+    ]:
+        if value is not None:
+            rows.append(f"<tr><th>{escape(label)}</th><td>{escape(_score(value))}</td></tr>")
+    if coverage:
+        rows.append(
+            "<tr><th>Coverage</th><td>"
+            + escape(str(coverage.get("label") or "-"))
+            + (f", {escape(str(coverage.get('prompt_cases')))} cases" if coverage.get("prompt_cases") else "")
+            + "</td></tr>"
+        )
+    return f"""
+      <div class="score-summary">
+        <div class="table-wrap mini">
+          <table><tbody>{''.join(rows)}</tbody></table>
+        </div>
+      </div>
+    """ if rows else ""
+
+
+def _render_skipped_suites(trace: dict) -> str:
+    skipped = trace.get("skipped_suites") or []
+    if not skipped:
+        return ""
+    items = "".join(
+        f"<li><code>{escape(str(item.get('suite_id')))}</code>: {escape(str(item.get('skip_reason') or 'skipped'))}</li>"
+        for item in skipped
+    )
+    return f"""
+      <div class="notice">
+        <strong>Skipped runtime suites</strong>
+        <ul>{items}</ul>
+      </div>
+    """
+
+
+def _render_case_score_tiles(case: dict) -> str:
+    top = case.get("top_axes") or {}
+    axes = case.get("axes") or {}
+    items = [
+        ("Score", case.get("score")),
+        ("Capability", top.get("capability_truthfulness")),
+        ("Reliability", top.get("reliability_safety")),
+        ("UX", top.get("efficiency_ux")),
+        ("Outcome", axes.get("outcome_reached")),
+        ("Response", axes.get("responsiveness")),
+    ]
+    return "".join(
+        f"""
+          <div>
+            <dt>{escape(label)}</dt>
+            <dd>{escape(_score(value))}</dd>
+          </div>
+        """
+        for label, value in items
+        if value is not None
+    )
+
+
+def _render_text_block(text: Any) -> str:
+    return f'<div class="text-block">{escape(str(text or ""))}</div>'
+
+
+def _render_transcript(case: dict) -> str:
+    transcript = case.get("public_transcript") or []
+    retention = case.get("trace_retention") or {}
+    if not transcript:
+        return f"""
+          <div class="transcript-empty">
+            No public transcript is available for this case.
+            Retention: {escape(str(retention.get('public_transcript') or 'not available'))}.
+          </div>
+        """
+    turns = []
+    for idx, turn in enumerate(transcript, start=1):
+        user = turn.get("user")
+        assistant = turn.get("assistant")
+        error = turn.get("error")
+        turns.append(f"""
+          <article class="conversation-turn">
+            <div class="turn-label">Turn {idx}</div>
+            <div class="message user-message">
+              <div class="message-role">User</div>
+              {_render_text_block(user)}
+            </div>
+            <div class="message assistant-message">
+              <div class="message-role">Assistant</div>
+              {_render_text_block(assistant)}
+              {f'<div class="message-error">Error: {escape(str(error))}</div>' if error else ''}
+            </div>
+          </article>
+        """)
+    redactions = retention.get("redactions") or []
+    redaction_text = ", ".join(str(item).replace("_", " ") for item in redactions) if redactions else "standard public redaction"
+    return f"""
+      <div class="transcript-retention">
+        Public transcript included. Redactions: {escape(redaction_text)}.
+      </div>
+      <div class="conversation">{''.join(turns)}</div>
+    """
+
+
+def _render_axis_table(case: dict) -> str:
+    top = case.get("top_axes") or {}
+    axes = case.get("axes") or {}
+    rows = []
+    for label, value in [
+        ("Capability / truthfulness", top.get("capability_truthfulness")),
+        ("Reliability / safety", top.get("reliability_safety")),
+        ("Efficiency / UX", top.get("efficiency_ux")),
+        ("Task fulfillment", axes.get("task_fulfillment")),
+        ("Evidence / truthfulness", axes.get("evidence_truthfulness")),
+        ("Runtime / scope safety", axes.get("runtime_scope_safety")),
+        ("Communication quality", axes.get("communication_quality")),
+    ]:
+        if value is not None:
+            rows.append(f"<tr><th>{escape(label)}</th><td>{escape(_score(value))}</td></tr>")
+    return f'<div class="table-wrap mini"><table><tbody>{"".join(rows)}</tbody></table></div>' if rows else "<p>No axis scores recorded.</p>"
+
+
+def _render_checks_and_effects(case: dict) -> str:
+    checks = case.get("checks") or {}
+    effects = case.get("side_effects") or {}
+    failed = checks.get("failed") or []
+    files = effects.get("files") or []
+    failed_html = "".join(f"<li>{escape(str(item))}</li>" for item in failed) or "<li>None</li>"
+    files_html = "".join(
+        f"<li>{escape(str(item.get('path') or item))}</li>" if isinstance(item, dict) else f"<li>{escape(str(item))}</li>"
+        for item in files
+    ) or "<li>None</li>"
+    return f"""
+      <div class="evidence-grid">
+        <div>
+          <h4>Checks</h4>
+          <dl class="mini-defs">
+            <div><dt>Explicit checks</dt><dd>{escape(str(checks.get('explicit_count', 0)))}</dd></div>
+            <div><dt>Scope OK</dt><dd>{escape(_fmt_bool(checks.get('scope_ok')))}</dd></div>
+            <div><dt>Check score</dt><dd>{escape(_score(checks.get('score')))}</dd></div>
+          </dl>
+          <p class="mini-heading">Failed checks</p>
+          <ul>{failed_html}</ul>
+        </div>
+        <div>
+          <h4>Side Effects</h4>
+          <dl class="mini-defs">
+            <div><dt>Scope</dt><dd>{escape(str(effects.get('scope') or '-'))}</dd></div>
+            <div><dt>Files</dt><dd>{escape(str(effects.get('total_files', 0)))}</dd></div>
+            <div><dt>Bytes</dt><dd>{escape(str(effects.get('total_bytes', 0)))}</dd></div>
+          </dl>
+          <p class="mini-heading">Touched files</p>
+          <ul>{files_html}</ul>
+        </div>
+      </div>
+    """
 
 
 def render_trace_markdown(trace: dict) -> str:
@@ -770,6 +1192,8 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
     for trace in traces:
         case_rows = []
         case_details = []
+        suite_count = len({case.get("suite_id") for case in trace["cases"] if case.get("suite_id")})
+        transcript_turns = sum(len(case.get("public_transcript") or []) for case in trace["cases"])
         for case in trace["cases"]:
             driver = case.get("driver_decision") or {}
             judge = case.get("judge") or {}
@@ -778,41 +1202,55 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
             prompt = task.get("prompt") or "Task definition came from a prior suite set; see the stored case-result row."
             case_rows.append(f"""
               <tr>
-                <td><code>{escape(str(case.get('case')))}</code></td>
+                <td>
+                  <a href="#trace-{escape(_anchor(trace['baseline_id']))}-{escape(_anchor(case.get('case')))}"><code>{escape(str(case.get('case')))}</code></a>
+                  <span class="table-subtext">{escape(_short(task.get('title') or prompt, 90))}</span>
+                </td>
                 <td><code>{escape(str(case.get('suite_id')))}</code></td>
-                <td>{escape(str(case.get('expectation')))}</td>
-                <td>{case.get('score')}</td>
-                <td>{escape(str(driver.get('closure_type') or driver.get('scenario_closed')))}</td>
-                <td>{escape(_short(judge.get('reason'), 120))}</td>
+                <td class="numeric strong">{escape(_score(case.get('score')))}</td>
+                <td>{escape(_label_text(driver.get('closure_type') or driver.get('scenario_closed')))}</td>
+                <td>{escape(_short(judge.get('reason'), 150))}</td>
               </tr>
             """)
             case_details.append(f"""
               <details class="trace-detail" id="trace-{escape(_anchor(trace['baseline_id']))}-{escape(_anchor(case.get('case')))}">
-                <summary><code>{escape(str(case.get('case')))}</code> - score {case.get('score')}</summary>
-                <dl class="detail-grid">
-                  <div><dt>Responded</dt><dd>{mech.get('responded')}</dd></div>
-                  <div><dt>Concluded</dt><dd>{mech.get('concluded')}</dd></div>
-                  <div><dt>Stable</dt><dd>{mech.get('stable')}</dd></div>
-                  <div><dt>Turns</dt><dd>{mech.get('turns_sent')} / {mech.get('turn_budget')}</dd></div>
-                  <div><dt>Wall time</dt><dd>{mech.get('wall_ms')} ms</dd></div>
-                  <div><dt>Transcript</dt><dd>{escape(str((case.get('trace_retention') or {}).get('public_transcript')))}</dd></div>
+                <summary>
+                  <span><code>{escape(str(case.get('case')))}</code></span>
+                  <span class="summary-score">score {escape(_score(case.get('score')))}</span>
+                </summary>
+                <dl class="detail-grid trace-score-grid">
+                  {_render_case_score_tiles(case)}
+                  <div><dt>Closure</dt><dd>{escape(_label_text(driver.get('closure_type') or driver.get('scenario_closed')))}</dd></div>
+                  <div><dt>Turns</dt><dd>{escape(str(mech.get('turns_sent')))} / {escape(str(mech.get('turn_budget')))}</dd></div>
+                  <div><dt>Wall time</dt><dd>{escape(_duration_ms(mech.get('wall_ms')))}</dd></div>
                 </dl>
-                <h3>Task</h3>
-                <pre><code>{escape(prompt)}</code></pre>
-                <h3>Public Transcript</h3>
-                <pre><code>{escape(json.dumps(case.get('public_transcript') or [], indent=2))}</code></pre>
-                <h3>Driver Decision</h3>
-                <p>{escape(str(driver.get('reason') or driver))}</p>
-                <h3>Judge Summary</h3>
-                <p>{escape(str(judge.get('reason') or judge))}</p>
-                <details>
+                <div class="case-narrative">
+                  <section>
+                    <h3>Task</h3>
+                    <div class="task-prompt">{escape(prompt)}</div>
+                  </section>
+                  <section>
+                    <h3>Outcome Readout</h3>
+                    <div class="readout-grid">
+                      <div>
+                        <h4>Driver Decision</h4>
+                        <p>{escape(str(driver.get('reason') or driver))}</p>
+                      </div>
+                      <div>
+                        <h4>Judge Summary</h4>
+                        <p>{escape(str(judge.get('reason') or judge))}</p>
+                      </div>
+                    </div>
+                  </section>
+                  <section>
+                    <h3>Public Transcript</h3>
+                    {_render_transcript(case)}
+                  </section>
+                </div>
+                <details class="advanced-evidence">
                   <summary>Axes, checks, and side effects</summary>
-                  <pre><code>{escape(json.dumps({
-                    'top_axes': case.get('top_axes') or {},
-                    'axes': case.get('axes') or {},
-                    'checks': case.get('checks') or {},
-                    'side_effects': case.get('side_effects') or {},
-                  }, indent=2))}</code></pre>
+                  {_render_axis_table(case)}
+                  {_render_checks_and_effects(case)}
                 </details>
               </details>
             """)
@@ -821,12 +1259,22 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
           <div class="section-head">
             <p class="eyebrow">{escape(str(trace.get('run_id')))}</p>
             <h2>{escape(trace['baseline_id'])}</h2>
-            <p>Score {trace.get('overall_score')} · runtime {trace.get('observed_runtime_s')}s · {trace.get('case_count')} cases</p>
+            <p>Score {trace.get('overall_score')} · runtime {trace.get('observed_runtime_s')}s · {trace.get('case_count')} cases · {suite_count} suites · {transcript_turns} transcript turns</p>
             <p><a href="https://github.com/verkyyi/hermesbench/tree/main/data/traces/{escape(trace['baseline_id'])}">Leaderboard evidence files</a></p>
           </div>
+          <div class="scorecard leaderboard-scorecard">
+            {_render_metric_cards([
+              ("overall score", trace.get("overall_score"), None),
+              ("cases", trace.get("case_count"), f"{suite_count} suites"),
+              ("runtime", trace.get("observed_runtime_s"), "seconds"),
+              ("transcripts", transcript_turns, "public turns"),
+            ])}
+          </div>
+          {_render_score_breakdown(trace)}
+          {_render_skipped_suites(trace)}
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Case</th><th>Suite</th><th>Expected</th><th>Score</th><th>Closure</th><th>Judge summary</th></tr></thead>
+              <thead><tr><th>Case</th><th>Suite</th><th>Score</th><th>Closure</th><th>Judge summary</th></tr></thead>
               <tbody>{''.join(case_rows)}</tbody>
             </table>
           </div>
@@ -846,6 +1294,7 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
         </div>
         <div class="scorecard">
           <div><span class="metric">{index['trace_count']}</span><span class="label">published baseline results</span></div>
+          <div><span class="metric">{sum(trace.get('case_count') or 0 for trace in traces)}</span><span class="label">scored case results</span></div>
         </div>
       </section>
       {''.join(trace_blocks)}

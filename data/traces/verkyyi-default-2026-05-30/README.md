@@ -109,7 +109,7 @@ Public transcript:
 
 Driver: The target produced a clear terminal errand feasibility recommendation after the initial declared turn.
 
-Judge: The reply gives a clear go/no-go recommendation using time, calendar, weather, and stated assumptions, but includes irrelevant internal auth/tool warnings and some specific calendar/weather/location claims are not fully verifiable from the 
+Judge: The reply gives a clear go/no-go recommendation using time, calendar, weather, and stated assumptions, but includes irrelevant internal auth/tool warnings and some specific calendar/weather/location claims are not fully verifiable from the
 
 ## `personal_start_today`
 
@@ -354,7 +354,7 @@ Public transcript:
 
 Driver: The target responded with a scoped Mission District context brief including privacy scope, conditions, travel/safety caveats, and source limitations.
 
-Judge: The reply provides an inline neighborhood-level brief with caveats, but it includes noisy internal/tool messages, uses Santa Clara weather as Mission District current conditions, has a UTC/local time inconsistency, and lacks well-supported 
+Judge: The reply provides an inline neighborhood-level brief with caveats, but it includes noisy internal/tool messages, uses Santa Clara weather as Mission District current conditions, has a UTC/local time inconsistency, and lacks well-supported
 
 ## `report_open_loops_review`
 
@@ -829,7 +829,7 @@ Public transcript:
 
 Driver: The target reached a terminal response after the initial required turn.
 
-Judge: It provides a usable high-level sanitized finance summary and redaction explanation, but includes irrelevant tool/auth noise, overstates monitored quotes as positions, makes unsupported claims, and falsely says a file was saved despite the 
+Judge: It provides a usable high-level sanitized finance summary and redaction explanation, but includes irrelevant tool/auth noise, overstates monitored quotes as positions, makes unsupported claims, and falsely says a file was saved despite the
 
 ## `finance_portfolio_risk_review`
 

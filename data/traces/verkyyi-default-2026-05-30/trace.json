@@ -3661,9 +3661,59 @@
     "turn_budget": 54,
     "turns_sent": 25
   },
-  "generated_at": "2026-05-30T01:17:43.291871+00:00",
+  "generated_at": "2026-05-30T01:29:47.376671+00:00",
   "observed_runtime_s": 585,
   "overall_score": 59.72,
+  "profile": {
+    "agent_skills": {
+      "count": 107,
+      "hash": "3760ef5a8871fc35",
+      "sample": [
+        "apple/apple-calendar",
+        "apple/apple-notes",
+        "apple/apple-reminders",
+        "apple/findmy",
+        "apple/imessage",
+        "apple/macos-computer-use",
+        "autonomous-ai-agents/claude-code",
+        "autonomous-ai-agents/codex",
+        "autonomous-ai-agents/hermes-agent",
+        "autonomous-ai-agents/kanban-codex-lane",
+        "autonomous-ai-agents/opencode",
+        "creative/architecture-diagram",
+        "creative/ascii-art",
+        "creative/ascii-video",
+        "creative/baoyu-article-illustrator",
+        "creative/baoyu-comic",
+        "creative/baoyu-infographic",
+        "creative/claude-design",
+        "creative/comfyui",
+        "creative/creative-ideation"
+      ],
+      "truncated": true
+    },
+    "execution_surface": {
+      "id": "kanban_delegation",
+      "kanban_enabled": true,
+      "label": "Kanban delegation",
+      "prompt_case_contract": "framework_agnostic"
+    },
+    "memory_enabled": true,
+    "memory_provider": "honcho",
+    "model": "gpt-5.5",
+    "model_provider": "openai-codex",
+    "plugins_enabled": [
+      "agentfeeds",
+      "break-glass-cli",
+      "kanban-orchestrator-routing",
+      "observability/langfuse"
+    ],
+    "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355",
+    "toolsets": [
+      "hermes-cli",
+      "kanban"
+    ]
+  },
   "profile_fingerprint": {
     "hermesbench_git_sha": "37097ee8194a59a63140deac36820234e803ccb6",
     "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
@@ -3676,10 +3726,72 @@
   },
   "run_id": "hb-20260530T011046Z",
   "schema_version": 3,
+  "score_breakdown": {
+    "axes": {
+      "appropriateness": 56.5,
+      "artifact_correctness": 56.5,
+      "closure": 92.6,
+      "coherence": 69.8,
+      "communication_quality": 69.8,
+      "evidence_truthfulness": 56.5,
+      "outcome_reached": 92.6,
+      "responsiveness": 24.8,
+      "runtime_scope_safety": 92.6,
+      "scope_discipline": 100.0,
+      "stability": 92.6,
+      "task_fulfillment": 56.5
+    },
+    "categories": {
+      "capability_truthfulness": [
+        "task_fulfillment",
+        "evidence_truthfulness"
+      ],
+      "efficiency_ux": [
+        "responsiveness",
+        "communication_quality"
+      ],
+      "reliability_safety": [
+        "outcome_reached",
+        "runtime_scope_safety"
+      ]
+    },
+    "coverage": {
+      "label": "9/11",
+      "prompt_cases": 27,
+      "registered_suites": 11,
+      "scored_suites": 9
+    },
+    "top_axes": {
+      "capability_truthfulness": 56.5,
+      "efficiency_ux": 47.3,
+      "reliability_safety": 92.6
+    }
+  },
+  "skipped_suites": [
+    {
+      "skip_reason": "Hermes Agent evals.responsiveness not importable: ModuleNotFoundError",
+      "suite_id": "gateway_ack_policy"
+    },
+    {
+      "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set",
+      "suite_id": "delegated_closure"
+    }
+  ],
   "source_files": {
     "baseline": "data/baselines/verkyyi-default-2026-05-30",
     "case_results": "data/baselines/verkyyi-default-2026-05-30/case-results.jsonl",
     "run_manifest": "data/baselines/verkyyi-default-2026-05-30/run-manifest.json"
+  },
+  "suite_scores": {
+    "calendar_schedule": 64.09,
+    "daily_planning_reporting": 55.18,
+    "developer_ops": 39.77,
+    "general_assistant": 64.54,
+    "mail_assistant": 40.1,
+    "messaging_assistant": 73.23,
+    "personal_finance": 66.18,
+    "travel_places": 77.27,
+    "web_research": 57.15
   },
   "timestamp_utc": "2026-05-30T01:10:46.729850+00:00"
 }
