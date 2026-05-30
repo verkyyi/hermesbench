@@ -97,6 +97,8 @@ Baseline directories:
 
 Transparent recipe and leaderboard artifacts:
 
+- [`docs/recipe-schema.md`](docs/recipe-schema.md): public draft of the
+  authored recipe schema and feedback questions.
 - [`data/tasks/README.md`](data/tasks/README.md): human-readable recipe catalog.
 - [`data/tasks/tasks.json`](data/tasks/tasks.json): machine-readable scenario
   catalog with per-scenario public leaderboard rows.
