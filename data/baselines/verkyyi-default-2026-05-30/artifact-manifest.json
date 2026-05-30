@@ -1,0 +1,57 @@
+{
+  "schema_version": 3,
+  "run_id": "hb-20260530T011046Z",
+  "baseline_id": "verkyyi-default-2026-05-30",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3092,
+      "sha256": "a70d5e854ceb05225a9d6e61ce1abac367dd3211f8590f18594414da65b5741f"
+    },
+    {
+      "path": "case-results.jsonl",
+      "bytes": 128662,
+      "sha256": "c08feb9c55d3069f353fb5e5255ac4a3851f867ca888718a8513fa9416c8be41"
+    },
+    {
+      "path": "cost-usage.json",
+      "bytes": 365,
+      "sha256": "b58fb78d97311fc69778a0046aab75f8b2182bea09cb29b73ec5aad87d6a20a4"
+    },
+    {
+      "path": "distribution-baseline.yaml",
+      "bytes": 5589,
+      "sha256": "8aa2f880fb9e94653846da0b75132e5d927a7b99be8c76ec80a2519a40124c42"
+    },
+    {
+      "path": "judge-decisions.jsonl",
+      "bytes": 7572,
+      "sha256": "cedc7fd9258f081f84c3f92a03e1f8a3efd1a769346f35a0b9f864381a43e52b"
+    },
+    {
+      "path": "profile-snapshot.redacted.yaml",
+      "bytes": 4783,
+      "sha256": "d502e0d5ef651eaa2d838d2f2ced4c5cfa064528c789bf4a466f86d59e1a443a"
+    },
+    {
+      "path": "run-manifest.json",
+      "bytes": 1589,
+      "sha256": "95b0cd9f690cdaeb750c3fd3ab5657b20e4255ecd70e5ec0760ec275f682e618"
+    },
+    {
+      "path": "score.json",
+      "bytes": 3973,
+      "sha256": "cc81e06a5dcdde1cca10a69d1f65159db66294dddd1e5f5e80ee77a34b93aa60"
+    },
+    {
+      "path": "suite-results.json",
+      "bytes": 25816,
+      "sha256": "a1a515d2414b80104190a69caca3cdf6223b476092216ab321dab21e69f20cee"
+    },
+    {
+      "path": "variance.json",
+      "bytes": 229,
+      "sha256": "2ce40ea87ac42770eb9c0be35089f03b4dfb63df9d9d98f18e3992bc7d4cca3b"
+    }
+  ]
+}

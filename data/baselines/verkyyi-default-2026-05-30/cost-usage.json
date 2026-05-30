@@ -1,0 +1,11 @@
+{
+  "schema_version": 3,
+  "run_id": "hb-20260530T011046Z",
+  "observed_runtime_s": 585,
+  "estimated_target_turns": 25,
+  "estimated_prompt_trials": 27,
+  "estimated_judge_calls": 27,
+  "token_usage_captured": false,
+  "dollar_cost_captured": false,
+  "budget_policy": "This artifact records call counts only because provider token accounting was not captured."
+}

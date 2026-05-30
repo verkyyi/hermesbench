@@ -61,8 +61,9 @@ Required:
   catalogue/results, judge summary, artifact manifest, cost/usage summary, and
   variance summary
 
-The first checked-in baseline, `data/baselines/verkyyi-default-2026-05-29`, uses
-this second form.
+The checked-in local comparison baseline,
+`data/baselines/verkyyi-default-2026-05-30`, uses this second form. It replaced
+the earlier 2026-05-29 legacy taxonomy baselines.
 
 ## Execution Surfaces
 

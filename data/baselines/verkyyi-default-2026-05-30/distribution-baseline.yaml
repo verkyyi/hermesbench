@@ -1,0 +1,209 @@
+name: verkyyi-default-baseline
+version: 2026.05.30
+description: Redacted distribution-style baseline for a local Hermes default profile
+  on the current HermesBench public taxonomy.
+author: verkyyi
+license: MIT
+benchmark:
+  run_id: hb-20260530T011046Z
+  score: 59.72
+  observed_runtime_s: 585
+  runtime_note: Wall-clock from captured report file birth/modification times on the
+    runner host.
+  suite_count: 9
+  registered_suite_count: 11
+  prompt_cases: 27
+  trials_per_case: 1
+  case_concurrency: 3
+  suite_concurrency: 3
+  high_rate: false
+  evaluator_driver: codex
+  agentic_max_turns_default: 2
+  controller_timeout_s: 240
+  driver_scenario_closed_rate: 0.963
+  turns_sent: 25
+  turn_budget: 54
+  command: HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency
+    3 --case-concurrency 3 --trials 1 --json
+  score_breakdown:
+    top_axes:
+      capability_truthfulness: 56.5
+      reliability_safety: 92.6
+      efficiency_ux: 47.3
+    axes:
+      task_fulfillment: 56.5
+      evidence_truthfulness: 56.5
+      outcome_reached: 92.6
+      runtime_scope_safety: 92.6
+      responsiveness: 24.8
+      communication_quality: 69.8
+      closure: 92.6
+      artifact_correctness: 56.5
+      stability: 92.6
+      scope_discipline: 100.0
+      appropriateness: 56.5
+      coherence: 69.8
+    coverage:
+      scored_suites: 9
+      registered_suites: 11
+      prompt_cases: 27
+      label: 9/11
+    categories:
+      capability_truthfulness:
+      - task_fulfillment
+      - evidence_truthfulness
+      reliability_safety:
+      - outcome_reached
+      - runtime_scope_safety
+      efficiency_ux:
+      - responsiveness
+      - communication_quality
+profile_fingerprint:
+  hermesbench_git_sha: 37097ee8194a59a63140deac36820234e803ccb6
+  profile_hash: e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355
+runtime_config:
+  execution_surface:
+    id: kanban_delegation
+    label: Kanban delegation
+    kanban_enabled: true
+    prompt_case_contract: framework_agnostic
+  model:
+    default: gpt-5.5
+    provider: openai-codex
+  memory:
+    memory_enabled: true
+    user_profile_enabled: true
+    memory_char_limit: 5000
+    user_char_limit: 2000
+    provider: honcho
+    nudge_interval: 10
+    flush_min_turns: 6
+  toolsets:
+  - hermes-cli
+  - kanban
+  plugins_enabled:
+  - agentfeeds
+  - break-glass-cli
+  - kanban-orchestrator-routing
+  - observability/langfuse
+  capability_surface:
+    target:
+      ui: cli
+      requested_ui: cli
+      profile: default
+      platform: cli
+      toolsets_override: null
+      skills_override: null
+      command_configured: false
+    tools:
+      root_toolsets:
+      - hermes-cli
+      - kanban
+      platform_toolsets:
+      - agentfeeds_readonly
+      - browser
+      - clarify
+      - code_execution
+      - computer_use
+      - cronjob
+      - delegation
+      - file
+      - image_gen
+      - kanban
+      - memory
+      - messaging
+      - moa
+      - session_search
+      - skills
+      - terminal
+      - todo
+      - tts
+      - video
+      - video_gen
+      - vision
+      - web
+      - x_search
+      platform_toolset_hash: dbd0c98a391854b1
+    agent_skills:
+      inventory:
+        count: 107
+        hash: 3760ef5a8871fc35
+        sample:
+        - apple/apple-calendar
+        - apple/apple-notes
+        - apple/apple-reminders
+        - apple/findmy
+        - apple/imessage
+        - apple/macos-computer-use
+        - autonomous-ai-agents/claude-code
+        - autonomous-ai-agents/codex
+        - autonomous-ai-agents/hermes-agent
+        - autonomous-ai-agents/kanban-codex-lane
+        - autonomous-ai-agents/opencode
+        - creative/architecture-diagram
+        - creative/ascii-art
+        - creative/ascii-video
+        - creative/baoyu-article-illustrator
+        - creative/baoyu-comic
+        - creative/baoyu-infographic
+        - creative/claude-design
+        - creative/comfyui
+        - creative/creative-ideation
+        truncated: true
+      globally_disabled:
+      - kanban-worker
+      platform_disabled:
+      - godmode
+      - comfyui
+      - ascii-video
+      - manim-video
+      - touchdesigner-mcp
+      - audiocraft-audio-generation
+      - axolotl
+      - unsloth
+      - fine-tuning-with-trl
+      - serving-llms-vllm
+      - minecraft-modpack-server
+      - pokemon-player
+      - kanban-worker
+      platform_allowed: []
+  gateway:
+    strict: false
+    media_delivery_allow_dirs: []
+    trust_recent_files: true
+    trust_recent_files_seconds: 600
+  kanban:
+    dispatch_in_gateway: true
+    dispatch_interval_seconds: 5
+    synthesis_timeout_seconds: 120
+    failure_limit: 2
+    worker_log_rotate_bytes: 2097152
+    worker_log_backup_count: 1
+    orchestrator_profile: orchestrator
+    default_assignee: orchestrator
+    auto_decompose: true
+    auto_decompose_per_tick: 3
+    dispatch_stale_timeout_seconds: 14400
+    max_spawn: 20
+redaction:
+  installable_distribution: false
+  reason: This baseline publishes benchmark-relevant runtime shape, not the full private
+    profile distribution.
+  omitted:
+  - auth.json
+  - .env
+  - memories/
+  - sessions/
+  - state.db*
+  - logs/
+  - workspace/
+  - local paths
+  - personal skill allowlists
+notes:
+- Use this as a comparable current-taxonomy benchmark baseline, not as an installable
+  Hermes profile distribution.
+- The 2026-05-29 legacy taxonomy baselines were removed in this refresh.
+- delegated_closure was skipped because it remains opt-in for delegated/multi-profile
+  execution.
+- gateway_ack_policy skipped because the local Hermes Agent evals.responsiveness module
+  was not importable in this run.

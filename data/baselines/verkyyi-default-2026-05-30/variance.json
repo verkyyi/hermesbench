@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "run_id": "hb-20260529T111322Z",
+  "schema_version": 3,
+  "run_id": "hb-20260530T011046Z",
   "trials_per_case": 1,
   "repeated_run_statistics_available": false,
   "note": "Single baseline run only. Use repeated runs for variance-aware regression decisions."

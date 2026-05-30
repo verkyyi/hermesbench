@@ -1,27 +1,17 @@
 {
-  "generated_at": "2026-05-29T23:22:29.912234+00:00",
+  "generated_at": "2026-05-30T01:17:43.294455+00:00",
   "schema_version": 3,
-  "trace_count": 2,
+  "trace_count": 1,
   "traces": [
     {
-      "baseline_dir": "data/baselines/verkyyi-default-2026-05-29",
-      "baseline_id": "verkyyi-default-2026-05-29",
-      "observed_runtime_s": 435,
-      "overall_score": 77.23,
-      "run_id": "hb-20260529T111322Z",
-      "timestamp_utc": "2026-05-29T11:13:22.874055+00:00",
-      "trace_json": "data/traces/verkyyi-default-2026-05-29/trace.json",
-      "trace_markdown": "data/traces/verkyyi-default-2026-05-29/README.md"
-    },
-    {
-      "baseline_dir": "data/baselines/verkyyi-default-no-kanban-2026-05-29",
-      "baseline_id": "verkyyi-default-no-kanban-2026-05-29",
-      "observed_runtime_s": 417,
-      "overall_score": 78.15,
-      "run_id": "hb-20260529T111210Z",
-      "timestamp_utc": "2026-05-29T11:12:10.032769+00:00",
-      "trace_json": "data/traces/verkyyi-default-no-kanban-2026-05-29/trace.json",
-      "trace_markdown": "data/traces/verkyyi-default-no-kanban-2026-05-29/README.md"
+      "baseline_dir": "data/baselines/verkyyi-default-2026-05-30",
+      "baseline_id": "verkyyi-default-2026-05-30",
+      "observed_runtime_s": 585,
+      "overall_score": 59.72,
+      "run_id": "hb-20260530T011046Z",
+      "timestamp_utc": "2026-05-30T01:10:46.729850+00:00",
+      "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
+      "trace_markdown": "data/traces/verkyyi-default-2026-05-30/README.md"
     }
   ]
 }

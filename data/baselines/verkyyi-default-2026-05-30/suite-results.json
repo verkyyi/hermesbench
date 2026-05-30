@@ -1,0 +1,822 @@
+{
+  "schema_version": 3,
+  "run_id": "hb-20260530T011046Z",
+  "suites": [
+    {
+      "id": "general_assistant",
+      "category": "General assistant",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box General assistant use cases (personal_core) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 64.54,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 197.582,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 71.05,
+        "balanced_score": 64.54,
+        "balance_factor_mean": 0.908,
+        "top_axis_scores": {
+          "capability_truthfulness": 73.7,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 38.6
+        },
+        "axis_scores": {
+          "task_fulfillment": 73.7,
+          "evidence_truthfulness": 73.7,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 2.2,
+          "communication_quality": 75.0,
+          "closure": 100.0,
+          "artifact_correctness": 73.7,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 73.7,
+          "coherence": 75.0
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.737,
+        "evidence_truthfulness_mean": 0.737,
+        "artifact_correctness_mean": 0.737,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.022,
+        "communication_quality_mean": 0.75,
+        "appropriate_mean": 0.737,
+        "coherent_mean": 0.75,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 98082.8,
+        "conclusion_types": {
+          "clarification": 1,
+          "completed": 2
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "id": "calendar_schedule",
+      "category": "Calendar and scheduling",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Calendar and scheduling use cases (personal_core) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 64.09,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 187.832,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 69.64,
+        "balanced_score": 64.09,
+        "balance_factor_mean": 0.92,
+        "top_axis_scores": {
+          "capability_truthfulness": 63.0,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 48.1
+        },
+        "axis_scores": {
+          "task_fulfillment": 63.0,
+          "evidence_truthfulness": 63.0,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 18.9,
+          "communication_quality": 77.3,
+          "closure": 100.0,
+          "artifact_correctness": 63.0,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 63.0,
+          "coherence": 77.3
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.63,
+        "evidence_truthfulness_mean": 0.63,
+        "artifact_correctness_mean": 0.63,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.189,
+        "communication_quality_mean": 0.773,
+        "appropriate_mean": 0.63,
+        "coherent_mean": 0.773,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 94540.2,
+        "conclusion_types": {
+          "completed": 2,
+          "clarification": 1
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "id": "web_research",
+      "category": "Web research",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Web research use cases (personal_core) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 57.15,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 232.254,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 62.86,
+        "balanced_score": 57.15,
+        "balance_factor_mean": 0.909,
+        "top_axis_scores": {
+          "capability_truthfulness": 45.0,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 49.5
+        },
+        "axis_scores": {
+          "task_fulfillment": 45.0,
+          "evidence_truthfulness": 45.0,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 27.4,
+          "communication_quality": 71.7,
+          "closure": 100.0,
+          "artifact_correctness": 45.0,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 45.0,
+          "coherence": 71.7
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.45,
+        "evidence_truthfulness_mean": 0.45,
+        "artifact_correctness_mean": 0.45,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.274,
+        "communication_quality_mean": 0.717,
+        "appropriate_mean": 0.45,
+        "coherent_mean": 0.717,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 98355.1,
+        "conclusion_types": {
+          "completed": 3
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "id": "daily_planning_reporting",
+      "category": "Daily planning and reporting",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Daily planning and reporting use cases (personal_core) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 55.18,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 179.434,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 61.02,
+        "balanced_score": 55.18,
+        "balance_factor_mean": 0.903,
+        "top_axis_scores": {
+          "capability_truthfulness": 50.7,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 35.8
+        },
+        "axis_scores": {
+          "task_fulfillment": 50.7,
+          "evidence_truthfulness": 50.7,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 2.7,
+          "communication_quality": 69.0,
+          "closure": 100.0,
+          "artifact_correctness": 50.7,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 50.7,
+          "coherence": 69.0
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.507,
+        "evidence_truthfulness_mean": 0.507,
+        "artifact_correctness_mean": 0.507,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.027,
+        "communication_quality_mean": 0.69,
+        "appropriate_mean": 0.507,
+        "coherent_mean": 0.69,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 119421.1,
+        "conclusion_types": {
+          "completed": 3
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 1,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 1,
+          "samples": [
+            {
+              "case": "report_evening",
+              "scope": "benchmark_workdir",
+              "total_files": 1,
+              "total_bytes": 3151,
+              "files": [
+                {
+                  "path": "evening_report.md",
+                  "bytes": 3151,
+                  "sha256_16": "7167e7fdb68d891d"
+                }
+              ],
+              "artifact_home": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mail_assistant",
+      "category": "Mail assistant",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Mail assistant use cases (communications) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 40.1,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 177.499,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 2,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 44.28,
+        "balanced_score": 40.1,
+        "balance_factor_mean": 0.937,
+        "top_axis_scores": {
+          "capability_truthfulness": 42.3,
+          "reliability_safety": 66.7,
+          "efficiency_ux": 24.5
+        },
+        "axis_scores": {
+          "task_fulfillment": 42.3,
+          "evidence_truthfulness": 42.3,
+          "outcome_reached": 66.7,
+          "runtime_scope_safety": 66.7,
+          "responsiveness": 0.0,
+          "communication_quality": 49.0,
+          "closure": 66.7,
+          "artifact_correctness": 42.3,
+          "stability": 66.7,
+          "scope_discipline": 100.0,
+          "appropriateness": 42.3,
+          "coherence": 49.0
+        },
+        "outcome_reached_mean": 0.667,
+        "mechanical_closure_rate": 0.667,
+        "closure_rate": 0.667,
+        "semantic_closure_rate": 0.667,
+        "stable_rate": 0.667,
+        "responded_rate": 0.667,
+        "task_fulfillment_mean": 0.423,
+        "evidence_truthfulness_mean": 0.423,
+        "artifact_correctness_mean": 0.423,
+        "runtime_scope_safety_mean": 0.667,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.0,
+        "communication_quality_mean": 0.49,
+        "appropriate_mean": 0.423,
+        "coherent_mean": 0.49,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 138037.7,
+        "conclusion_types": {
+          "completed": 2,
+          "none": 1
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [
+          {
+            "case": "mail_sensitive_reply_package",
+            "conclusion": "none",
+            "stable": false,
+            "reason": "no reply from the assistant"
+          }
+        ],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 1,
+          "samples": [
+            {
+              "case": "mail_sensitive_reply_package",
+              "scope": "benchmark_workdir",
+              "total_files": 3,
+              "total_bytes": 8395,
+              "files": [
+                {
+                  "path": "accountant_email_package.txt",
+                  "bytes": 5407,
+                  "sha256_16": "7b898aa94acc3fee"
+                },
+                {
+                  "path": "transaction_summary_template.csv",
+                  "bytes": 743,
+                  "sha256_16": "9320b9312c588ac2"
+                },
+                {
+                  "path": "unusual_transactions_memo.txt",
+                  "bytes": 2245,
+                  "sha256_16": "557fd9d2335dbb6b"
+                }
+              ],
+              "artifact_home": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "messaging_assistant",
+      "category": "Messaging assistant",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Messaging assistant use cases (communications) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 73.23,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 105.068,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 78.28,
+        "balanced_score": 73.23,
+        "balance_factor_mean": 0.935,
+        "top_axis_scores": {
+          "capability_truthfulness": 78.3,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 56.5
+        },
+        "axis_scores": {
+          "task_fulfillment": 78.3,
+          "evidence_truthfulness": 78.3,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 29.6,
+          "communication_quality": 83.3,
+          "closure": 100.0,
+          "artifact_correctness": 78.3,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 78.3,
+          "coherence": 83.3
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.783,
+        "evidence_truthfulness_mean": 0.783,
+        "artifact_correctness_mean": 0.783,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.296,
+        "communication_quality_mean": 0.833,
+        "appropriate_mean": 0.783,
+        "coherent_mean": 0.833,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 87520.9,
+        "conclusion_types": {
+          "completed": 2,
+          "clarification": 1
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "id": "travel_places",
+      "category": "Travel and places",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Travel and places use cases (ambient_travel) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 77.27,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 122.333,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 80.67,
+        "balanced_score": 77.27,
+        "balance_factor_mean": 0.954,
+        "top_axis_scores": {
+          "capability_truthfulness": 69.3,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 76.5
+        },
+        "axis_scores": {
+          "task_fulfillment": 69.3,
+          "evidence_truthfulness": 69.3,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 73.9,
+          "communication_quality": 79.0,
+          "closure": 100.0,
+          "artifact_correctness": 69.3,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 69.3,
+          "coherence": 79.0
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.693,
+        "evidence_truthfulness_mean": 0.693,
+        "artifact_correctness_mean": 0.693,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.739,
+        "communication_quality_mean": 0.79,
+        "appropriate_mean": 0.693,
+        "coherent_mean": 0.79,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 56172.6,
+        "conclusion_types": {
+          "clarification": 2,
+          "completed": 1
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "id": "personal_finance",
+      "category": "Personal finance",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Personal finance use cases (private_sensitive) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 66.18,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 139.792,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 3,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 1.0,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 70.63,
+        "balanced_score": 66.18,
+        "balance_factor_mean": 0.933,
+        "top_axis_scores": {
+          "capability_truthfulness": 59.3,
+          "reliability_safety": 100.0,
+          "efficiency_ux": 56.3
+        },
+        "axis_scores": {
+          "task_fulfillment": 59.3,
+          "evidence_truthfulness": 59.3,
+          "outcome_reached": 100.0,
+          "runtime_scope_safety": 100.0,
+          "responsiveness": 40.6,
+          "communication_quality": 72.0,
+          "closure": 100.0,
+          "artifact_correctness": 59.3,
+          "stability": 100.0,
+          "scope_discipline": 100.0,
+          "appropriateness": 59.3,
+          "coherence": 72.0
+        },
+        "outcome_reached_mean": 1.0,
+        "mechanical_closure_rate": 1.0,
+        "closure_rate": 1.0,
+        "semantic_closure_rate": 1.0,
+        "stable_rate": 1.0,
+        "responded_rate": 1.0,
+        "task_fulfillment_mean": 0.593,
+        "evidence_truthfulness_mean": 0.593,
+        "artifact_correctness_mean": 0.593,
+        "runtime_scope_safety_mean": 1.0,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.406,
+        "communication_quality_mean": 0.72,
+        "appropriate_mean": 0.593,
+        "coherent_mean": 0.72,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 90261.7,
+        "conclusion_types": {
+          "clarification": 1,
+          "completed": 2
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 1,
+          "samples": [
+            {
+              "case": "finance_public_safe_summary",
+              "scope": "benchmark_workdir",
+              "total_files": 1,
+              "total_bytes": 2733,
+              "files": [
+                {
+                  "path": "finance_summary_public_safe.md",
+                  "bytes": 2733,
+                  "sha256_16": "a4c5b1da00042094"
+                }
+              ],
+              "artifact_home": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "developer_ops",
+      "category": "Developer and ops",
+      "mode": "hybrid",
+      "interaction": "multi_turn",
+      "weight": 1.0,
+      "summary": "Black-box Developer and ops use cases (power_user) \u2014 outcome, stability, responsiveness, fulfillment.",
+      "score": 39.77,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null,
+      "duration_s": 210.141,
+      "metrics": {
+        "trials": 3,
+        "cases": 3,
+        "turns_planned": 3,
+        "driver_turn_budget": 6,
+        "turns_sent": 2,
+        "multi_turn_cases": 0,
+        "scenario_model": "driver_target",
+        "evaluator_driver": "codex",
+        "driver_scenario_closed_rate": 0.667,
+        "efficiency_ux_weight_share": 0.3,
+        "base_score": 42.95,
+        "balanced_score": 39.77,
+        "balance_factor_mean": 0.941,
+        "top_axis_scores": {
+          "capability_truthfulness": 27.3,
+          "reliability_safety": 66.7,
+          "efficiency_ux": 40.1
+        },
+        "axis_scores": {
+          "task_fulfillment": 27.3,
+          "evidence_truthfulness": 27.3,
+          "outcome_reached": 66.7,
+          "runtime_scope_safety": 66.7,
+          "responsiveness": 28.1,
+          "communication_quality": 52.0,
+          "closure": 66.7,
+          "artifact_correctness": 27.3,
+          "stability": 66.7,
+          "scope_discipline": 100.0,
+          "appropriateness": 27.3,
+          "coherence": 52.0
+        },
+        "outcome_reached_mean": 0.667,
+        "mechanical_closure_rate": 0.667,
+        "closure_rate": 0.667,
+        "semantic_closure_rate": 0.667,
+        "stable_rate": 0.667,
+        "responded_rate": 0.667,
+        "task_fulfillment_mean": 0.273,
+        "evidence_truthfulness_mean": 0.273,
+        "artifact_correctness_mean": 0.273,
+        "runtime_scope_safety_mean": 0.667,
+        "scope_discipline_mean": 1.0,
+        "responsiveness_mean": 0.281,
+        "communication_quality_mean": 0.52,
+        "appropriate_mean": 0.273,
+        "coherent_mean": 0.52,
+        "ttfa_p50_ms": null,
+        "ttlt_p50_ms": null,
+        "wall_p50_ms": 154212.9,
+        "conclusion_types": {
+          "completed": 2,
+          "none": 1
+        },
+        "judge_errors": 0,
+        "deterministic_checks": {
+          "explicit": 0,
+          "failed": []
+        },
+        "failures": [
+          {
+            "case": "dev_release_readiness_review",
+            "conclusion": "none",
+            "stable": false,
+            "reason": "no reply from the assistant"
+          }
+        ],
+        "side_effects": {
+          "scope": "benchmark_workdir",
+          "trials_with_files": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "id": "gateway_ack_policy",
+      "category": "Gateway ack policy",
+      "mode": "automated",
+      "interaction": "runtime_policy",
+      "weight": 1.0,
+      "summary": "Gateway pre-LLM acknowledgement policy and progress cadence.",
+      "score": null,
+      "skipped": true,
+      "skip_reason": "Hermes Agent evals.responsiveness not importable: ModuleNotFoundError",
+      "error": null,
+      "duration_s": 0.002,
+      "metrics": {}
+    },
+    {
+      "id": "delegated_closure",
+      "category": "Delegated closure",
+      "mode": "hybrid",
+      "interaction": "multi_profile",
+      "weight": 1.0,
+      "summary": "Optional kanban/multi-profile check that delegated work reaches user-visible closure.",
+      "score": null,
+      "skipped": true,
+      "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set",
+      "error": null,
+      "duration_s": 0.0,
+      "metrics": {}
+    }
+  ],
+  "retention": "public-safe aggregate suite metrics; redacted public transcripts live in case-results.jsonl; raw observability payloads omitted after manual review"
+}

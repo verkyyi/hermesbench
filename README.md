@@ -83,26 +83,28 @@ scenario spec -> driver adapter -> target adapter -> deterministic checks -> jud
   whether the scenario reached a real outcome and whether the final result was
   complete, truthful, scoped, responsive, and clear.
 
-## Published Baselines
+## Published Baseline
 
-The first public baselines are redacted distribution-style snapshots of the same
-local Hermes default profile family. The leaderboard focuses on score-related
-diagnostics and keeps reproducibility metadata in the linked baseline files.
+The current public baseline is a redacted distribution-style snapshot of a local
+Hermes default profile on the current 27-recipe public taxonomy. The leaderboard
+focuses on score-related diagnostics and keeps reproducibility metadata in the
+linked baseline files.
 
 | configuration | score | cap/truth | rel/safety | eff/ux | fulfillment | evidence | outcome | safety | response | comms | coverage | profile snapshot |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
-| `verkyyi/default-no-kanban` | `78.15` | `70.9` | `96.2` | `86.6` | `71.6` | `69.9` | `94.2` | `98.1` | `92.2` | `80.9` | `13/14` | `direct`, `gpt-5.5`, `honcho`, `3 plugins` |
-| `verkyyi/default` | `77.23` | `68.9` | `94.2` | `86.5` | `69.8` | `67.5` | `92.3` | `96.2` | `94.6` | `78.4` | `13/14` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins` |
+| `verkyyi/default` | `59.72` | `56.5` | `92.6` | `47.3` | `56.5` | `56.5` | `92.6` | `92.6` | `24.8` | `69.8` | `9/11`, `27 cases` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins`, `107 skills` |
 
 Outcome reached is evidence-grounded: a transport-level reply is not enough; the
-driver/judge must see a valid terminal state. The opt-in `delegated_closure`
-suite is not included in either baseline score. These baselines use the balanced
-3x2 scoring model and were run in parallel with bounded high-rate concurrency.
-They were captured before the bundled suite set shifted to the generic
-personal-agent taxonomy, so refresh them before treating the displayed scores as
-current leaderboard entries for the new public suite mix.
+driver/judge must see a valid terminal state. This baseline uses the balanced
+3x2 scoring model, one trial per case, suite concurrency 3, and case concurrency
+3. It replaces the 2026-05-29 legacy taxonomy baselines.
 
-Each baseline directory includes a human summary plus public-safe observability
+Two runtime suites are intentionally not part of the score: `delegated_closure`
+was skipped because delegated/multi-profile execution is opt-in, and
+`gateway_ack_policy` skipped because the local Hermes Agent
+`evals.responsiveness` module was not importable during this run.
+
+The baseline directory includes a human summary plus public-safe observability
 artifacts: `run-manifest.json`, `suite-results.json`, `case-results.jsonl`,
 `judge-decisions.jsonl`, `artifact-manifest.json`, `cost-usage.json`,
 `variance.json`, `profile-snapshot.redacted.yaml`, `score.json`, and
@@ -110,8 +112,7 @@ artifacts: `run-manifest.json`, `suite-results.json`, `case-results.jsonl`,
 
 Baseline directories:
 
-- [`data/baselines/verkyyi-default-2026-05-29`](data/baselines/verkyyi-default-2026-05-29)
-- [`data/baselines/verkyyi-default-no-kanban-2026-05-29`](data/baselines/verkyyi-default-no-kanban-2026-05-29)
+- [`data/baselines/verkyyi-default-2026-05-30`](data/baselines/verkyyi-default-2026-05-30)
 
 Transparent recipe and leaderboard artifacts:
 

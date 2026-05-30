@@ -1,0 +1,195 @@
+version: 1
+hermes_home: <hermes_home>
+hermes_home_hash: 63ca39d4af7ac405
+config_path: <hermes_home>/config.yaml
+config_hash: e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355
+bench_env:
+  HERMES_BENCH_CONCURRENCY: '3'
+  HERMES_BENCH_SUITE_CONCURRENCY: '3'
+  HERMES_BENCH_TRIALS: '1'
+  HERMES_RUN_LLM_EVALS: '1'
+config:
+  gateway:
+    strict: false
+    media_delivery_allow_dirs: []
+    trust_recent_files: true
+    trust_recent_files_seconds: 600
+  kanban:
+    dispatch_in_gateway: true
+    dispatch_interval_seconds: 5
+    synthesis_timeout_seconds: 120
+    failure_limit: 2
+    worker_log_rotate_bytes: 2097152
+    worker_log_backup_count: 1
+    orchestrator_profile: orchestrator
+    default_assignee: orchestrator
+    auto_decompose: true
+    auto_decompose_per_tick: 3
+    dispatch_stale_timeout_seconds: 14400
+    max_spawn: 20
+  memory:
+    memory_enabled: true
+    user_profile_enabled: true
+    memory_char_limit: 5000
+    user_char_limit: 2000
+    provider: honcho
+    nudge_interval: 10
+    flush_min_turns: 6
+  model:
+    default: gpt-5.5
+    provider: openai-codex
+  plugins:
+    enabled:
+    - agentfeeds
+    - break-glass-cli
+    - kanban-orchestrator-routing
+    - observability/langfuse
+    disabled: []
+  skills:
+    external_dirs: []
+    template_vars: true
+    inline_shell: false
+    inline_shell_timeout: 10
+    guard_agent_created: false
+    creation_nudge_interval: 15
+    disabled:
+    - kanban-worker
+    platform_disabled:
+      cli:
+      - godmode
+      - comfyui
+      - ascii-video
+      - manim-video
+      - touchdesigner-mcp
+      - audiocraft-audio-generation
+      - axolotl
+      - unsloth
+      - fine-tuning-with-trl
+      - serving-llms-vllm
+      - minecraft-modpack-server
+      - pokemon-player
+      - kanban-worker
+      telegram:
+      - godmode
+      - comfyui
+      - ascii-video
+      - manim-video
+      - touchdesigner-mcp
+      - audiocraft-audio-generation
+      - axolotl
+      - unsloth
+      - fine-tuning-with-trl
+      - serving-llms-vllm
+      - minecraft-modpack-server
+      - pokemon-player
+      - kanban-worker
+    platform_allowed:
+      telegram:
+      - agentfeeds
+      - hermes-agent
+      - kanban-orchestrator
+      - traction-watchdog
+      - founder-command-center
+      - verky-obsidian-control-plane
+      - hermes-hk-weixin-binding
+      weixin:
+      - agentfeeds
+      - hermes-agent
+      - kanban-orchestrator
+      - traction-watchdog
+      - founder-command-center
+      - verky-obsidian-control-plane
+      - hermes-hk-weixin-binding
+  toolsets:
+  - hermes-cli
+  - kanban
+execution_surface:
+  id: kanban_delegation
+  label: Kanban delegation
+  comparison_role: Kanban-enabled baseline
+  kanban_enabled: true
+  prompt_case_contract: framework_agnostic
+  notes: Bundled prompt use cases are intended to run on either surface. Kanban-enabled
+    configurations may perform better on delegation, progress, and long-work closure
+    behavior; explicit multi-profile checks live in opt-in runtime suites.
+capability_surface:
+  target:
+    ui: cli
+    requested_ui: cli
+    profile: default
+    platform: cli
+    toolsets_override: null
+    skills_override: null
+    command_configured: false
+  tools:
+    root_toolsets:
+    - hermes-cli
+    - kanban
+    platform_toolsets:
+    - agentfeeds_readonly
+    - browser
+    - clarify
+    - code_execution
+    - computer_use
+    - cronjob
+    - delegation
+    - file
+    - image_gen
+    - kanban
+    - memory
+    - messaging
+    - moa
+    - session_search
+    - skills
+    - terminal
+    - todo
+    - tts
+    - video
+    - video_gen
+    - vision
+    - web
+    - x_search
+    platform_toolset_hash: dbd0c98a391854b1
+  agent_skills:
+    inventory:
+      count: 107
+      hash: 3760ef5a8871fc35
+      sample:
+      - apple/apple-calendar
+      - apple/apple-notes
+      - apple/apple-reminders
+      - apple/findmy
+      - apple/imessage
+      - apple/macos-computer-use
+      - autonomous-ai-agents/claude-code
+      - autonomous-ai-agents/codex
+      - autonomous-ai-agents/hermes-agent
+      - autonomous-ai-agents/kanban-codex-lane
+      - autonomous-ai-agents/opencode
+      - creative/architecture-diagram
+      - creative/ascii-art
+      - creative/ascii-video
+      - creative/baoyu-article-illustrator
+      - creative/baoyu-comic
+      - creative/baoyu-infographic
+      - creative/claude-design
+      - creative/comfyui
+      - creative/creative-ideation
+      truncated: true
+    globally_disabled:
+    - kanban-worker
+    platform_disabled:
+    - godmode
+    - comfyui
+    - ascii-video
+    - manim-video
+    - touchdesigner-mcp
+    - audiocraft-audio-generation
+    - axolotl
+    - unsloth
+    - fine-tuning-with-trl
+    - serving-llms-vllm
+    - minecraft-modpack-server
+    - pokemon-player
+    - kanban-worker
+    platform_allowed: []

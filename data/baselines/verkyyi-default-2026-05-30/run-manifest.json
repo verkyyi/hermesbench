@@ -1,0 +1,50 @@
+{
+  "schema_version": 3,
+  "run_id": "hb-20260530T011046Z",
+  "timestamp_utc": "2026-05-30T01:10:46.729850+00:00",
+  "command": "HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency 3 --case-concurrency 3 --trials 1 --json",
+  "overall_score": 59.72,
+  "observed_runtime_s": 585,
+  "runtime_note": "Wall-clock from captured report file birth/modification times on the runner host.",
+  "profile_fingerprint": {
+    "hermesbench_git_sha": "37097ee8194a59a63140deac36820234e803ccb6",
+    "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
+  },
+  "environment": {
+    "trials_per_case": 1,
+    "case_concurrency": 3,
+    "suite_concurrency": 3,
+    "high_rate": false,
+    "evaluator_driver": "codex",
+    "agentic_max_turns_default": 2,
+    "controller_timeout_s": 240,
+    "driver_scenario_closed_rate": 0.963,
+    "turns_sent": 25,
+    "turn_budget": 54
+  },
+  "skipped_suites": [
+    {
+      "suite_id": "gateway_ack_policy",
+      "skip_reason": "Hermes Agent evals.responsiveness not importable: ModuleNotFoundError"
+    },
+    {
+      "suite_id": "delegated_closure",
+      "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set"
+    }
+  ],
+  "redaction": {
+    "installable_distribution": false,
+    "reason": "This baseline publishes benchmark-relevant runtime shape, not the full private profile distribution.",
+    "omitted": [
+      "auth.json",
+      ".env",
+      "memories/",
+      "sessions/",
+      "state.db*",
+      "logs/",
+      "workspace/",
+      "local paths",
+      "personal skill allowlists"
+    ]
+  }
+}
