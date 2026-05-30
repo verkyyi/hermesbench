@@ -698,11 +698,11 @@ def test_task_catalog_can_be_enriched_with_scenario_leaderboards(monkeypatch):
     enriched = public_artifacts.enrich_task_catalog_with_leaderboards(catalog, [trace])
     task = next(t for t in enriched["tasks"] if t["id"] == "personal_start_today")
     assert task["best_run"]["score"] == 91.0
-    assert task["leaderboard"][0]["trace_url"] == "leaderboard.html#trace-demo-baseline-personal-start-today"
+    assert task["leaderboard"][0]["trace_url"] == "traces.html#trace-demo-baseline-personal-start-today"
     assert task["leaderboard"][0]["wall_ms"] == 1250
     assert task["leaderboard"][0]["closure_type"] == "answer"
     html = public_artifacts.render_tasks_html(enriched)
-    assert "Best Known Configuration" in html
+    assert "Trace Evidence" in html
     assert "Scenario score" in html
     assert "leaderboard-best-row" in html
     assert 'class="prompt-expander benchmark-prompt"' in html
@@ -885,7 +885,7 @@ capability_surface:
     assert "Copy local implementation prompt" in html
     assert "Copy benchmark loop prompt" not in html
     assert "profile distribution baselines" in html
-    assert "leaderboard.html#trace-demo-baseline-dev-ci-failure-triage" in html
+    assert "traces.html#trace-demo-baseline-dev-ci-failure-triage" in html
 
 
 def test_case_result_keeps_redacted_public_transcript_by_default(monkeypatch):
@@ -926,6 +926,7 @@ def test_public_artifacts_are_available_from_api(monkeypatch, tmp_path: Path):
     assert (repo / "data" / "profiles" / "index.json").exists()
     assert (repo / "site" / "recipes.html").exists()
     assert (repo / "site" / "profiles.html").exists()
+    assert (repo / "site" / "traces.html").exists()
     assert (repo / "site" / "leaderboard.html").exists()
     assert (repo / "site" / "tasks.html").exists()
     assert (repo / "site" / "data" / "tasks" / "tasks.json").exists()

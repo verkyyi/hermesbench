@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Recipes - HermesBench</title>
-    <meta name="description" content="HermesBench scenario recipes and public leaderboard evidence." />
+    <meta name="description" content="HermesBench scenario recipes, profile readouts, and public trace evidence." />
     <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body>
@@ -14,7 +14,7 @@
         <a href="index.html#quickstart">Quick start</a>
         <a href="recipes.html">Recipes</a>
         <a href="profiles.html">Profiles</a>
-        <a href="leaderboard.html">Leaderboard</a>
+        <a href="traces.html">Traces</a>
         <a href="index.html#feedback">Feedback</a>
         <a href="index.html#contribute">Contribute</a>
         <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
@@ -24,7 +24,7 @@
       <section class="recipe-search-hero">
         <p class="recipe-badge">27 recipes · 9 categories</p>
         <h1>Search Recipes</h1>
-        <p class="lede">Browse personal-agent recipes, filter by category, expand the criteria, then copy a single-recipe benchmark prompt for your coding agent.</p>
+        <p class="lede">Browse personal-agent recipes, filter by category, expand the criteria, then open the trace evidence behind the current baseline.</p>
         <div class="recipe-search-panel" data-task-browser>
           <label class="search-label" for="task-search">Search recipes</label>
           <input id="task-search" class="task-search" type="search" data-task-search placeholder="Search prompts, categories, capabilities..." />
@@ -45,7 +45,7 @@
           </div>
           <div class="recipe-count-row">
             <span><strong data-task-count>27</strong> matching recipes</span>
-            <span class="note">Open a recipe for goal, criteria, leaderboard evidence, and benchmark CTA.</span>
+            <span class="note">Open a recipe for goal, criteria, trace evidence, and benchmark CTA.</span>
           </div>
         </div>
       </section>
@@ -95,14 +95,14 @@ Scenario: calendar_daily_brief
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;calendar_daily_brief&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">71.4</td>
                     <td class="numeric">78</td>
                     <td class="numeric">100</td>
@@ -163,14 +163,14 @@ Scenario: calendar_event_draft_boundary
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;calendar_event_draft_boundary&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">74.4</td>
                     <td class="numeric">85</td>
                     <td class="numeric">100</td>
@@ -231,14 +231,14 @@ Scenario: calendar_reschedule_decision
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;calendar_reschedule_decision&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">69.5</td>
                     <td class="numeric">75</td>
                     <td class="numeric">100</td>
@@ -299,14 +299,14 @@ Scenario: report_evening
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;report_evening&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-report-evening">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">0</td>
                     <td class="numeric">0</td>
@@ -367,14 +367,14 @@ Scenario: report_morning_context
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;report_morning_context&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-report-morning-context">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-report-morning-context">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">60.0</td>
                     <td class="numeric">55</td>
                     <td class="numeric">100</td>
@@ -435,14 +435,14 @@ Scenario: report_open_loops_review
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;report_open_loops_review&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-report-open-loops-review">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-report-open-loops-review">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">65.0</td>
                     <td class="numeric">55</td>
                     <td class="numeric">100</td>
@@ -503,14 +503,14 @@ Scenario: dev_ci_failure_triage
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;dev_ci_failure_triage&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">0</td>
                     <td class="numeric">0</td>
@@ -571,14 +571,14 @@ Scenario: dev_production_health_check
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;dev_production_health_check&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-dev-production-health-check">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">96.5</td>
                     <td class="numeric">100</td>
                     <td class="numeric">100</td>
@@ -639,14 +639,14 @@ Scenario: dev_release_readiness_review
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;dev_release_readiness_review&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">68.5</td>
                     <td class="numeric">55</td>
                     <td class="numeric">100</td>
@@ -707,14 +707,14 @@ Scenario: personal_continue_prior_plan
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;personal_continue_prior_plan&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">74.0</td>
                     <td class="numeric">90</td>
                     <td class="numeric">100</td>
@@ -775,14 +775,14 @@ Scenario: personal_errand_window
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;personal_errand_window&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-personal-errand-window">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-personal-errand-window">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">67</td>
                     <td class="numeric">78</td>
                     <td class="numeric">100</td>
@@ -843,14 +843,14 @@ Scenario: personal_start_today
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;personal_start_today&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-personal-start-today">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-personal-start-today">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">67</td>
                     <td class="numeric">78</td>
                     <td class="numeric">100</td>
@@ -911,14 +911,14 @@ Scenario: mail_attention_triage
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;mail_attention_triage&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-mail-attention-triage">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">45</td>
                     <td class="numeric">0</td>
@@ -979,14 +979,14 @@ Scenario: mail_receipt_context
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;mail_receipt_context&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-mail-receipt-context">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">70</td>
                     <td class="numeric">0</td>
@@ -1047,14 +1047,14 @@ Scenario: mail_sensitive_reply_package
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;mail_sensitive_reply_package&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">45</td>
                     <td class="numeric">0</td>
@@ -1115,14 +1115,14 @@ Scenario: message_late_update_package
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;message_late_update_package&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-message-late-update-package">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-message-late-update-package">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">70.2</td>
                     <td class="numeric">68</td>
                     <td class="numeric">100</td>
@@ -1183,14 +1183,14 @@ Scenario: message_sensitive_cleanup_plan
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;message_sensitive_cleanup_plan&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">74.4</td>
                     <td class="numeric">92</td>
                     <td class="numeric">100</td>
@@ -1251,14 +1251,14 @@ Scenario: message_thread_reply_package
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;message_thread_reply_package&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">77.7</td>
                     <td class="numeric">85</td>
                     <td class="numeric">100</td>
@@ -1319,14 +1319,14 @@ Scenario: finance_portfolio_risk_review
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;finance_portfolio_risk_review&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">64.2</td>
                     <td class="numeric">45</td>
                     <td class="numeric">100</td>
@@ -1387,14 +1387,14 @@ Scenario: finance_public_safe_summary
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;finance_public_safe_summary&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">68.3</td>
                     <td class="numeric">65</td>
                     <td class="numeric">100</td>
@@ -1455,14 +1455,14 @@ Scenario: finance_spending_review
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;finance_spending_review&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-finance-spending-review">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">89.0</td>
                     <td class="numeric">85</td>
                     <td class="numeric">100</td>
@@ -1523,14 +1523,14 @@ Scenario: travel_dinner_decision
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;travel_dinner_decision&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">75.4</td>
                     <td class="numeric">60</td>
                     <td class="numeric">100</td>
@@ -1591,14 +1591,14 @@ Scenario: travel_family_place
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;travel_family_place&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-travel-family-place">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-travel-family-place">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">80</td>
                     <td class="numeric">0</td>
@@ -1659,14 +1659,14 @@ Scenario: travel_half_day_plan
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;travel_half_day_plan&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">64.3</td>
                     <td class="numeric">78</td>
                     <td class="numeric">100</td>
@@ -1727,14 +1727,14 @@ Scenario: web_local_context_brief
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;web_local_context_brief&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-web-local-context-brief">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-web-local-context-brief">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">0</td>
                     <td class="numeric">0</td>
@@ -1795,14 +1795,14 @@ Scenario: web_official_process_brief
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;web_official_process_brief&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-web-official-process-brief">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-web-official-process-brief">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">0</td>
                     <td class="numeric">0</td>
                     <td class="numeric">0</td>
@@ -1863,14 +1863,14 @@ Scenario: web_purchase_decision
 Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow using run_scenario_baseline(&quot;web_purchase_decision&quot;, trials=1, run_llm_evals=True, persist=True). Do not run the full bundle unless I explicitly ask. Summarize the score, axes, runtime, profile/config snapshot tags, configured and observed tools/skills, and any failed checks.</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
 
             <div class="table-wrap mini">
               <table>
                 <thead><tr><th>Configuration</th><th>Scenario score</th><th>Capability</th><th>Reliability</th><th>Efficiency / UX</th><th>Runtime</th><th>Outcome</th><th>Turns used</th><th>Trace</th></tr></thead>
                 <tbody>
                   <tr class="leaderboard-best-row">
-                    <td><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-web-purchase-decision">verkyyi-default-2026-05-30</a></td>
+                    <td><a href="traces.html#trace-verkyyi-default-2026-05-30-web-purchase-decision">verkyyi-default-2026-05-30</a></td>
                     <td class="numeric strong">60.2</td>
                     <td class="numeric">45</td>
                     <td class="numeric">100</td>
@@ -2001,7 +2001,7 @@ Follow the skill&#x27;s &quot;Run Current Hermes Configuration&quot; workflow us
       <span>HermesBench</span>
       <a href="recipes.html">Recipes</a>
       <a href="profiles.html">Profiles</a>
-      <a href="leaderboard.html">Leaderboard</a>
+      <a href="traces.html">Traces</a>
       <a href="llms.txt">llms.txt</a>
       <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">Methodology</a>
     </footer>

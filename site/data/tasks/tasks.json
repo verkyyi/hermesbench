@@ -1,6 +1,6 @@
 {
   "category_count": 9,
-  "generated_at": "2026-05-30T02:44:21.179140+00:00",
+  "generated_at": "2026-05-30T03:13:57.942809+00:00",
   "leaderboard_source": "public traces under data/traces",
   "schema_version": 4,
   "suite_count": 9,
@@ -34,7 +34,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-personal-start-today",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-start-today",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 100471.9
@@ -91,7 +91,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-personal-start-today",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-start-today",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 100471.9
@@ -147,7 +147,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-personal-errand-window",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-errand-window",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 105990.2
@@ -204,7 +204,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-personal-errand-window",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-errand-window",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 105990.2
@@ -260,7 +260,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 82020.9
@@ -317,7 +317,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 82020.9
@@ -373,7 +373,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 89076.7
@@ -432,7 +432,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 89076.7
@@ -488,7 +488,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 94003.8
@@ -547,7 +547,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 94003.8
@@ -603,7 +603,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 90461.8
@@ -662,7 +662,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 90461.8
@@ -718,7 +718,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-web-purchase-decision",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-purchase-decision",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 96648.9
@@ -777,7 +777,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-web-purchase-decision",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-purchase-decision",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 96648.9
@@ -833,7 +833,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-web-official-process-brief",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-official-process-brief",
         "turn_budget": 2,
         "turns_sent": 0,
         "wall_ms": 107494.7
@@ -892,7 +892,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-web-official-process-brief",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-official-process-brief",
           "turn_budget": 2,
           "turns_sent": 0,
           "wall_ms": 107494.7
@@ -948,7 +948,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-web-local-context-brief",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-local-context-brief",
         "turn_budget": 2,
         "turns_sent": 0,
         "wall_ms": 152357.9
@@ -1007,7 +1007,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-web-local-context-brief",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-local-context-brief",
           "turn_budget": 2,
           "turns_sent": 0,
           "wall_ms": 152357.9
@@ -1063,7 +1063,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-morning-context",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-morning-context",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 108377.8
@@ -1125,7 +1125,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-morning-context",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-morning-context",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 108377.8
@@ -1181,7 +1181,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-evening",
         "turn_budget": 2,
         "turns_sent": 0,
         "wall_ms": 123010.2
@@ -1248,7 +1248,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-evening",
           "turn_budget": 2,
           "turns_sent": 0,
           "wall_ms": 123010.2
@@ -1304,7 +1304,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-open-loops-review",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-open-loops-review",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 85362.1
@@ -1366,7 +1366,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-open-loops-review",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-open-loops-review",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 85362.1
@@ -1422,7 +1422,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-attention-triage",
         "turn_budget": 2,
         "turns_sent": 2,
         "wall_ms": 216932.7
@@ -1481,7 +1481,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-attention-triage",
           "turn_budget": 2,
           "turns_sent": 2,
           "wall_ms": 216932.7
@@ -1537,7 +1537,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-receipt-context",
         "turn_budget": 2,
         "turns_sent": 2,
         "wall_ms": 230973.09999999998
@@ -1596,7 +1596,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-receipt-context",
           "turn_budget": 2,
           "turns_sent": 2,
           "wall_ms": 230973.09999999998
@@ -1652,7 +1652,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package",
         "turn_budget": 2,
         "turns_sent": 2,
         "wall_ms": 211780.9
@@ -1711,7 +1711,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package",
           "turn_budget": 2,
           "turns_sent": 2,
           "wall_ms": 211780.9
@@ -1767,7 +1767,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-late-update-package",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-late-update-package",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 80132.4
@@ -1825,7 +1825,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-late-update-package",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-late-update-package",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 80132.4
@@ -1881,7 +1881,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 74847.2
@@ -1939,7 +1939,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 74847.2
@@ -1995,7 +1995,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 101104.5
@@ -2053,7 +2053,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 101104.5
@@ -2109,7 +2109,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 44237.9
@@ -2166,7 +2166,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 44237.9
@@ -2222,7 +2222,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 152404.2
@@ -2279,7 +2279,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 152404.2
@@ -2335,7 +2335,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-family-place",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-family-place",
         "turn_budget": 2,
         "turns_sent": 2,
         "wall_ms": 57030.4
@@ -2392,7 +2392,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-family-place",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-family-place",
           "turn_budget": 2,
           "turns_sent": 2,
           "wall_ms": 57030.4
@@ -2448,7 +2448,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-spending-review",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 31445.6
@@ -2503,7 +2503,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-spending-review",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 31445.6
@@ -2559,7 +2559,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 65247.7
@@ -2614,7 +2614,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 65247.7
@@ -2670,7 +2670,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 85196.9
@@ -2725,7 +2725,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 85196.9
@@ -2781,7 +2781,7 @@
           "reliability_safety": 0.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage",
         "turn_budget": 2,
         "turns_sent": 0,
         "wall_ms": 183325.4
@@ -2841,7 +2841,7 @@
             "reliability_safety": 0.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage",
           "turn_budget": 2,
           "turns_sent": 0,
           "wall_ms": 183325.4
@@ -2897,7 +2897,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-production-health-check",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 59073.4
@@ -2957,7 +2957,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-production-health-check",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 59073.4
@@ -3013,7 +3013,7 @@
           "reliability_safety": 100.0
         },
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-        "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review",
         "turn_budget": 2,
         "turns_sent": 1,
         "wall_ms": 78189.3
@@ -3073,7 +3073,7 @@
             "reliability_safety": 100.0
           },
           "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
-          "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review",
+          "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review",
           "turn_budget": 2,
           "turns_sent": 1,
           "wall_ms": 78189.3

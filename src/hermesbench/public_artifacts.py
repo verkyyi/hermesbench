@@ -23,6 +23,8 @@ import yaml
 from hermesbench import usecases
 
 SCHEMA_VERSION = 4
+TRACE_PAGE = "traces.html"
+LEGACY_LEADERBOARD_PAGE = "leaderboard.html"
 _PUBLIC_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _PUBLIC_PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}(?!\d)")
 _PUBLIC_TOKEN_RE = re.compile(r"\b(?:sk|ghp|gho|xoxb|xoxp|AKIA)[A-Za-z0-9_\-]{12,}\b", re.IGNORECASE)
@@ -501,7 +503,7 @@ def enrich_task_catalog_with_leaderboards(catalog: dict, traces: list[dict]) -> 
                 "run_id": trace.get("run_id"),
                 "score": case.get("score"),
                 "overall_score": trace.get("overall_score"),
-                "trace_url": f"leaderboard.html#trace-{_anchor(baseline_id)}-{_anchor(case_id)}",
+                "trace_url": f"{TRACE_PAGE}#trace-{_anchor(baseline_id)}-{_anchor(case_id)}",
                 "trace_json": f"data/traces/{baseline_id}/trace.json",
                 "top_axes": case.get("top_axes") or {},
                 "mechanical": mechanical,
@@ -881,7 +883,7 @@ def _scenario_score_rows(trace: dict, *, reverse: bool) -> list[dict]:
             "suite_id": case.get("suite_id"),
             "title": ((case.get("task") or {}).get("title")) or case_id,
             "score": case.get("score"),
-            "trace_url": f"leaderboard.html#trace-{_anchor(baseline_id)}-{_anchor(case_id)}",
+            "trace_url": f"{TRACE_PAGE}#trace-{_anchor(baseline_id)}-{_anchor(case_id)}",
         })
     return sorted(rows, key=lambda row: (float(row.get("score") or 0.0), row["case"]), reverse=reverse)
 
@@ -1074,7 +1076,7 @@ Baseline: {baseline_id}
 Profile role: {role_name}
 Profile name: {profile_name}
 Distribution form: {distribution.get('form') or 'unknown'}
-Score evidence: {related.get('leaderboard_url')}
+Trace evidence: {related.get('trace_url') or related.get('leaderboard_url')}
 Trace JSON: {related.get('trace_json')}
 
 Goal:
@@ -1127,7 +1129,7 @@ Baseline: {baseline_id}
 Profile role: {role_name}
 Profile name: {profile_name}
 Distribution form: {distribution.get('form') or 'unknown'}
-Score evidence: {related.get('leaderboard_url')}
+Trace evidence: {related.get('trace_url') or related.get('leaderboard_url')}
 Trace JSON: {related.get('trace_json')}
 
 Goal:
@@ -1163,7 +1165,7 @@ After this single profile is implemented, link it into the same configuration bu
 Baseline: {baseline_id}
 Profile role: {role_name}
 Current published profile name: {profile_name or 'not_published'}
-Score evidence: {related.get('leaderboard_url')}
+Trace evidence: {related.get('trace_url') or related.get('leaderboard_url')}
 Trace JSON: {related.get('trace_json')}
 
 Required action:
@@ -1215,7 +1217,8 @@ def build_profile_architecture_index(baselines_root: Path, traces: list[dict], p
             "improvement_suites": sorted(suite_scores, key=lambda row: (float(row.get("score") or 0.0), row["suite_id"]))[:5],
             "top_scenarios": high,
             "improvement_scenarios": low,
-            "leaderboard_url": f"leaderboard.html#trace-{_anchor(baseline_dir.name)}",
+            "leaderboard_url": f"{TRACE_PAGE}#trace-{_anchor(baseline_dir.name)}",
+            "trace_url": f"{TRACE_PAGE}#trace-{_anchor(baseline_dir.name)}",
             "trace_json": f"data/traces/{baseline_dir.name}/trace.json",
         }
         architectures.append({
@@ -1305,7 +1308,7 @@ def render_tasks_markdown(catalog: dict) -> str:
                 f"- Initial prompt: {task['initial_prompt']}",
                 f"- Budget: reply target {task['budget'].get('reply_target_s')}s, conclude {task['budget'].get('conclude_s')}s",
                 f"- Side-effect scope: `{task['side_effect_scope']}`",
-                f"- Best leaderboard result: {best['score']} by `{best['baseline_id']}`" if best else "- Best leaderboard result: no matching public result yet",
+                f"- Best trace-backed result: {best['score']} by `{best['baseline_id']}`" if best else "- Best trace-backed result: no matching public result yet",
                 "",
                 "Goal:",
                 "",
@@ -1320,7 +1323,7 @@ def render_tasks_markdown(catalog: dict) -> str:
                 lines.extend(["", "Safety criteria:"])
                 lines.extend(f"- {item}" for item in task["safety_criteria"])
             if task.get("leaderboard"):
-                lines.extend(["", "Scenario leaderboard:", "", "| Rank | Baseline | Score | Evidence |", "| ---: | --- | ---: | --- |"])
+                lines.extend(["", "Scenario evidence:", "", "| Rank | Baseline | Score | Evidence |", "| ---: | --- | ---: | --- |"])
                 for row in task["leaderboard"][:10]:
                     lines.append(
                         f"| {row['rank']} | `{row['baseline_id']}` | {row['score']} | [{row['run_id']}]({row['trace_url']}) |"
@@ -1690,9 +1693,9 @@ def _render_checks_and_effects(case: dict) -> str:
 
 def render_trace_markdown(trace: dict) -> str:
     lines = [
-        f"# Leaderboard Evidence: {trace['baseline_id']}",
+        f"# Trace Evidence: {trace['baseline_id']}",
         "",
-        "This is the public-safe leaderboard evidence: scenario identity, expected outcome, scoring evidence,",
+        "This is the public-safe trace evidence: scenario identity, expected outcome, scoring evidence,",
         "mechanical closure, driver judgement, LLM judge summary, deterministic checks, and scoped side effects.",
         "Public transcripts are included when available with PII redaction.",
         "Unredacted raw replies/transcripts are private-debug artifacts and are not required for publication.",
@@ -1782,7 +1785,7 @@ def _page_shell(title: str, body: str) -> str:
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{escape(title)} - HermesBench</title>
-    <meta name="description" content="HermesBench scenario recipes and public leaderboard evidence." />
+    <meta name="description" content="HermesBench scenario recipes, profile readouts, and public trace evidence." />
     <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body>
@@ -1792,7 +1795,7 @@ def _page_shell(title: str, body: str) -> str:
         <a href="index.html#quickstart">Quick start</a>
         <a href="recipes.html">Recipes</a>
         <a href="profiles.html">Profiles</a>
-        <a href="leaderboard.html">Leaderboard</a>
+        <a href="traces.html">Traces</a>
         <a href="index.html#feedback">Feedback</a>
         <a href="index.html#contribute">Contribute</a>
         <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
@@ -1803,7 +1806,7 @@ def _page_shell(title: str, body: str) -> str:
       <span>HermesBench</span>
       <a href="recipes.html">Recipes</a>
       <a href="profiles.html">Profiles</a>
-      <a href="leaderboard.html">Leaderboard</a>
+      <a href="traces.html">Traces</a>
       <a href="llms.txt">llms.txt</a>
       <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">Methodology</a>
     </footer>
@@ -1904,7 +1907,7 @@ Follow the skill's "Run Current Hermes Configuration" workflow using run_scenari
             """
         else:
             leaderboard_html = """
-            <p class="note">No public leaderboard result has been published for this exact scenario id yet.</p>
+            <p class="note">No public trace-backed result has been published for this exact scenario id yet.</p>
             """
         recipe_rows.append(f"""
           <details class="recipe-row" id="{escape(anchor)}" data-recipe-row data-search="{escape(search_text)}" data-category="{escape(str(task['category_id']))}">
@@ -1938,7 +1941,7 @@ Follow the skill's "Run Current Hermes Configuration" workflow using run_scenari
                 <pre><code>{escape(benchmark_prompt)}</code></pre>
               </details>
               <section>
-                <h3>Best Known Configuration</h3>
+                <h3>Trace Evidence</h3>
                 {leaderboard_html}
               </section>
             </div>
@@ -1948,7 +1951,7 @@ Follow the skill's "Run Current Hermes Configuration" workflow using run_scenari
       <section class="recipe-search-hero">
         <p class="recipe-badge">{catalog['task_count']} recipes · {catalog['category_count']} categories</p>
         <h1>Search Recipes</h1>
-        <p class="lede">Browse personal-agent recipes, filter by category, expand the criteria, then copy a single-recipe benchmark prompt for your coding agent.</p>
+        <p class="lede">Browse personal-agent recipes, filter by category, expand the criteria, then open the trace evidence behind the current baseline.</p>
         <div class="recipe-search-panel" data-task-browser>
           <label class="search-label" for="task-search">Search recipes</label>
           <input id="task-search" class="task-search" type="search" data-task-search placeholder="Search prompts, categories, capabilities..." />
@@ -1961,7 +1964,7 @@ Follow the skill's "Run Current Hermes Configuration" workflow using run_scenari
           </div>
           <div class="recipe-count-row">
             <span><strong data-task-count>{catalog['task_count']}</strong> matching recipes</span>
-            <span class="note">Open a recipe for goal, criteria, leaderboard evidence, and benchmark CTA.</span>
+            <span class="note">Open a recipe for goal, criteria, trace evidence, and benchmark CTA.</span>
           </div>
         </div>
       </section>
@@ -2165,7 +2168,7 @@ def _render_profile_readout(profile: dict, related: dict) -> str:
             <h3>Setup and Recipe Performance</h3>
             <p class="note">Start here: this is the benchmarked setup, what it scored, and where the profile shape currently works or fails.</p>
           </div>
-          <a class="button primary" href="{escape(str(related.get('leaderboard_url')))}">Open evidence</a>
+          <a class="button primary" href="{escape(str(related.get('trace_url') or related.get('leaderboard_url')))}">Open traces</a>
         </div>
         <div class="profile-scoreboard">
           <article class="score-kpi primary">
@@ -2218,7 +2221,7 @@ def _render_profile_setup(profile: dict, surface: dict, distribution: dict, memo
             <div><dt>Trace</dt><dd><a href="{escape(str(related.get('trace_json')))}">Trace JSON</a></dd></div>
           </dl>
           <div class="profile-link-panel">
-            <a class="button primary" href="{escape(str(related.get('leaderboard_url')))}">Leaderboard evidence</a>
+            <a class="button primary" href="{escape(str(related.get('trace_url') or related.get('leaderboard_url')))}">Trace evidence</a>
             <a class="button" href="{escape(str(related.get('trace_json')))}">Trace JSON</a>
           </div>
         </div>
@@ -2594,8 +2597,7 @@ def render_profiles_html(profile_index: dict) -> str:
 def render_traces_html(index: dict, traces: list[dict]) -> str:
     trace_blocks: list[str] = []
     for trace in traces:
-        case_rows = []
-        case_details = []
+        case_cards = []
         suite_count = len({case.get("suite_id") for case in trace["cases"] if case.get("suite_id")})
         transcript_turns = sum(len(case.get("public_transcript") or []) for case in trace["cases"])
         event_count = sum(len(case.get("public_events") or []) for case in trace["cases"])
@@ -2605,39 +2607,67 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
             for event in (case.get("public_events") or [])
             if str(event.get("type")) in {"tool_call", "tool_result", "tool_step"}
         )
+        categories = sorted({
+            (
+                str(((case.get("task") or {}).get("category_id")) or case.get("suite_id") or ""),
+                str(((case.get("task") or {}).get("category_label")) or _label_text(case.get("suite_id"))),
+            )
+            for case in trace["cases"]
+            if case.get("suite_id") or (case.get("task") or {}).get("category_id")
+        }, key=lambda item: item[1])
+        category_options = "\n".join(
+            f'<option value="{escape(category_id)}">{escape(label)}</option>'
+            for category_id, label in categories
+        )
         for case in trace["cases"]:
             driver = case.get("driver_decision") or {}
             judge = case.get("judge") or {}
             mech = case.get("mechanical") or {}
             task = case.get("task") or {}
             prompt = task.get("prompt") or "Task definition came from a prior suite set; see the stored case-result row."
+            title = str(task.get("title") or _title_from_id(str(case.get("case") or "")))
+            category_id = str(task.get("category_id") or case.get("suite_id") or "")
+            category_label = str(task.get("category_label") or _label_text(case.get("suite_id")))
+            closure = _label_text(driver.get("closure_type") or driver.get("scenario_closed"))
             case_events = case.get("public_events") or []
             case_tool_events = [
                 event for event in case_events
                 if str(event.get("type")) in {"tool_call", "tool_result", "tool_step"}
             ]
-            case_rows.append(f"""
-              <tr>
-                <td>
-                  <a href="#trace-{escape(_anchor(trace['baseline_id']))}-{escape(_anchor(case.get('case')))}"><code>{escape(str(case.get('case')))}</code></a>
-                  <span class="table-subtext">{escape(_short(task.get('title') or prompt, 90))}</span>
-                </td>
-                <td><code>{escape(str(case.get('suite_id')))}</code></td>
-                <td class="numeric strong">{escape(_score(case.get('score')))}</td>
-                <td class="numeric">{escape(str(len(case_tool_events)))}</td>
-                <td>{escape(_label_text(driver.get('closure_type') or driver.get('scenario_closed')))}</td>
-                <td>{escape(_short(judge.get('reason'), 150))}</td>
-              </tr>
-            """)
-            case_details.append(f"""
-              <details class="trace-detail" id="trace-{escape(_anchor(trace['baseline_id']))}-{escape(_anchor(case.get('case')))}">
-                <summary>
-                  <span><code>{escape(str(case.get('case')))}</code></span>
-                  <span class="summary-score">score {escape(_score(case.get('score')))}</span>
+            search_text = " ".join([
+                str(case.get("case") or ""),
+                title,
+                category_id,
+                category_label,
+                prompt,
+                str(judge.get("reason") or ""),
+                str(driver.get("reason") or ""),
+                str(trace.get("baseline_id") or ""),
+            ]).lower()
+            card_id = f"trace-{_anchor(trace['baseline_id'])}-{_anchor(case.get('case'))}"
+            score = _score(case.get("score"))
+            score_class = " zero" if _float_or_none(case.get("score")) in (None, 0.0) else ""
+            case_cards.append(f"""
+              <details class="trace-detail trace-recipe-card" id="{escape(card_id)}" data-trace-row data-category="{escape(category_id)}" data-search="{escape(search_text)}">
+                <summary class="trace-card-summary">
+                  <span class="trace-card-main">
+                    <span class="trace-card-header">
+                      <span class="trace-card-category">{escape(category_label)}</span>
+                      <span class="trace-card-model">{escape(str(trace.get('baseline_id') or 'baseline'))}</span>
+                      <span class="trace-card-chip">{escape(_duration_ms(mech.get('wall_ms')))}</span>
+                    </span>
+                    <span class="trace-card-title">{escape(title)}</span>
+                    <span class="trace-card-prompt">{escape(_short(prompt, 180))}</span>
+                  </span>
+                  <span class="trace-card-result">
+                    <span class="trace-card-score{score_class}">{escape(score)}</span>
+                    <span class="trace-card-status">{escape(closure)}</span>
+                    <span class="trace-card-meta">{escape(str(len(case_tool_events)))} tools · {escape(str(len(case_events)))} events</span>
+                  </span>
                 </summary>
                 <dl class="detail-grid trace-score-grid">
                   {_render_case_score_tiles(case)}
-                  <div><dt>Closure</dt><dd>{escape(_label_text(driver.get('closure_type') or driver.get('scenario_closed')))}</dd></div>
+                  <div><dt>Closure</dt><dd>{escape(closure)}</dd></div>
                   <div><dt>Trace events</dt><dd>{escape(str(len(case_events)))}</dd></div>
                   <div><dt>Tool events</dt><dd>{escape(str(len(case_tool_events)))}</dd></div>
                   <div><dt>Turns</dt><dd>{escape(str(mech.get('turns_sent')))} / {escape(str(mech.get('turn_budget')))}</dd></div>
@@ -2678,52 +2708,80 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
               </details>
             """)
         trace_blocks.append(f"""
-        <section class="section compact" id="trace-{escape(_anchor(trace['baseline_id']))}">
-          <div class="section-head">
-            <p class="eyebrow">{escape(str(trace.get('run_id')))}</p>
-            <h2>{escape(trace['baseline_id'])}</h2>
-            <p>Score {trace.get('overall_score')} · runtime {trace.get('observed_runtime_s')}s · {trace.get('case_count')} cases · {suite_count} suites · {event_count} trace events · {tool_event_count} tool events</p>
-            <p><a href="https://github.com/verkyyi/hermesbench/tree/main/data/traces/{escape(trace['baseline_id'])}">Leaderboard evidence files</a></p>
+        <section class="section compact trace-results-section" id="trace-{escape(_anchor(trace['baseline_id']))}">
+          <div class="trace-browser-panel" data-trace-browser>
+            <div class="trace-results-head">
+              <div>
+                <p class="eyebrow">Recipe traces</p>
+                <h1>Recipe results with traces</h1>
+              </div>
+              <a class="button" href="https://github.com/verkyyi/hermesbench/tree/main/data/traces/{escape(trace['baseline_id'])}">Trace files</a>
+            </div>
+            <label class="search-label" for="trace-search-{escape(_anchor(trace['baseline_id']))}">Search recipe results</label>
+            <input id="trace-search-{escape(_anchor(trace['baseline_id']))}" class="task-search" type="search" data-trace-search placeholder="Search recipe, category, prompt, result..." />
+            <div class="recipe-filters" aria-label="Trace filters">
+              <select data-trace-category aria-label="Filter traces by category">
+                <option value="">All categories</option>
+                {category_options}
+              </select>
+              <button class="button" type="button" data-trace-clear>Clear</button>
+            </div>
+            <div class="recipe-count-row">
+              <span><strong data-trace-count>{trace.get('case_count')}</strong> matching recipe traces</span>
+              <span class="note">{escape(trace['baseline_id'])} · score {escape(_score(trace.get('overall_score')))} · {suite_count} suites</span>
+            </div>
           </div>
-          <div class="scorecard leaderboard-scorecard">
-            {_render_metric_cards([
-              ("overall score", trace.get("overall_score"), None),
-              ("cases", trace.get("case_count"), f"{suite_count} suites"),
-              ("runtime", trace.get("observed_runtime_s"), "seconds"),
-              ("events", event_count, f"{tool_event_count} tool events"),
-              ("transcripts", transcript_turns, "public turns"),
-            ])}
-          </div>
-          {_render_score_breakdown(trace)}
-          {_render_skipped_suites(trace)}
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Case</th><th>Suite</th><th>Score</th><th>Tools</th><th>Closure</th><th>Judge summary</th></tr></thead>
-              <tbody>{''.join(case_rows)}</tbody>
-            </table>
-          </div>
-          <div class="stacked-list trace-list">{''.join(case_details)}</div>
+          <div class="trace-recipe-list">{''.join(case_cards)}</div>
         </section>
         """)
     body = f"""
-      <section class="hero slim">
-        <div>
-          <p class="eyebrow">Public leaderboard</p>
-          <h1>Hermes configuration leaderboard.</h1>
-          <p class="lede">Compare published Hermes results as reusable profile/config packages. Each entry links scores to scenario recipes, redacted evidence, profile snapshots, and judge reasoning so users can see what worked and reuse the shape behind it.</p>
-          <div class="actions">
-            <a class="button primary" href="https://github.com/verkyyi/hermesbench/tree/main/data/traces">Repo evidence</a>
-            <a class="button" href="https://github.com/verkyyi/hermesbench/blob/main/data/traces/index.json">Leaderboard JSON</a>
-          </div>
-        </div>
-        <div class="scorecard">
-          <div><span class="metric">{index['trace_count']}</span><span class="label">published baseline results</span></div>
-          <div><span class="metric">{sum(trace.get('case_count') or 0 for trace in traces)}</span><span class="label">scored case results</span></div>
-        </div>
-      </section>
       {''.join(trace_blocks)}
+      <script>
+        (() => {{
+          const browsers = Array.from(document.querySelectorAll("[data-trace-browser]"));
+          browsers.forEach((browser) => {{
+            const section = browser.closest("section");
+            const rows = Array.from(section.querySelectorAll("[data-trace-row]"));
+            const search = browser.querySelector("[data-trace-search]");
+            const category = browser.querySelector("[data-trace-category]");
+            const clear = browser.querySelector("[data-trace-clear]");
+            const count = browser.querySelector("[data-trace-count]");
+            const apply = () => {{
+              const query = (search.value || "").trim().toLowerCase();
+              const categoryValue = category.value || "";
+              let visible = 0;
+              rows.forEach((row) => {{
+                const ok = (!query || (row.dataset.search || "").includes(query))
+                  && (!categoryValue || row.dataset.category === categoryValue);
+                row.hidden = !ok;
+                if (ok) visible += 1;
+              }});
+              if (count) count.textContent = String(visible);
+            }};
+            [search, category].forEach((item) => {{
+              item.addEventListener("input", apply);
+              item.addEventListener("change", apply);
+            }});
+            clear.addEventListener("click", () => {{
+              search.value = "";
+              category.value = "";
+              apply();
+              search.focus();
+            }});
+            apply();
+          }});
+          const hash = (location.hash || "").slice(1);
+          if (hash) {{
+            const row = document.getElementById(hash);
+            if (row?.matches("[data-trace-row]")) {{
+              row.open = true;
+              row.scrollIntoView({{ block: "start" }});
+            }}
+          }}
+        }})();
+      </script>
     """
-    return _page_shell("Leaderboard", body)
+    return _page_shell("Traces", body)
 
 
 def build_public_artifacts(repo_root: Path) -> dict:
@@ -2756,9 +2814,9 @@ def build_public_artifacts(repo_root: Path) -> dict:
 
     _write_text(site_root / "recipes.html", render_tasks_html(catalog))
     _write_text(site_root / "profiles.html", render_profiles_html(profile_index))
-    _write_text(site_root / "leaderboard.html", render_traces_html(index, traces))
+    _write_text(site_root / "traces.html", render_traces_html(index, traces))
+    _write_text(site_root / LEGACY_LEADERBOARD_PAGE, _redirect_page("Traces", TRACE_PAGE))
     _write_text(site_root / "tasks.html", _redirect_page("Recipes", "recipes.html"))
-    _write_text(site_root / "traces.html", _redirect_page("Leaderboard", "leaderboard.html"))
     _mirror_tree(tasks_root, site_root / "data" / "tasks")
     _mirror_tree(profiles_root, site_root / "data" / "profiles")
     _mirror_tree(traces_root, site_root / "data" / "traces")

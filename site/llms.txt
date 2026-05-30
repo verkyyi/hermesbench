@@ -10,13 +10,14 @@ Primary pages:
 - Agent-driven quick start: /#quickstart
 - Alpha feedback: https://github.com/verkyyi/hermesbench/blob/main/FEEDBACK.md
 - Scenario recipe catalog: /recipes.html
-- Leaderboard: /leaderboard.html
+- Profile readouts: /profiles.html
+- Trace evidence browser: /traces.html
 - Submission contract: /../data/submissions/README.md
 
 Machine-readable artifacts:
 
 - Scenario recipe JSON: /../data/tasks/tasks.json
-- Leaderboard evidence JSON: /../data/traces/index.json
+- Trace evidence JSON: /../data/traces/index.json
 
 Agent-facing Python API:
 
@@ -50,13 +51,13 @@ Current bundled public benchmark shape:
 Publishing policy:
 
 - Public recipe pages show scenario prompts, expected outcomes, budgets,
-  checks, capability intent, side-effect scope, and per-scenario leaderboards
-  linked to the best public evidence.
-- Public leaderboard pages show per-case score, axes, mechanical closure,
+  checks, capability intent, side-effect scope, and per-scenario evidence
+  linked to the best public trace.
+- Public trace pages show per-case score, axes, mechanical closure,
   evaluator decision, judge summary, side effects, and redacted public
   transcripts when available.
 - Unredacted raw transcripts are private debugging artifacts and must be
   redacted before publication.
-- Public leaderboard submissions are prepared by coding agents using the
+- Public trace submissions are prepared by coding agents using the
   HermesBench skill workflow "Publish A Benchmark Result" and submitted by
   GitHub pull request under data/submissions/.

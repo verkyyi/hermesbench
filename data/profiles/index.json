@@ -1,6 +1,6 @@
 {
   "distribution_contract": "docs/profile-distribution-baselines.md",
-  "generated_at": "2026-05-30T02:44:21.329551+00:00",
+  "generated_at": "2026-05-30T03:13:58.087252+00:00",
   "profile_count": 1,
   "profile_unit_count": 8,
   "profiles": [
@@ -313,7 +313,7 @@
           "hashes": {
             "config_summary_hash": "fbce17cd1b7feba2"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: front_desk\nProfile name: default\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: front_desk\nProfile name: default\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -377,7 +377,7 @@
           "hashes": {
             "config_summary_hash": "18a6d2f8f35ae6d9"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: orchestrator\nProfile name: orchestrator\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: orchestrator\nProfile name: orchestrator\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -416,7 +416,7 @@
           "hashes": {
             "config_summary_hash": "f836bb2a8dc1d153"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-code\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-code\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -479,7 +479,7 @@
           "hashes": {
             "config_summary_hash": "3a43ed98a166c30e"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-fast\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-fast\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -525,7 +525,7 @@
           "hashes": {
             "config_summary_hash": "3d94df5e60d80e91"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-ops\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-ops\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -590,7 +590,7 @@
           "hashes": {
             "config_summary_hash": "58cbd6af7500ef3b"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-report\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-report\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -647,7 +647,7 @@
           "hashes": {
             "config_summary_hash": "e953887122295635"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-research\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-research\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -704,7 +704,7 @@
           "hashes": {
             "config_summary_hash": "37df1ca2c16dfdd9"
           },
-          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker\nDistribution form: redacted_distribution_style\nTrace evidence: traces.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
           "install_command": null,
           "installable": false,
           "memory": {
@@ -758,35 +758,35 @@
             "score": 0.0,
             "suite_id": "developer_ops",
             "title": "CI Failure Triage",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage"
           },
           {
             "case": "mail_attention_triage",
             "score": 0.0,
             "suite_id": "mail_assistant",
             "title": "Mailbox Attention Triage",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-attention-triage"
           },
           {
             "case": "mail_receipt_context",
             "score": 0.0,
             "suite_id": "mail_assistant",
             "title": "Receipt Context Lookup",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-receipt-context"
           },
           {
             "case": "mail_sensitive_reply_package",
             "score": 0.0,
             "suite_id": "mail_assistant",
             "title": "Sensitive Reply Package",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package"
           },
           {
             "case": "report_evening",
             "score": 0.0,
             "suite_id": "daily_planning_reporting",
             "title": "Evening Report Artifact",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-evening"
           }
         ],
         "improvement_suites": [
@@ -811,7 +811,7 @@
             "suite_id": "developer_ops"
           }
         ],
-        "leaderboard_url": "leaderboard.html#trace-verkyyi-default-2026-05-30",
+        "leaderboard_url": "traces.html#trace-verkyyi-default-2026-05-30",
         "overall": 50.26,
         "score_breakdown": {
           "axes": {
@@ -898,35 +898,35 @@
             "score": 96.51,
             "suite_id": "developer_ops",
             "title": "Production Health Check",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-production-health-check"
           },
           {
             "case": "finance_spending_review",
             "score": 88.95,
             "suite_id": "personal_finance",
             "title": "Spending Review",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-spending-review"
           },
           {
             "case": "message_thread_reply_package",
             "score": 77.7,
             "suite_id": "messaging_assistant",
             "title": "Thread Reply Package",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package"
           },
           {
             "case": "travel_dinner_decision",
             "score": 75.44,
             "suite_id": "travel_places",
             "title": "Dinner Decision",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision"
           },
           {
             "case": "calendar_event_draft_boundary",
             "score": 74.42,
             "suite_id": "calendar_schedule",
             "title": "Calendar Event Draft Boundary",
-            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary"
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary"
           }
         ],
         "top_suites": [
@@ -951,7 +951,8 @@
             "suite_id": "developer_ops"
           }
         ],
-        "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json"
+        "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
+        "trace_url": "traces.html#trace-verkyyi-default-2026-05-30"
       },
       "roles": [
         {

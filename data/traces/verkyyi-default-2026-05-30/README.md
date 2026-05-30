@@ -1,6 +1,6 @@
-# Leaderboard Evidence: verkyyi-default-2026-05-30
+# Trace Evidence: verkyyi-default-2026-05-30
 
-This is the public-safe leaderboard evidence: scenario identity, expected outcome, scoring evidence,
+This is the public-safe trace evidence: scenario identity, expected outcome, scoring evidence,
 mechanical closure, driver judgement, LLM judge summary, deterministic checks, and scoped side effects.
 Public transcripts are included when available with PII redaction.
 Unredacted raw replies/transcripts are private-debug artifacts and are not required for publication.

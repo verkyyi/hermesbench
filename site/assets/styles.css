@@ -233,8 +233,45 @@ pre {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .card {
   padding: 22px;
+}
+
+.nav-card-grid {
+  align-items: stretch;
+}
+
+.nav-card {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 16px 38px rgba(27, 39, 55, 0.06);
+  text-decoration: none;
+}
+
+.nav-card span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.nav-card strong {
+  font-size: 18px;
+}
+
+.nav-card small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
 }
 
 .stacked-list {
@@ -1093,6 +1130,46 @@ details summary {
   margin-top: 18px;
 }
 
+.trace-results-section {
+  padding-top: 24px;
+  border-top: 0;
+}
+
+.trace-results-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.trace-results-head h1 {
+  font-size: clamp(28px, 4vw, 44px);
+}
+
+.trace-results-head .eyebrow {
+  margin-bottom: 8px;
+}
+
+.trace-browser-panel {
+  margin: 0 0 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 16px 38px rgba(27, 39, 55, 0.06);
+}
+
+.trace-browser-panel .task-search {
+  min-height: 50px;
+}
+
+.trace-recipe-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
 .trace-detail {
   padding: 18px 20px;
 }
@@ -1109,6 +1186,132 @@ details summary {
   font-size: 13px;
   font-weight: 750;
   white-space: nowrap;
+}
+
+.trace-recipe-card {
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 16px 38px rgba(27, 39, 55, 0.06);
+}
+
+.trace-recipe-card[hidden] {
+  display: none;
+}
+
+.trace-recipe-card > .trace-card-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 20px;
+  border-left: 3px solid var(--accent);
+  list-style: none;
+}
+
+.trace-recipe-card > .trace-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.trace-recipe-card[open] > .trace-card-summary {
+  border-bottom: 1px solid var(--line);
+  background: #f8faff;
+}
+
+.trace-card-main {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.trace-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.trace-card-category,
+.trace-card-model,
+.trace-card-chip,
+.trace-card-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f6f8fb;
+  color: #3f4854;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.trace-card-category {
+  color: var(--accent);
+  background: #edf4ff;
+  border-color: #c7dcff;
+}
+
+.trace-card-model {
+  color: var(--accent-2);
+  background: #eefaf7;
+  border-color: #bfe5da;
+}
+
+.trace-card-title {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.trace-card-prompt {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.trace-card-result {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  min-width: 120px;
+}
+
+.trace-card-score {
+  color: var(--accent);
+  font-size: 32px;
+  font-weight: 850;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.trace-card-score.zero {
+  color: var(--warn);
+}
+
+.trace-card-meta {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.trace-recipe-card > .detail-grid,
+.trace-recipe-card > .case-narrative,
+.trace-recipe-card > .advanced-evidence {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.trace-recipe-card > .detail-grid {
+  margin-top: 18px;
+}
+
+.trace-recipe-card > .advanced-evidence {
+  margin-bottom: 20px;
 }
 
 .trace-detail h3 {
@@ -1666,6 +1869,7 @@ footer span {
   }
 
   .grid,
+  .grid.three,
   .grid.two {
     grid-template-columns: 1fr;
   }
@@ -1687,6 +1891,19 @@ footer span {
   .profile-unit-state,
   .mini-defs div {
     grid-template-columns: 1fr;
+  }
+
+  .trace-recipe-card > .trace-card-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .trace-card-result {
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .trace-results-head {
+    display: grid;
   }
 
   .profile-row > summary {
