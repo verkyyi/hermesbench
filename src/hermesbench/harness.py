@@ -608,7 +608,16 @@ def run_scenario(
             if result.get("session_id"):
                 target_session_id = str(result["session_id"])
             results.append(result)
-            transcript.append({"turn": idx, "user": prompt, "assistant": reply})
+            prior_offset_ms = sum(float(turn.get("wall_ms") or 0.0) for turn in transcript)
+            transcript.append({
+                "turn": idx,
+                "user": prompt,
+                "assistant": reply,
+                "error": err,
+                "timed_out": timed_out,
+                "wall_ms": wall_ms,
+                "offset_ms": round(prior_offset_ms + float(wall_ms or 0.0), 1),
+            })
             if stop_on_error and (not result["stable"] or timed_out):
                 break
     finally:

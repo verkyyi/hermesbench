@@ -10221,57 +10221,9 @@
       ],
       "public_events": [
         {
-          "duration_ms": null,
-          "error": null,
-          "index": 1,
-          "input_summary": null,
-          "label": "Turn 1 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Prepare an email package for my accountant about sharing bank statements: draft the reply, list any attachments or data you would need, redact sensitive details in the visible summary, and keep everything ready for my confirmation without sending.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 1,
-          "type": "user_message"
-        },
-        {
-          "duration_ms": null,
-          "error": null,
-          "index": 2,
-          "input_summary": null,
-          "label": "Turn 2 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Please provide the email package here without sending anything.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 2,
-          "type": "user_message"
-        },
-        {
           "duration_ms": 0.58,
           "error": null,
-          "index": 3,
+          "index": 1,
           "input_summary": "name: himalaya",
           "label": "Tool",
           "output_summary": "content: ---\nname: himalaya\ndescription: \"Himalaya CLI: IMAP/SMTP email from terminal.\"\nversion: 1.1.0\nauthor: community\nlicense: MIT\nplatforms: [linux, macos, windows]\nmetadata:\n  hermes:\n    tags: [Email, IMAP, SMTP...",
@@ -10308,7 +10260,7 @@
         {
           "duration_ms": 0.577,
           "error": null,
-          "index": 4,
+          "index": 2,
           "input_summary": "command: himalaya --version",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 127; output: /bin/bash: line 2: himalaya: command not found",
@@ -10345,7 +10297,7 @@
         {
           "duration_ms": 0.887,
           "error": null,
-          "index": 5,
+          "index": 3,
           "input_summary": "content: Subject: Bank Statements for [YEAR] Tax Preparation - [YOUR NAME]\n\nDear [ACCOUNTANT NAME],\n\nI hope this email finds you well. As we approach the tax filing deadline, I'm preparing to share my bank statements...",
           "label": "Tool",
           "output_summary": "error: Refusing to write to sensitive system path: /private<benchmark_workdir>/email_to_accountant_draft.txt\nUse the terminal tool with sudo if you need to modify system files.",
@@ -10382,7 +10334,7 @@
         {
           "duration_ms": 0.883,
           "error": null,
-          "index": 6,
+          "index": 4,
           "input_summary": "content: Subject: Bank Statements for [YEAR] Tax Preparation - [YOUR NAME]\n\nDear [ACCOUNTANT NAME],\n\nI hope this email finds you well. As we approach the tax filing deadline, I'm preparing to share my bank statements...",
           "label": "Tool",
           "output_summary": "error: Refusing to write to sensitive system path: email_to_accountant_draft.txt\nUse the terminal tool with sudo if you need to modify system files.",
@@ -10419,7 +10371,7 @@
         {
           "duration_ms": 0.353,
           "error": null,
-          "index": 7,
+          "index": 5,
           "input_summary": "command: pwd && ls -la",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output: /private<benchmark_workdir>\ntotal 0\ndrwxr-xr-x   2 verkyyi  staff   64 May 29 19:27 .\ndrwx------  27 verkyyi  staff  864 May 29 19:28 ..",
@@ -10456,7 +10408,7 @@
         {
           "duration_ms": 1.079,
           "error": null,
-          "index": 8,
+          "index": 6,
           "input_summary": "command: cat > email_to_accountant_draft.txt << 'EOF'\nSubject: Bank Statements for [YEAR] Tax Preparation - [YOUR NAME]\n\nDear [ACCOUNTANT NAME],\n\nI hope this email finds you well. As we approach the tax filing deadlin...",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output:",
@@ -10493,7 +10445,7 @@
         {
           "duration_ms": 0.706,
           "error": null,
-          "index": 9,
+          "index": 7,
           "input_summary": "command: cat > attachments_checklist.txt << 'EOF'\nATTACHMENTS AND DATA CHECKLIST FOR ACCOUNTANT\n=============================================\n\nRequired Bank Statements (PDF format):\n\u25a1 Primary Checking Account - Full y...",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output:",
@@ -10530,7 +10482,7 @@
         {
           "duration_ms": 0.98,
           "error": null,
-          "index": 10,
+          "index": 8,
           "input_summary": "command: cat > redacted_summary_template.txt << 'EOF'\nREDACTED SUMMARY FOR ACCOUNTANT TRANSMISSION\n==========================================\n\nClient: [REDACTED - YOUR NAME]\nTax Year: [YEAR]\nDate Prepared: [DATE]\n\nAcc...",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output:",
@@ -10567,7 +10519,7 @@
         {
           "duration_ms": 0.794,
           "error": null,
-          "index": 11,
+          "index": 9,
           "input_summary": "command: cat > pre_send_verification.txt << 'EOF'\nPRE-SEND VERIFICATION CHECKLIST\n==============================\n\nBEFORE HITTING SEND - VERIFY THESE ITEMS:\n\nPersonal Information Updates:\n\u25a1 [YOUR NAME] replaced with ac...",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output:",
@@ -10604,7 +10556,7 @@
         {
           "duration_ms": 0.325,
           "error": null,
-          "index": 12,
+          "index": 10,
           "input_summary": "path: email_to_accountant_draft.txt",
           "label": "Tool",
           "output_summary": "content:      1|Subject: Bank Statements for [YEAR] Tax Preparation - [YOUR NAME]\n     2|\n     3|Dear [ACCOUNTANT NAME],\n     4|\n     5|I hope this email finds you well. As we approach the tax filing deadline, I'm pre...",
@@ -10641,7 +10593,7 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 13,
+          "index": 11,
           "input_summary": null,
           "label": "Judge result",
           "output_summary": null,
@@ -10665,7 +10617,31 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 14,
+          "index": 12,
+          "input_summary": null,
+          "label": "Turn 1 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Prepare an email package for my accountant about sharing bank statements: draft the reply, list any attachments or data you would need, redact sensitive details in the visible summary, and keep everything ready for my confirmation without sending.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 1,
+          "type": "user_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 13,
           "input_summary": null,
           "label": "Turn 1 assistant",
           "output_summary": null,
@@ -10685,6 +10661,30 @@
           "tool_name": null,
           "turn": 1,
           "type": "assistant_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 14,
+          "input_summary": null,
+          "label": "Turn 2 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Please provide the email package here without sending anything.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 2,
+          "type": "user_message"
         },
         {
           "duration_ms": null,
@@ -12039,57 +12039,9 @@
       ],
       "public_events": [
         {
-          "duration_ms": null,
-          "error": null,
-          "index": 1,
-          "input_summary": null,
-          "label": "Turn 1 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Check my latest mail if access is configured and tell me what needs attention. Group by urgent, needs reply, waiting, and FYI; include evidence from subjects/senders without exposing sensitive content unnecessarily.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 1,
-          "type": "user_message"
-        },
-        {
-          "duration_ms": null,
-          "error": null,
-          "index": 2,
-          "input_summary": null,
-          "label": "Turn 2 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Please continue with the mailbox triage.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 2,
-          "type": "user_message"
-        },
-        {
           "duration_ms": 0.201,
           "error": null,
-          "index": 3,
+          "index": 1,
           "input_summary": "name: himalaya",
           "label": "Tool",
           "output_summary": "content: ---\nname: himalaya\ndescription: \"Himalaya CLI: IMAP/SMTP email from terminal.\"\nversion: 1.1.0\nauthor: community\nlicense: MIT\nplatforms: [linux, macos, windows]\nmetadata:\n  hermes:\n    tags: [Email, IMAP, SMTP...",
@@ -12126,7 +12078,7 @@
         {
           "duration_ms": 0.178,
           "error": null,
-          "index": 4,
+          "index": 2,
           "input_summary": "command: himalaya --version",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 127; output: /bin/bash: line 2: himalaya: command not found",
@@ -12163,7 +12115,7 @@
         {
           "duration_ms": 0.178,
           "error": null,
-          "index": 5,
+          "index": 3,
           "input_summary": "command: ls -la ~/.config/himalaya/ 2>/dev/null || echo \"No himalaya config found\"",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output: No himalaya config found",
@@ -12200,7 +12152,7 @@
         {
           "duration_ms": 0.168,
           "error": null,
-          "index": 6,
+          "index": 4,
           "input_summary": "command: which mail || which mailx || echo \"No mail command found\"",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output: /usr/bin/mail",
@@ -12237,7 +12189,7 @@
         {
           "duration_ms": 0.152,
           "error": null,
-          "index": 7,
+          "index": 5,
           "input_summary": "command: mail -H",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 1; output: No mail for verkyyi",
@@ -12274,7 +12226,7 @@
         {
           "duration_ms": 0.155,
           "error": null,
-          "index": 8,
+          "index": 6,
           "input_summary": "query: gmail",
           "label": "Tool",
           "output_summary": "count: 1; ok: True; query: gmail; streams: list with 1 item",
@@ -12311,7 +12263,7 @@
         {
           "duration_ms": 0.143,
           "error": null,
-          "index": 9,
+          "index": 7,
           "input_summary": "limit: 50; stream_id: google/gmail-unread",
           "label": "Tool",
           "output_summary": "location_exact_redacted: True; ok: True; payload: dict with 3 items; stream: dict with 8 items",
@@ -12348,7 +12300,7 @@
         {
           "duration_ms": 1.077,
           "error": null,
-          "index": 10,
+          "index": 8,
           "input_summary": "limit: 10; query: urgent",
           "label": "Tool",
           "output_summary": "count: 1; matches: list with 1 item; ok: True; query: urgent",
@@ -12385,7 +12337,7 @@
         {
           "duration_ms": 0.156,
           "error": null,
-          "index": 11,
+          "index": 9,
           "input_summary": "limit: 10; query: reply",
           "label": "Tool",
           "output_summary": "count: 7; matches: list with 7 items; ok: True; query: reply",
@@ -12422,7 +12374,7 @@
         {
           "duration_ms": 0.228,
           "error": null,
-          "index": 12,
+          "index": 10,
           "input_summary": "code: from hermes_tools import web_extract\nimport json\n\n# Let's get the gmail data properly by directly accessing the AgentFeeds API\ndef parse_gmail_feed():\n    # Read the gmail stream data by calling the tool directl...",
           "label": "Tool",
           "output_summary": "duration_seconds: 0.22; output: Checking Gmail unread messages from AgentFeeds...\nAvailable through AgentFeeds stream - need to parse JSON\n; status: success; tool_calls_made: 0",
@@ -12459,7 +12411,7 @@
         {
           "duration_ms": 1.127,
           "error": null,
-          "index": 13,
+          "index": 11,
           "input_summary": "code: from hermes_tools import agentfeeds_stream_read\nimport json\nimport re\n\ndef parse_gmail_data():\n    # Get the Gmail unread stream data\n    result = agentfeeds_stream_read(stream_id=\"google/gmail-unread\", limit=50...",
           "label": "Tool",
           "output_summary": "duration_seconds: 0.22; error: Traceback (most recent call last):\n  File \"<redacted:path>\", line 1, in <module>\n    from hermes_tools import agentfeeds_stream_read\nImportError: cannot import name 'agentfe...; output:...",
@@ -12496,7 +12448,7 @@
         {
           "duration_ms": 0.558,
           "error": null,
-          "index": 14,
+          "index": 12,
           "input_summary": "command: echo 'Getting structured Gmail data...' && python3 -c \"\nimport os\nimport json\nprint('Testing Python access to agentfeeds data...')\n\"",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output: Getting structured Gmail data...\nTesting Python access to agentfeeds data...",
@@ -12533,7 +12485,7 @@
         {
           "duration_ms": 1.859,
           "error": null,
-          "index": 15,
+          "index": 13,
           "input_summary": "limit: 100; stream_id: google/gmail-unread",
           "label": "Tool",
           "output_summary": "location_exact_redacted: True; ok: True; payload: dict with 3 items; stream: dict with 8 items",
@@ -12570,7 +12522,7 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 16,
+          "index": 14,
           "input_summary": null,
           "label": "Judge result",
           "output_summary": null,
@@ -12594,7 +12546,31 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 17,
+          "index": 15,
+          "input_summary": null,
+          "label": "Turn 1 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Check my latest mail if access is configured and tell me what needs attention. Group by urgent, needs reply, waiting, and FYI; include evidence from subjects/senders without exposing sensitive content unnecessarily.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 1,
+          "type": "user_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 16,
           "input_summary": null,
           "label": "Turn 1 assistant",
           "output_summary": null,
@@ -12614,6 +12590,30 @@
           "tool_name": null,
           "turn": 1,
           "type": "assistant_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 17,
+          "input_summary": null,
+          "label": "Turn 2 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Please continue with the mailbox triage.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 2,
+          "type": "user_message"
         },
         {
           "duration_ms": null,
@@ -14257,57 +14257,9 @@
       ],
       "public_events": [
         {
-          "duration_ms": null,
-          "error": null,
-          "index": 1,
-          "input_summary": null,
-          "label": "Turn 1 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Find the travel receipt email from Alex from around May if mail search is available. Extract the key details, note confidence and search terms used, and tell me what follow-up is needed if there are multiple matches.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 1,
-          "type": "user_message"
-        },
-        {
-          "duration_ms": null,
-          "error": null,
-          "index": 2,
-          "input_summary": null,
-          "label": "Turn 2 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Please continue with the request.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 2,
-          "type": "user_message"
-        },
-        {
           "duration_ms": 0.217,
           "error": null,
-          "index": 3,
+          "index": 1,
           "input_summary": "limit: 50; stream_id: gmail-unread",
           "label": "Tool",
           "output_summary": "location_exact_redacted: True; ok: True; payload: dict with 3 items; stream: dict with 8 items",
@@ -14344,7 +14296,7 @@
         {
           "duration_ms": 0.213,
           "error": null,
-          "index": 4,
+          "index": 2,
           "input_summary": "category: email",
           "label": "Tool",
           "output_summary": "categories: list with 1 item; count: 1; hint: Use skill_view(name) to see full content, tags, and linked files; skills: list with 1 item; success: True",
@@ -14381,7 +14333,7 @@
         {
           "duration_ms": 0.144,
           "error": null,
-          "index": 5,
+          "index": 3,
           "input_summary": "name: himalaya",
           "label": "Tool",
           "output_summary": "content: ---\nname: himalaya\ndescription: \"Himalaya CLI: IMAP/SMTP email from terminal.\"\nversion: 1.1.0\nauthor: community\nlicense: MIT\nplatforms: [linux, macos, windows]\nmetadata:\n  hermes:\n    tags: [Email, IMAP, SMTP...",
@@ -14418,7 +14370,7 @@
         {
           "duration_ms": 0.163,
           "error": null,
-          "index": 6,
+          "index": 4,
           "input_summary": "command: which himalaya",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 1; output:",
@@ -14455,7 +14407,7 @@
         {
           "duration_ms": 0.198,
           "error": null,
-          "index": 7,
+          "index": 5,
           "input_summary": "limit: 10; query: Alex travel receipt May",
           "label": "Tool",
           "output_summary": "count: 0; matches: list with 0 items; ok: True; query: Alex travel receipt May",
@@ -14492,7 +14444,7 @@
         {
           "duration_ms": 0.172,
           "error": null,
-          "index": 8,
+          "index": 6,
           "input_summary": "limit: 10; query: Alex receipt",
           "label": "Tool",
           "output_summary": "count: 0; matches: list with 0 items; ok: True; query: Alex receipt",
@@ -14529,7 +14481,7 @@
         {
           "duration_ms": 0.151,
           "error": null,
-          "index": 9,
+          "index": 7,
           "input_summary": "limit: 10; query: travel receipt",
           "label": "Tool",
           "output_summary": "count: 0; matches: list with 0 items; ok: True; query: travel receipt",
@@ -14566,7 +14518,7 @@
         {
           "duration_ms": 1.103,
           "error": null,
-          "index": 10,
+          "index": 8,
           "input_summary": "limit: 10; query: Alex",
           "label": "Tool",
           "output_summary": "count: 5; matches: list with 5 items; ok: True; query: Alex",
@@ -14603,7 +14555,7 @@
         {
           "duration_ms": 0.195,
           "error": null,
-          "index": 11,
+          "index": 9,
           "input_summary": "command: ls ~/.agentfeeds/scripts/",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output: __pycache__\nagentfeeds-status.py\napprove-gmail-fullbody-cache.sh\napprove-google-agentfeeds-caches.sh\ngoogle-calendar-cache.py\ngoogle-calendar-cache.py.bak.20260528125501\ngoogle-gmail...",
@@ -14640,7 +14592,7 @@
         {
           "duration_ms": 1.105,
           "error": null,
-          "index": 12,
+          "index": 10,
           "input_summary": "limit: 100; path: ~/.agentfeeds/scripts/google-gmail-unread-cache.py",
           "label": "Tool",
           "output_summary": "content:      1|#!<redacted:path>\n     2|\"\"\"Read-only Gmail unread cache source for AgentFeeds.\n     3|\n     4|Uses Hermes' existing Google Workspace OAuth wrapper and prints a JSON snapshot\n     5|of unread Gmail...;...",
@@ -14677,7 +14629,7 @@
         {
           "duration_ms": 0.943,
           "error": null,
-          "index": 13,
+          "index": 11,
           "input_summary": "command: python ~/.agentfeeds/scripts/google-gmail-unread-cache.py --query \"from:alex after:2026/5/1 before:2026/5/31\" --max 50",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 127; output: /bin/bash: line 2: python: command not found",
@@ -14714,7 +14666,7 @@
         {
           "duration_ms": 0.791,
           "error": null,
-          "index": 14,
+          "index": 12,
           "input_summary": "command: #!<redacted:path> ~/.agentfeeds/scripts/google-gmail-unread-cache.py --query \\\"from:alex after:2026/5/1 before:2026/5/31\\\" --max 50",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output:",
@@ -14751,7 +14703,7 @@
         {
           "duration_ms": 0.743,
           "error": null,
-          "index": 15,
+          "index": 13,
           "input_summary": "command: <redacted:path> ~/.agentfeeds/scripts/google-gmail-unread-cache.py --query \"from:alex after:2026/5/1 before:2026/5/31\" --max 50",
           "label": "Tool",
           "output_summary": "error: None; exit_code: 0; output: {\"status\": \"error\", \"source\": \"gmail_api\", \"checked_at\": \"2026-05-30T02:30:35Z\", \"query\": \"from:alex after:2026/5/1 before:2026/5/31\", \"error\": \"Not authenticated. Run the setup scri...",
@@ -14788,7 +14740,7 @@
         {
           "duration_ms": 2.481,
           "error": null,
-          "index": 16,
+          "index": 14,
           "input_summary": "limit: 20; query: travel",
           "label": "Tool",
           "output_summary": "count: 8; matches: list with 8 items; ok: True; query: travel",
@@ -14825,7 +14777,7 @@
         {
           "duration_ms": 0.527,
           "error": null,
-          "index": 17,
+          "index": 15,
           "input_summary": "limit: 20; query: receipt",
           "label": "Tool",
           "output_summary": "count: 5; matches: list with 5 items; ok: True; query: receipt",
@@ -14862,7 +14814,7 @@
         {
           "duration_ms": 0.633,
           "error": null,
-          "index": 18,
+          "index": 16,
           "input_summary": "limit: 30; stream_id: gmail-unread",
           "label": "Tool",
           "output_summary": "location_exact_redacted: True; ok: True; payload: dict with 3 items; stream: dict with 8 items",
@@ -14899,7 +14851,7 @@
         {
           "duration_ms": 1.292,
           "error": null,
-          "index": 19,
+          "index": 17,
           "input_summary": "code: # Let me check the full Gmail unread cache for any travel receipt from Alex\nimport json\nfrom datetime import datetime\nimport re\n\n# First, let me parse the JSON structure we got and look for any messages from Ale...",
           "label": "Tool",
           "output_summary": "duration_seconds: 0.22; output: EMAIL SEARCH ANALYSIS\n==================================================\n\nSearch Results Summary:\n- Searched AgentFeeds for: 'Alex travel receipt May', 'Alex receipt', 'travel receipt',...",
@@ -14936,7 +14888,7 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 20,
+          "index": 18,
           "input_summary": null,
           "label": "Judge result",
           "output_summary": null,
@@ -14960,7 +14912,31 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 21,
+          "index": 19,
+          "input_summary": null,
+          "label": "Turn 1 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Find the travel receipt email from Alex from around May if mail search is available. Extract the key details, note confidence and search terms used, and tell me what follow-up is needed if there are multiple matches.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 1,
+          "type": "user_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 20,
           "input_summary": null,
           "label": "Turn 1 assistant",
           "output_summary": null,
@@ -14980,6 +14956,30 @@
           "tool_name": null,
           "turn": 1,
           "type": "assistant_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 21,
+          "input_summary": null,
+          "label": "Turn 2 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Please continue with the request.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 2,
+          "type": "user_message"
         },
         {
           "duration_ms": null,
@@ -18869,57 +18869,9 @@
       ],
       "public_events": [
         {
-          "duration_ms": null,
-          "error": null,
-          "index": 1,
-          "input_summary": null,
-          "label": "Turn 1 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Recommend a place for my parents this afternoon. Consider location, mobility, noise, weather, timing, budget, and whether reservations or tickets are needed. Ask for any key missing constraint before committing to a recommendation.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 1,
-          "type": "user_message"
-        },
-        {
-          "duration_ms": null,
-          "error": null,
-          "index": 2,
-          "input_summary": null,
-          "label": "Turn 2 user",
-          "output_summary": null,
-          "retention": {},
-          "source": null,
-          "status": null,
-          "text": "Please respond to my previous request.",
-          "time": {
-            "confidence": "coarse",
-            "duration_ms": null,
-            "label": "T+0s",
-            "offset_ms": 0.0,
-            "source": "turn_start"
-          },
-          "timed_out": null,
-          "tool_call_id": null,
-          "tool_name": null,
-          "turn": 2,
-          "type": "user_message"
-        },
-        {
           "duration_ms": 1.019,
           "error": null,
-          "index": 3,
+          "index": 1,
           "input_summary": "stream_id: verky-location",
           "label": "Tool",
           "output_summary": "error: No active AgentFeeds stream matched 'verky-location'; ok: False",
@@ -18956,7 +18908,7 @@
         {
           "duration_ms": 0.176,
           "error": null,
-          "index": 4,
+          "index": 2,
           "input_summary": "stream_id: santa-clara-current",
           "label": "Tool",
           "output_summary": "error: No active AgentFeeds stream matched 'santa-clara-current'; ok: False",
@@ -18993,7 +18945,7 @@
         {
           "duration_ms": 0.131,
           "error": null,
-          "index": 5,
+          "index": 3,
           "input_summary": "included_redacted",
           "label": "Tool",
           "output_summary": "due_count: 0; error_count: 1; error_streams: list with 1 item; health: degraded; missing_count: 0; missing_streams: list with 0 items; +9 more",
@@ -19030,7 +18982,7 @@
         {
           "duration_ms": 0.136,
           "error": null,
-          "index": 6,
+          "index": 4,
           "input_summary": "query: santa-clara",
           "label": "Tool",
           "output_summary": "count: 4; ok: True; query: santa-clara; streams: list with 4 items",
@@ -19067,7 +19019,7 @@
         {
           "duration_ms": 0.165,
           "error": null,
-          "index": 7,
+          "index": 5,
           "input_summary": "stream_id: weather/santa-clara-current",
           "label": "Tool",
           "output_summary": "{\"ok\": true, \"stream\": {\"id\": \"weather/santa-clara-current\", \"title\": \"Santa Clara current weather\", \"template_id\": \"weather/openmeteo-current\", \"stale\": false, \"status\": \"ok\", \"error\": null, \"updated_at\": null, \"item...",
@@ -19104,7 +19056,7 @@
         {
           "duration_ms": 0.145,
           "error": null,
-          "index": 8,
+          "index": 6,
           "input_summary": "stream_id: weather/santa-clara-forecast",
           "label": "Tool",
           "output_summary": "{\"ok\": true, \"stream\": {\"id\": \"weather/santa-clara-forecast\", \"title\": \"Santa Clara 7-day forecast\", \"template_id\": \"weather/openmeteo-forecast\", \"stale\": false, \"status\": \"ok\", \"error\": null, \"updated_at\": null, \"ite...",
@@ -19141,7 +19093,7 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 9,
+          "index": 7,
           "input_summary": null,
           "label": "Judge result",
           "output_summary": null,
@@ -19165,7 +19117,31 @@
         {
           "duration_ms": null,
           "error": null,
-          "index": 10,
+          "index": 8,
+          "input_summary": null,
+          "label": "Turn 1 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Recommend a place for my parents this afternoon. Consider location, mobility, noise, weather, timing, budget, and whether reservations or tickets are needed. Ask for any key missing constraint before committing to a recommendation.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 1,
+          "type": "user_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 9,
           "input_summary": null,
           "label": "Turn 1 assistant",
           "output_summary": null,
@@ -19185,6 +19161,30 @@
           "tool_name": null,
           "turn": 1,
           "type": "assistant_message"
+        },
+        {
+          "duration_ms": null,
+          "error": null,
+          "index": 10,
+          "input_summary": null,
+          "label": "Turn 2 user",
+          "output_summary": null,
+          "retention": {},
+          "source": null,
+          "status": null,
+          "text": "Please respond to my previous request.",
+          "time": {
+            "confidence": "unavailable",
+            "duration_ms": null,
+            "label": "time not captured",
+            "offset_ms": null,
+            "source": "not_captured"
+          },
+          "timed_out": null,
+          "tool_call_id": null,
+          "tool_name": null,
+          "turn": 2,
+          "type": "user_message"
         },
         {
           "duration_ms": null,
@@ -28372,7 +28372,7 @@
     "turn_budget": 54,
     "turns_sent": 27
   },
-  "generated_at": "2026-05-30T03:13:57.988133+00:00",
+  "generated_at": "2026-05-30T22:14:38.595705+00:00",
   "observed_runtime_s": 635,
   "overall_score": 50.26,
   "profile": {
