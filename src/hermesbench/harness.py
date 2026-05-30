@@ -8,12 +8,15 @@ observable from outside: replies and mechanical reliability signals (did it
 respond, how fast, did it stay stable, did it reach terminal conclusions within
 budget). No kanban/orchestrator internals are inspected by prompt scenarios.
 
-Each call runs in its own temp HERMES_HOME (config.yaml + .env + context-length
-cache copied from the real default profile) plus a benchmark-owned working
-directory. Side effects are allowed inside that working directory and summarized
-before cleanup; real chats, production boards, external messaging, money, and
-cloud infrastructure are out of scope for the default prompt suites. Built on
-the same isolation pattern as evals/responsiveness/run_live.
+Each call runs in its own temp HERMES_HOME (config.yaml + .env + auth +
+context-length cache copied from the real default profile) plus a benchmark-owned
+working directory. Non-secret local binaries required for configured safety
+checks, such as bin/tirith, are copied too so the first turn does not fail open
+while auto-install runs in the background. Side effects are allowed inside that
+working directory and summarized before cleanup; real chats, production boards,
+external messaging, money, and cloud infrastructure are out of scope for the
+default prompt suites. Built on the same isolation pattern as
+evals/responsiveness/run_live.
 """
 
 from __future__ import annotations
@@ -71,7 +74,7 @@ def _default_home() -> Path:
 
 def _make_isolated_home(src_home: Path) -> Path:
     home = Path(tempfile.mkdtemp(prefix="hb-usecase-"))
-    for name in ("config.yaml", ".env", "context_length_cache.yaml"):
+    for name in ("config.yaml", ".env", "auth.json", "context_length_cache.yaml"):
         s = src_home / name
         if s.exists():
             shutil.copy2(s, home / name)
@@ -79,6 +82,15 @@ def _make_isolated_home(src_home: Path) -> Path:
                 (home / name).chmod(0o600)
             except OSError:
                 pass
+    tirith = src_home / "bin" / "tirith"
+    if tirith.exists() and tirith.is_file():
+        dst = home / "bin" / "tirith"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(tirith, dst)
+        try:
+            dst.chmod(0o700)
+        except OSError:
+            pass
     if os.environ.get("HERMES_BENCH_ENABLE_TRAJECTORIES", "").lower() in {"1", "true", "yes", "on"}:
         _enable_upstream_trajectories(home / "config.yaml")
     return home

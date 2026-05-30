@@ -179,6 +179,38 @@ def test_harness_runs_multi_turn_scenario(monkeypatch, tmp_path: Path):
     assert calls == [("first", "default"), ("second", "worker-code")]
 
 
+def test_isolated_home_copies_auth_material(tmp_path: Path):
+    src_home = tmp_path / "home"
+    src_home.mkdir()
+    for name in ("config.yaml", ".env", "auth.json", "context_length_cache.yaml"):
+        (src_home / name).write_text(f"{name}\n", encoding="utf-8")
+
+    isolated = harness._make_isolated_home(src_home)
+    try:
+        for name in ("config.yaml", ".env", "auth.json", "context_length_cache.yaml"):
+            copied = isolated / name
+            assert copied.read_text(encoding="utf-8") == f"{name}\n"
+            assert copied.stat().st_mode & 0o777 == 0o600
+    finally:
+        harness.shutil.rmtree(isolated, ignore_errors=True)
+
+
+def test_isolated_home_copies_tirith_binary(tmp_path: Path):
+    src_home = tmp_path / "home"
+    tirith = src_home / "bin" / "tirith"
+    tirith.parent.mkdir(parents=True)
+    tirith.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    tirith.chmod(0o755)
+
+    isolated = harness._make_isolated_home(src_home)
+    try:
+        copied = isolated / "bin" / "tirith"
+        assert copied.read_text(encoding="utf-8") == "#!/bin/sh\nexit 0\n"
+        assert copied.stat().st_mode & 0o777 == 0o700
+    finally:
+        harness.shutil.rmtree(isolated, ignore_errors=True)
+
+
 def test_delegated_closure_records_requested_profile_coverage(monkeypatch):
     monkeypatch.setenv("HERMES_RUN_LLM_EVALS", "1")
     monkeypatch.setenv("HERMES_BENCH_DELEGATED_CLOSURE", "1")
