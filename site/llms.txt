@@ -8,6 +8,7 @@ Primary pages:
 
 - Home and single-recipe quick start: /
 - Agent-driven quick start: /#quickstart
+- Alpha feedback: https://github.com/verkyyi/hermesbench/blob/main/FEEDBACK.md
 - Scenario recipe catalog: /recipes.html
 - Leaderboard: /leaderboard.html
 - Submission contract: /../data/submissions/README.md
