@@ -179,6 +179,10 @@ def test_harness_runs_multi_turn_scenario(monkeypatch, tmp_path: Path):
     assert out["turn_count"] == 2
     assert out["reply"] == "reply to second"
     assert calls == [("first", "default"), ("second", "worker-code")]
+    assert out["transcript"][0]["wall_ms"] == 10.0
+    assert out["transcript"][0]["offset_ms"] == 10.0
+    assert out["transcript"][1]["wall_ms"] == 10.0
+    assert out["transcript"][1]["offset_ms"] == 20.0
 
 
 def test_isolated_home_copies_auth_material(tmp_path: Path):
@@ -846,6 +850,173 @@ def test_public_trace_events_render_tool_timeline_without_raw_json(monkeypatch, 
     assert "/Users/verkyyi" not in html
 
 
+def test_public_trace_events_use_multi_turn_transcript_offsets(monkeypatch, tmp_path: Path):
+    monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
+    baseline = tmp_path / "baseline"
+    baseline.mkdir()
+    (baseline / "run-manifest.json").write_text(json.dumps({
+        "run_id": "hb-test",
+        "timestamp_utc": "2026-05-30T00:00:00+00:00",
+        "overall_score": 72.0,
+        "observed_runtime_s": 19,
+    }), encoding="utf-8")
+    (baseline / "case-results.jsonl").write_text(json.dumps({
+        "case": "personal_start_today",
+        "suite_id": "general_assistant",
+        "expectation": "answer",
+        "score": 72.0,
+        "mechanical": {"responded": True, "concluded": True, "stable": True, "turns_sent": 2, "turn_budget": 2, "wall_ms": 5700},
+        "driver_decision": {"scenario_closed": True, "closure_type": "answer", "reason": "closed"},
+        "judge": {"reason": "used observed context"},
+        "public_transcript": [
+            {"turn": 1, "user": "first", "assistant": "not enough", "wall_ms": 1200, "offset_ms": 1200},
+            {"turn": 2, "user": "second", "assistant": "done", "wall_ms": 4500, "offset_ms": 5700},
+        ],
+        "trace_retention": {
+            "public_transcript": "included_pii_redacted",
+            "raw_transcript": "omitted_public_safe",
+        },
+    }) + "\n", encoding="utf-8")
+
+    trace = public_artifacts.build_trace_for_baseline(baseline)
+    message_events = [
+        event for event in trace["cases"][0]["public_events"]
+        if event["type"] in {"user_message", "assistant_message"}
+    ]
+    assert [(event["type"], event["turn"], event["time"]["label"]) for event in message_events] == [
+        ("user_message", 1, "T+0s"),
+        ("assistant_message", 1, "T+1.2s"),
+        ("user_message", 2, "T+1.2s"),
+        ("assistant_message", 2, "T+5.7s"),
+    ]
+    assert [event["time"]["source"] for event in message_events] == [
+        "transcript.turn_start",
+        "transcript.offset_ms",
+        "transcript.turn_start",
+        "transcript.offset_ms",
+    ]
+    assistant_events = [
+        event for event in trace["cases"][0]["public_events"]
+        if event["type"] == "assistant_message"
+    ]
+    assert [event["time"]["label"] for event in assistant_events] == ["T+1.2s", "T+5.7s"]
+    assert [event["time"]["source"] for event in assistant_events] == ["transcript.offset_ms", "transcript.offset_ms"]
+    assert [event["duration_ms"] for event in assistant_events] == [1200, 4500]
+
+
+def test_public_trace_events_leave_ambiguous_legacy_assistant_times_uncaptured(monkeypatch, tmp_path: Path):
+    monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
+    baseline = tmp_path / "baseline"
+    baseline.mkdir()
+    (baseline / "run-manifest.json").write_text(json.dumps({
+        "run_id": "hb-test",
+        "timestamp_utc": "2026-05-30T00:00:00+00:00",
+        "overall_score": 72.0,
+        "observed_runtime_s": 19,
+    }), encoding="utf-8")
+    (baseline / "case-results.jsonl").write_text(json.dumps({
+        "case": "personal_start_today",
+        "suite_id": "general_assistant",
+        "expectation": "answer",
+        "score": 72.0,
+        "mechanical": {"responded": True, "concluded": True, "stable": True, "turns_sent": 2, "turn_budget": 2, "wall_ms": 5700},
+        "driver_decision": {"scenario_closed": True, "closure_type": "answer", "reason": "closed"},
+        "judge": {"reason": "used observed context"},
+        "public_transcript": [
+            {"turn": 1, "user": "first", "assistant": "not enough", "wall_ms": None},
+            {"turn": 2, "user": "second", "assistant": "done", "wall_ms": None},
+        ],
+        "observability": {
+            "messages": {
+                "sample": [
+                    {
+                        "id": 4,
+                        "role": "assistant",
+                        "finish_reason": "tool_calls",
+                        "time": {"offset_ms": 1200, "timestamp_utc": "2026-05-30T00:00:01.200000+00:00", "source": "state_db.messages.timestamp", "confidence": "recorded"},
+                    },
+                    {
+                        "id": 8,
+                        "role": "assistant",
+                        "finish_reason": "stop",
+                        "time": {"offset_ms": 5700, "timestamp_utc": "2026-05-30T00:00:05.700000+00:00", "source": "state_db.messages.timestamp", "confidence": "recorded"},
+                    },
+                ],
+            },
+        },
+        "trace_retention": {
+            "public_transcript": "included_pii_redacted",
+            "raw_transcript": "omitted_public_safe",
+        },
+    }) + "\n", encoding="utf-8")
+
+    trace = public_artifacts.build_trace_for_baseline(baseline)
+    assistant_events = [
+        event for event in trace["cases"][0]["public_events"]
+        if event["type"] == "assistant_message"
+    ]
+    assert [event["time"]["label"] for event in assistant_events] == ["time not captured", "time not captured"]
+    assert [event["time"]["source"] for event in assistant_events] == ["not_captured", "not_captured"]
+
+
+def test_public_trace_events_backfill_legacy_assistant_times_when_mapping_is_safe(monkeypatch, tmp_path: Path):
+    monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
+    baseline = tmp_path / "baseline"
+    baseline.mkdir()
+    (baseline / "run-manifest.json").write_text(json.dumps({
+        "run_id": "hb-test",
+        "timestamp_utc": "2026-05-30T00:00:00+00:00",
+        "overall_score": 72.0,
+        "observed_runtime_s": 19,
+    }), encoding="utf-8")
+    (baseline / "case-results.jsonl").write_text(json.dumps({
+        "case": "personal_start_today",
+        "suite_id": "general_assistant",
+        "expectation": "answer",
+        "score": 72.0,
+        "mechanical": {"responded": True, "concluded": True, "stable": True, "turns_sent": 2, "turn_budget": 2, "wall_ms": 5700},
+        "driver_decision": {"scenario_closed": True, "closure_type": "answer", "reason": "closed"},
+        "judge": {"reason": "used observed context"},
+        "public_transcript": [
+            {"turn": 1, "user": "first", "assistant": "not enough", "wall_ms": None},
+            {"turn": 2, "user": "second", "assistant": "done", "wall_ms": None},
+        ],
+        "observability": {
+            "messages": {
+                "sample": [
+                    {
+                        "id": 4,
+                        "role": "assistant",
+                        "finish_reason": "stop",
+                        "time": {"offset_ms": 1200, "timestamp_utc": "2026-05-30T00:00:01.200000+00:00", "source": "state_db.messages.timestamp", "confidence": "recorded"},
+                    },
+                    {
+                        "id": 8,
+                        "role": "assistant",
+                        "finish_reason": "stop",
+                        "time": {"offset_ms": 5700, "timestamp_utc": "2026-05-30T00:00:05.700000+00:00", "source": "state_db.messages.timestamp", "confidence": "recorded"},
+                    },
+                ],
+            },
+        },
+        "trace_retention": {
+            "public_transcript": "included_pii_redacted",
+            "raw_transcript": "omitted_public_safe",
+        },
+    }) + "\n", encoding="utf-8")
+
+    trace = public_artifacts.build_trace_for_baseline(baseline)
+    assistant_events = [
+        event for event in trace["cases"][0]["public_events"]
+        if event["type"] == "assistant_message"
+    ]
+    assert [event["time"]["label"] for event in assistant_events] == ["T+1.2s", "T+5.7s"]
+    assert [event["time"]["source"] for event in assistant_events] == [
+        "state_db.messages.timestamp",
+        "state_db.messages.timestamp",
+    ]
+
+
 def test_profile_architecture_index_links_distribution_shape_and_scores(tmp_path: Path):
     baselines = tmp_path / "baselines"
     baseline = baselines / "demo-baseline"
@@ -1151,6 +1322,8 @@ def test_agentic_bridge_records_target_turn(monkeypatch, tmp_path: Path):
     assert out["ok"] is True
     assert saved["turns"][0]["reply"] == "reply"
     assert saved["transcript"][0]["user"] == "hello"
+    assert saved["transcript"][0]["wall_ms"] == 5.0
+    assert saved["transcript"][0]["offset_ms"] == 5.0
 
 
 def test_agentic_bridge_applies_target_ui_defaults(monkeypatch, tmp_path: Path):
@@ -1212,6 +1385,7 @@ def test_agentic_bridge_resumes_cli_session_between_turns(monkeypatch, tmp_path:
     assert seen_resume == [None, "sid-one"]
     assert saved["target_session_id"] == "sid-two"
     assert [turn["assistant"] for turn in saved["transcript"]] == ["reply one", "reply two"]
+    assert [turn["offset_ms"] for turn in saved["transcript"]] == [5.0, 10.0]
 
 
 def test_spawn_cli_extracts_and_resumes_hermes_session(monkeypatch, tmp_path: Path):

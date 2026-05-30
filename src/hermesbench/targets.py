@@ -218,7 +218,15 @@ class HermesCliTarget:
             )
             result["turns"] = [dict(result, turn_index=1, profile="default")]
             result["transcript"] = [
-                {"turn": 1, "user": turns[0]["prompt"], "assistant": result.get("reply", "")}
+                {
+                    "turn": 1,
+                    "user": turns[0]["prompt"],
+                    "assistant": result.get("reply", ""),
+                    "error": result.get("error"),
+                    "timed_out": result.get("timed_out"),
+                    "wall_ms": result.get("wall_ms"),
+                    "offset_ms": result.get("wall_ms"),
+                }
             ]
             result["turn_count"] = 1
             result["expected_turn_count"] = 1

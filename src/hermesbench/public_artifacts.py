@@ -274,6 +274,34 @@ def _merge_tool_events(events: list[dict]) -> list[dict]:
     return merged
 
 
+def _assistant_message_time_fallbacks(row: dict, public_transcript: list[dict]) -> list[dict]:
+    assistant_turn_count = sum(
+        1
+        for turn in public_transcript
+        if isinstance(turn, dict) and (turn.get("assistant") or turn.get("error"))
+    )
+    if assistant_turn_count <= 0:
+        return []
+    observability = row.get("observability") if isinstance(row.get("observability"), dict) else {}
+    messages = observability.get("messages") if isinstance(observability.get("messages"), dict) else {}
+    samples = [item for item in (messages.get("sample") or []) if isinstance(item, dict)]
+    assistant_messages = [
+        item for item in samples
+        if item.get("role") == "assistant" and isinstance(item.get("time"), dict)
+    ]
+    final_messages = [
+        item for item in assistant_messages
+        if str(item.get("finish_reason") or "") not in {"", "tool_calls"}
+    ]
+    if len(final_messages) < assistant_turn_count:
+        return []
+    candidates = final_messages
+    return [
+        _event_time_from_source({"time": item["time"]})
+        for item in candidates[-assistant_turn_count:]
+    ]
+
+
 def _normalize_public_events(row: dict, public_transcript: list[dict]) -> list[dict]:
     """Return public-safe trace events for website rendering.
 
@@ -287,22 +315,55 @@ def _normalize_public_events(row: dict, public_transcript: list[dict]) -> list[d
         events = row["public_events"]
     else:
         events = []
+        assistant_time_fallbacks = _assistant_message_time_fallbacks(row, public_transcript)
+        assistant_event_index = 0
         for turn in public_transcript:
             turn_id = turn.get("turn")
+            turn_offset = _float_or_none(turn.get("offset_ms"))
+            turn_wall = _float_or_none(turn.get("wall_ms"))
+            user_offset = None
+            if turn_offset is not None and turn_wall is not None:
+                user_offset = max(0.0, turn_offset - turn_wall)
+            elif len(public_transcript) == 1:
+                user_offset = 0
             if turn.get("user"):
                 events.append({
                     "type": "user_message",
                     "turn": turn_id,
                     "label": f"Turn {turn_id} user",
                     "text": turn.get("user"),
-                    "time": _timing(0, source="turn_start", confidence="coarse"),
+                    "time": _timing(
+                        user_offset,
+                        source="transcript.turn_start" if user_offset is not None and (turn_offset is not None or turn_wall is not None) else "turn_start" if user_offset == 0 else "not_captured",
+                        confidence="recorded" if turn_offset is not None and turn_wall is not None else "coarse" if user_offset == 0 else "unavailable",
+                    ),
                 })
             if turn.get("assistant") or turn.get("error"):
-                assistant_wall = turn.get("wall_ms") if turn.get("wall_ms") is not None else (
+                assistant_fallback_time = (
+                    assistant_time_fallbacks[assistant_event_index]
+                    if assistant_event_index < len(assistant_time_fallbacks)
+                    else None
+                )
+                assistant_event_index += 1
+                assistant_offset = turn.get("offset_ms") if turn.get("offset_ms") is not None else turn.get("wall_ms")
+                assistant_wall = assistant_offset if assistant_offset is not None else (
                     case_wall_ms if len(public_transcript) == 1 else None
                 )
-                source = "transcript.wall_ms" if turn.get("wall_ms") is not None else (
-                    "case.wall_ms" if assistant_wall is not None else "not_captured"
+                if turn.get("offset_ms") is not None:
+                    source = "transcript.offset_ms"
+                elif turn.get("wall_ms") is not None:
+                    source = "transcript.wall_ms"
+                else:
+                    source = "case.wall_ms" if assistant_wall is not None else "not_captured"
+                event_time = (
+                    _timing(
+                        assistant_wall,
+                        duration_ms=turn.get("wall_ms"),
+                        source=source,
+                        confidence="coarse" if source == "case.wall_ms" else "recorded" if source.startswith("transcript.") else "unavailable",
+                    )
+                    if assistant_wall is not None or turn.get("wall_ms") is not None
+                    else assistant_fallback_time or _timing(None, source="not_captured", confidence="unavailable")
                 )
                 events.append({
                     "type": "assistant_message",
@@ -312,12 +373,7 @@ def _normalize_public_events(row: dict, public_transcript: list[dict]) -> list[d
                     "error": turn.get("error"),
                     "timed_out": turn.get("timed_out"),
                     "duration_ms": turn.get("wall_ms"),
-                    "time": _timing(
-                        assistant_wall,
-                        duration_ms=turn.get("wall_ms"),
-                        source=source,
-                        confidence="coarse" if source == "case.wall_ms" else "recorded" if source == "transcript.wall_ms" else "unavailable",
-                    ),
+                    "time": event_time,
                 })
 
         observability = row.get("observability") if isinstance(row.get("observability"), dict) else {}

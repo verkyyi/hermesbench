@@ -105,7 +105,16 @@ def send_turn(
         state["target_session_id"] = result["session_id"]
     turns.append(result)
     transcript = list(state.get("transcript") or [])
-    transcript.append({"turn": result["turn_index"], "user": prompt, "assistant": reply})
+    prior_offset_ms = sum(float(turn.get("wall_ms") or 0.0) for turn in transcript if isinstance(turn, dict))
+    transcript.append({
+        "turn": result["turn_index"],
+        "user": prompt,
+        "assistant": reply,
+        "error": err,
+        "timed_out": timed_out,
+        "wall_ms": wall_ms,
+        "offset_ms": round(prior_offset_ms + float(wall_ms or 0.0), 1),
+    })
     state["turns"] = turns
     state["transcript"] = transcript
     state["side_effects"] = side_effects

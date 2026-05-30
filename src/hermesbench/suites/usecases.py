@@ -175,6 +175,7 @@ def _redacted_case_result(r: dict) -> dict:
             "error": _redact_pii_text(t.get("error")),
             "timed_out": t.get("timed_out"),
             "wall_ms": t.get("wall_ms"),
+            "offset_ms": t.get("offset_ms"),
         }
         for t in (mech.get("transcript") or [])
     ]
@@ -267,6 +268,7 @@ def _redacted_case_result(r: dict) -> dict:
                 "error": t.get("error"),
                 "timed_out": t.get("timed_out"),
                 "wall_ms": t.get("wall_ms"),
+                "offset_ms": t.get("offset_ms"),
             }
             for t in (mech.get("transcript") or [])
         ]
