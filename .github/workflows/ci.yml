@@ -24,3 +24,16 @@ jobs:
         run: pytest
       - name: Validate suites
         run: hermesbench --validate
+      - name: Build and verify package
+        run: |
+          python -m pip install build
+          python -m build
+          python -m pip install --force-reinstall dist/*.whl
+          python - <<'PY'
+          from hermesbench.api import agent_skill_path, validate
+
+          skill = agent_skill_path()
+          assert skill.exists(), skill
+          assert validate()["ok"] is True
+          print(skill)
+          PY

@@ -122,6 +122,13 @@ h3 {
   margin-top: 30px;
 }
 
+.stacked-actions {
+  align-content: start;
+  align-items: stretch;
+  display: grid;
+  margin-top: 0;
+}
+
 .button {
   display: inline-flex;
   align-items: center;

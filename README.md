@@ -16,6 +16,24 @@ HermesBench currently targets Hermes Agent users who customize a personal agent
 for daily work: calendar, mail, messaging, web lookup, local context, finance,
 travel, reports, and optional power-user integrations.
 
+## Alpha Quick Start
+
+HermesBench is designed to be driven through a coding agent. Start with one
+default scenario recipe; full bundle runs are opt-in because they take longer
+and cost more.
+
+```text
+Use the HermesBench skill and run one default scenario recipe for my current Hermes configuration.
+
+Skill: https://github.com/verkyyi/hermesbench/blob/main/agent-skills/hermesbench/SKILL.md
+
+Follow the skill's "Run Current Hermes Configuration" workflow. Use the Python API default single-recipe path, save artifacts, and summarize the score and main findings. Do not run the full bundle unless I explicitly ask.
+```
+
+After a first run, open alpha feedback with the first setup issue, scoring
+surprise, recipe concern, or redaction/trust gap you found:
+[`FEEDBACK.md`](FEEDBACK.md).
+
 ## What It Includes
 
 - **27 bundled workflow recipes** across 9 job-area categories.
@@ -97,6 +115,8 @@ Baseline directories:
 
 Transparent recipe and leaderboard artifacts:
 
+- [`docs/recipe-schema.md`](docs/recipe-schema.md): public draft of the
+  authored recipe schema and feedback questions.
 - [`data/tasks/README.md`](data/tasks/README.md): human-readable recipe catalog.
 - [`data/tasks/tasks.json`](data/tasks/tasks.json): machine-readable scenario
   catalog with per-scenario public leaderboard rows.
@@ -401,6 +421,7 @@ product-facing verdict; axis scores explain why the score moved.
 - [Roadmap](docs/ROADMAP.md)
 - [Local suites guide](docs/local-suites.md)
 - [Profile distribution baselines](docs/profile-distribution-baselines.md)
+- [Alpha feedback guide](FEEDBACK.md)
 - [Website source](site/)
 
 ## Development

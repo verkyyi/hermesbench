@@ -1,0 +1,68 @@
+name: Alpha feedback
+description: Share first-run feedback, setup friction, scoring concerns, or recipe feedback.
+title: "[feedback] "
+labels: ["alpha-feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing HermesBench. Share redacted public artifacts only. Do not attach raw transcripts, auth files, `.env` files, raw memories, or private local paths.
+  - type: input
+    id: version
+    attributes:
+      label: HermesBench version or commit
+      description: Paste the installed version, tag, or commit SHA.
+      placeholder: "0.1.0 or abc1234"
+    validations:
+      required: true
+  - type: dropdown
+    id: feedback_type
+    attributes:
+      label: Feedback type
+      options:
+        - First-run setup
+        - Score or judge concern
+        - Recipe coverage
+        - Public artifact or redaction concern
+        - Leaderboard submission
+        - Documentation
+    validations:
+      required: true
+  - type: input
+    id: target_surface
+    attributes:
+      label: Target surface
+      placeholder: "cli, telegram, weixin, or custom command bridge"
+  - type: input
+    id: scenario
+    attributes:
+      label: Scenario or suite id
+      placeholder: "calendar_daily_brief"
+  - type: input
+    id: run
+    attributes:
+      label: Run id and score
+      placeholder: "hb-... / 78.2"
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+      description: Include the first confusing step, failure, or result that did not match your expectation.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Redacted public artifact links or excerpts
+      description: Link to public-safe artifacts when available. Keep raw/private data out of the issue.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed secrets, raw private transcripts, auth files, `.env` files, raw memories, and private local paths.
+          required: true
