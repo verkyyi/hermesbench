@@ -4,7 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>HermesBench</title>
-    <meta name="description" content="Reliability-first benchmark and evaluation harness for Hermes Agent runtime configurations." />
+    <meta name="description" content="HermesBench benchmarks full Hermes personal-agent configurations with public recipes, redacted trace evidence, and reproducibility metadata." />
+    <link rel="canonical" href="https://verkyyi.github.io/hermesbench/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HermesBench" />
+    <meta property="og:title" content="HermesBench" />
+    <meta property="og:description" content="Benchmark full Hermes personal-agent configurations with public recipes, redacted traces, and reproducibility metadata." />
+    <meta property="og:url" content="https://verkyyi.github.io/hermesbench/" />
+    <meta property="og:image" content="https://verkyyi.github.io/hermesbench/assets/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HermesBench" />
+    <meta name="twitter:description" content="Benchmark full Hermes personal-agent configurations with public recipes, redacted traces, and reproducibility metadata." />
+    <meta name="twitter:image" content="https://verkyyi.github.io/hermesbench/assets/social-card.svg" />
     <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body>
@@ -25,30 +36,64 @@
       <section class="hero">
         <div>
           <p class="eyebrow">Hermes Agent runtime evaluation</p>
-          <h1>Stop guessing whether your Hermes setup got better.</h1>
+          <h1>Benchmark the whole personal agent, not just the model.</h1>
           <p class="lede">
-            Run HermesBench through your coding agent to compare configurations
-            with scenario recipes, redacted trace evidence, and profile
-            readouts. See what improved, what regressed, and which
-            profile/config package is worth reusing for daily personal-agent work.
+            HermesBench evaluates complete Hermes configurations: prompt,
+            model/provider, tools, AgentSkills, memory, gateway behavior,
+            delegation, safety, latency, and stability. The current public
+            baseline scores 78.2 across 27 personal-agent recipes with
+            redacted traces you can inspect.
           </p>
           <div class="actions">
-            <a class="button primary" href="#quickstart">Benchmark my setup</a>
-            <a class="button" href="recipes.html">Browse recipes</a>
-            <a class="button" href="profiles.html">Browse profiles</a>
-            <a class="button" href="traces.html">Inspect traces</a>
+            <a class="button primary" href="traces.html">Inspect the baseline</a>
+            <a class="button" href="#quickstart">Run one recipe</a>
+            <a class="button" href="https://github.com/verkyyi/hermesbench">Star on GitHub</a>
             <a class="button" href="https://github.com/verkyyi/hermesbench/issues/new?template=alpha-feedback.yml">Give feedback</a>
           </div>
         </div>
         <div class="scorecard" aria-label="Benchmark summary">
+          <div>
+            <span class="metric">78.2</span>
+            <span class="label">current public baseline</span>
+          </div>
           <div>
             <span class="metric">27</span>
             <span class="label">workflow recipes</span>
           </div>
           <div>
             <span class="metric">9</span>
-            <span class="label">job-area categories</span>
+            <span class="label">scored suites</span>
           </div>
+        </div>
+      </section>
+
+      <section class="section compact">
+        <div class="section-head">
+          <p class="eyebrow">Why trust it</p>
+          <h2>Evidence first, with visible limits.</h2>
+          <p>
+            Every published result links back to scenario definitions, public
+            score axes, driver closure decisions, deterministic checks, and
+            redacted trace timelines. The site is deliberately clear that this
+            is one early baseline, not a base-model leaderboard.
+          </p>
+        </div>
+        <div class="grid three nav-card-grid">
+          <a class="nav-card" href="recipes.html">
+            <span>Public recipes</span>
+            <strong>See the prompts</strong>
+            <small>27 user-like personal-agent jobs with criteria and side-effect boundaries.</small>
+          </a>
+          <a class="nav-card" href="traces.html">
+            <span>Redacted traces</span>
+            <strong>Inspect what happened</strong>
+            <small>Tool timelines, assistant replies, checks, and judge summaries without raw private payloads.</small>
+          </a>
+          <a class="nav-card" href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">
+            <span>Methodology</span>
+            <strong>Understand the score</strong>
+            <small>Capability, reliability, and UX axes with documented limitations.</small>
+          </a>
         </div>
       </section>
 
@@ -105,11 +150,12 @@ Follow the skill's "Run Current Hermes Configuration" workflow. Use the Python A
       <section id="feedback" class="section split">
         <div>
           <p class="eyebrow">Alpha feedback</p>
-          <h2>Run one recipe, then report the first rough edge.</h2>
+          <h2>The best next action is concrete feedback.</h2>
           <p>
             HermesBench needs early feedback on setup friction, scoring
-            surprises, recipe realism, and redaction trust. Start with the
-            default one-recipe path and share redacted public artifacts only.
+            surprises, recipe realism, profile evidence, and redaction trust.
+            Star the repo if the benchmark shape is useful; open an issue if
+            one recipe, trace, or score axis feels wrong.
           </p>
         </div>
         <div class="actions stacked-actions">

@@ -1,6 +1,6 @@
 {
   "category_count": 9,
-  "generated_at": "2026-05-30T22:26:30.876771+00:00",
+  "generated_at": "2026-05-30T22:33:22.244226+00:00",
   "leaderboard_source": "public traces under data/traces",
   "schema_version": 4,
   "suite_count": 9,
@@ -124,7 +124,7 @@
         "baseline_id": "verkyyi-default-2026-05-30",
         "closure_type": "completed",
         "driver_summary": "The target produced a clear terminal answer addressing the requested decision without needing a follow-up.",
-        "judge_summary": "The reply provides a clear go/no-go recommendation with current time, calendar context, location/travel assumptions, weather, and missing information, with only minor unverifiability in the sanitized evidence for the exact weather/location ",
+        "judge_summary": "The reply provides a clear go/no-go recommendation with current time, calendar context, location/travel assumptions, weather, and missing information, with only minor unverifiability in the sanitized evidence for the exact weather/location",
         "mechanical": {
           "concluded": true,
           "responded": true,
@@ -181,7 +181,7 @@
           "baseline_id": "verkyyi-default-2026-05-30",
           "closure_type": "completed",
           "driver_summary": "The target produced a clear terminal answer addressing the requested decision without needing a follow-up.",
-          "judge_summary": "The reply provides a clear go/no-go recommendation with current time, calendar context, location/travel assumptions, weather, and missing information, with only minor unverifiability in the sanitized evidence for the exact weather/location ",
+          "judge_summary": "The reply provides a clear go/no-go recommendation with current time, calendar context, location/travel assumptions, weather, and missing information, with only minor unverifiability in the sanitized evidence for the exact weather/location",
           "mechanical": {
             "concluded": true,
             "responded": true,

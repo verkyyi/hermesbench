@@ -96,7 +96,7 @@ Can I fit a quick errand before my next commitment? Check the current time, loca
 Public transcript:
 
 - Turn 1 user: Can I fit a quick errand before my next commitment? Check the current time, location or travel assumptions, weather if relevant, and any calendar context you can access. Give me a...
-- Turn 1 assistant: Go — with limits.  Current context: - Time now: Sat May 30, 2026, 2:54 PM PDT. - Next calendar commitment: 7:00–8:00 PM PDT today, Zoom meeting: “24 helpful pre-seed meeting Lee, ...
+- Turn 1 assistant: Go — with limits.  Current context: - Time now: Sat May 30, 2026, 2:54 PM PDT. - Next calendar commitment: 7:00–8:00 PM PDT today, Zoom meeting: “<redacted:calendar-event>.” - Tim...
 
 Public trace events:
 
@@ -137,7 +137,7 @@ Help me decide how to start today. Use the current date/time, local weather if a
 Public transcript:
 
 - Turn 1 user: Help me decide how to start today. Use the current date/time, local weather if available, any calendar or memory context you can access, and give me the first three actions I shou...
-- Turn 1 assistant: It’s Saturday, May 30, 2026, 2:54 PM PDT.  Context I found: - Weather in Santa Clara: 21.1°C / 70°F, humidity 51%, wind 17.5 kph. Today’s forecast is mild, around 12.6–21.1°C, par...
+- Turn 1 assistant: It’s Saturday, May 30, 2026, 2:54 PM PDT.  Context I found: - Weather in Santa Clara: 21.1°C / 70°F, humidity <redacted:percentage>, wind 17.5 kph. Today’s forecast is mild, aroun...
 
 Public trace events:
 
@@ -210,7 +210,7 @@ Give me a concise brief for my day using calendar context if available: schedule
 Public transcript:
 
 - Turn 1 user: Give me a concise brief for my day using calendar context if available: schedule, conflicts, preparation gaps, travel or focus risks, and the follow-ups I should handle first.
-- Turn 1 assistant: Daily brief — Sat May 30, 2026, 2:54 PM PDT  Schedule - 7:00–8:00 PM: “24 helpful pre-seed meeting Lee, Gavin, Yumei” on Zoom. - No other calendar events today found.  Conflicts -...
+- Turn 1 assistant: Daily brief — Sat May 30, 2026, 2:54 PM PDT  Schedule - 7:00–8:00 PM: “<redacted:calendar-event>. - No other calendar events today found.  Conflicts - None detected.  Preparation ...
 
 Public trace events:
 

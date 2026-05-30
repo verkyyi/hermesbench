@@ -28,8 +28,20 @@ LEGACY_LEADERBOARD_PAGE = "leaderboard.html"
 _PUBLIC_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _PUBLIC_PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}(?!\d)")
 _PUBLIC_TOKEN_RE = re.compile(r"\b(?:sk|ghp|gho|xoxb|xoxp|AKIA)[A-Za-z0-9_\-]{12,}\b", re.IGNORECASE)
-_PUBLIC_LOCAL_PATH_RE = re.compile(r"(?<![\w.-])(?:/Users/[^,\s;:'\")]+|/home/[^,\s;:'\")]+|/tmp/[^,\s;:'\")]+|/var/folders/[^,\s;:'\")]+|/private/var/folders/[^,\s;:'\")]+)")
+_PUBLIC_LOCAL_PATH_RE = re.compile(r"(?<![\w.-])(?:~/(?:\.hermes|\.config|\.ssh)[^,\s;:'\")]*|/Users/[^,\s;:'\")]+|/home/[^,\s;:'\")]+|/tmp/[^,\s;:'\")]+|/var/folders/[^,\s;:'\")]+|/private/var/folders/[^,\s;:'\")]+)")
 _PUBLIC_ENV_FILE_RE = re.compile(r"(?<![\w.-])\.env(?![\w.-])")
+_PUBLIC_SECRET_LABEL_RE = re.compile(r"(?i)\b(passcode|password|meeting id)\s*[:#]?\s*[A-Za-z0-9._-]+")
+_PUBLIC_SENSITIVE_URL_RE = re.compile(r"https?://[^\s<>)\]}\"']+")
+_PUBLIC_MONEY_RE = re.compile(
+    r"(?i)(?<![\w])(?:US\$|HK\$|[$€£¥]|USD|HKD|CNY|RMB)\s*-?\d[\d,]*(?:\.\d+)?(?:\s*[kmb])?"
+    r"|\b-?\d[\d,]*(?:\.\d+)?\s*(?:USD|HKD|CNY|RMB)\b"
+)
+_PUBLIC_PERCENT_RE = re.compile(r"(?<![\w.+-])[-+]?\d{1,3}(?:\.\d+)?%(?![\w])")
+_PUBLIC_CALENDAR_EVENT_RE = re.compile(
+    r"(?i)(?:24 helpful pre-seed meeting [^.;\n]+|Cambly lesson with [A-Z][A-Za-z .-]+|招商信用卡最后还款日|credit card payment deadline|Apply For Ca ID)"
+)
+_PUBLIC_BROKERAGE_RE = re.compile(r"(?i)\b(?:Futu(?: margin(?: account)?)?|risk status: LEVEL\d+|LEVEL\d+)\b")
+_PUBLIC_RECEIPT_RE = re.compile(r"(?i)\b(?:OpenRouter(?:, Inc)?(?: receipt)?|receipt \[#?[A-Za-z0-9-]+\])\b")
 
 
 def _now() -> str:
@@ -88,6 +100,18 @@ def _short_text(value: Any, limit: int = 220) -> str:
     text = _PUBLIC_TOKEN_RE.sub("<redacted:token>", text)
     text = _PUBLIC_LOCAL_PATH_RE.sub("<redacted:path>", text)
     text = _PUBLIC_ENV_FILE_RE.sub("<redacted:env-file>", text)
+    text = _PUBLIC_SECRET_LABEL_RE.sub(lambda match: f"{match.group(1)}: <redacted>", text)
+    text = _PUBLIC_SENSITIVE_URL_RE.sub(
+        lambda match: "<redacted:url>"
+        if "?" in match.group(0) or "zoom.us/" in match.group(0) or "calendar/event" in match.group(0)
+        else match.group(0),
+        text,
+    )
+    text = _PUBLIC_MONEY_RE.sub("<redacted:amount>", text)
+    text = _PUBLIC_PERCENT_RE.sub("<redacted:percentage>", text)
+    text = _PUBLIC_CALENDAR_EVENT_RE.sub("<redacted:calendar-event>", text)
+    text = _PUBLIC_BROKERAGE_RE.sub("<redacted:brokerage-signal>", text)
+    text = _PUBLIC_RECEIPT_RE.sub("<redacted:receipt>", text)
     if len(text) <= limit:
         return text
     return text[: max(0, limit - 3)].rstrip() + "..."
@@ -1884,14 +1908,40 @@ def render_trace_markdown(trace: dict) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+SITE_URL = "https://verkyyi.github.io/hermesbench/"
+SITE_DESCRIPTION = (
+    "HermesBench benchmarks full Hermes personal-agent configurations with "
+    "public recipes, redacted trace evidence, and reproducibility metadata."
+)
+
+
+def _head_meta(title: str, *, path: str = "", description: str = SITE_DESCRIPTION) -> str:
+    page_title = "HermesBench" if title == "HermesBench" else f"{title} - HermesBench"
+    canonical = SITE_URL + path
+    image = SITE_URL + "assets/social-card.svg"
+    return f"""    <title>{escape(page_title)}</title>
+    <meta name="description" content="{escape(description)}" />
+    <link rel="canonical" href="{escape(canonical)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HermesBench" />
+    <meta property="og:title" content="{escape(page_title)}" />
+    <meta property="og:description" content="{escape(description)}" />
+    <meta property="og:url" content="{escape(canonical)}" />
+    <meta property="og:image" content="{escape(image)}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{escape(page_title)}" />
+    <meta name="twitter:description" content="{escape(description)}" />
+    <meta name="twitter:image" content="{escape(image)}" />"""
+
+
 def _page_shell(title: str, body: str) -> str:
+    path = "" if title == "HermesBench" else f"{_anchor(title)}.html"
     return f"""<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{escape(title)} - HermesBench</title>
-    <meta name="description" content="HermesBench scenario recipes, profile readouts, and public trace evidence." />
+{_head_meta(title, path=path)}
     <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body>
@@ -1930,7 +1980,7 @@ def _redirect_page(title: str, target: str) -> str:
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="refresh" content="0; url={target_escaped}" />
     <link rel="canonical" href="{target_escaped}" />
-    <title>{escape(title)} - HermesBench</title>
+{_head_meta(title, path=target)}
   </head>
   <body>
     <p><a href="{target_escaped}">Continue to {escape(title)}</a></p>

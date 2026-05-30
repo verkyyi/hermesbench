@@ -1917,14 +1917,18 @@ footer span {
 
   .topbar {
     gap: 12px;
+    grid-template-columns: 1fr;
     min-height: 56px;
     padding: 12px 16px;
     width: 100%;
   }
 
   .topbar nav {
+    flex-wrap: wrap;
     justify-content: flex-start;
     gap: 14px;
+    overflow-x: visible;
+    width: 100%;
   }
 
   .topbar nav a {

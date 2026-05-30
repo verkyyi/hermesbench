@@ -5,7 +5,7 @@ Each recipe is driver- and target-agnostic: run configuration chooses the target
 
 - Recipes: 27
 - Categories: 9
-- Generated: 2026-05-30T22:26:30.876771+00:00
+- Generated: 2026-05-30T22:33:22.244226+00:00
 
 ## Calendar and scheduling (`calendar_schedule`)
 

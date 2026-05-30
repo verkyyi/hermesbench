@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">HermesBench social preview</title>
+  <desc id="desc">A clean benchmark score card for HermesBench.</desc>
+  <rect width="1200" height="630" fill="#f7f8fa"/>
+  <rect x="64" y="64" width="1072" height="502" rx="20" fill="#ffffff" stroke="#d9dee7" stroke-width="2"/>
+  <text x="108" y="150" fill="#1769e0" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700">HermesBench</text>
+  <text x="108" y="245" fill="#121417" font-family="Inter, Arial, sans-serif" font-size="62" font-weight="800">Benchmark the whole</text>
+  <text x="108" y="318" fill="#121417" font-family="Inter, Arial, sans-serif" font-size="62" font-weight="800">personal agent</text>
+  <text x="108" y="384" fill="#5d6673" font-family="Inter, Arial, sans-serif" font-size="30">Public recipes, redacted traces, reproducible profile evidence.</text>
+  <rect x="792" y="146" width="238" height="164" rx="14" fill="#1769e0"/>
+  <text x="828" y="220" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800">78.2</text>
+  <text x="828" y="262" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="650">public baseline</text>
+  <rect x="108" y="450" width="160" height="54" rx="10" fill="#121417"/>
+  <text x="134" y="485" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">27 recipes</text>
+  <rect x="292" y="450" width="170" height="54" rx="10" fill="#0e8f72"/>
+  <text x="318" y="485" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">9 suites</text>
+  <rect x="486" y="450" width="210" height="54" rx="10" fill="#ffffff" stroke="#d9dee7" stroke-width="2"/>
+  <text x="512" y="485" fill="#121417" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">trace evidence</text>
+</svg>
