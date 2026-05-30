@@ -186,6 +186,9 @@ def _redacted_case_result(r: dict) -> dict:
         "score": round(float(scored.get("score") or 0.0), 2),
         "base_score": round(float(scored.get("base_score") or 0.0), 2),
         "balanced_score": round(float(scored.get("balanced_score") or 0.0), 2),
+        "capability_score": round(float(scored.get("capability_score") or 0.0), 2),
+        "reliability_score": round(float(scored.get("reliability_score") or 0.0), 2),
+        "communication_score": round(float(scored.get("communication_score") or 0.0), 2),
         "axes": {
             k: round(100.0 * float(v), 1)
             for k, v in (scored.get("axes") or {}).items()
@@ -195,6 +198,9 @@ def _redacted_case_result(r: dict) -> dict:
             for k, v in (scored.get("top_axes") or {}).items()
         },
         "balance_factor": round(float(scored.get("balance_factor") or 0.0), 3),
+        "score_cap": round(float(scored.get("score_cap") or 0.0), 2),
+        "score_cap_reasons": list(scored.get("score_cap_reasons") or []),
+        "scoring_policy": scored.get("scoring_policy"),
         "mechanical": {
             "responded": bool(mech.get("responded")),
             "concluded": bool(mech.get("concluded")),
@@ -316,6 +322,9 @@ def _run_cases(cases: list[dict], *, category: str) -> dict:
     base_score = sum(r["score"]["base_score"] for r in results) / n
     balanced_score = sum(r["score"]["balanced_score"] for r in results) / n
     balance_factor_mean = sum(r["score"]["balance_factor"] for r in results) / n
+    capability_score = sum(r["score"].get("capability_score", 0.0) for r in results) / n
+    reliability_score = sum(r["score"].get("reliability_score", 0.0) for r in results) / n
+    communication_score = sum(r["score"].get("communication_score", 0.0) for r in results) / n
 
     ctypes: dict = {}
     for r in results:
@@ -372,6 +381,9 @@ def _run_cases(cases: list[dict], *, category: str) -> dict:
             "base_score": round(base_score, 2),
             "balanced_score": round(balanced_score, 2),
             "balance_factor_mean": round(balance_factor_mean, 3),
+            "capability_score": round(capability_score, 2),
+            "reliability_score": round(reliability_score, 2),
+            "communication_score": round(communication_score, 2),
             "top_axis_scores": {
                 k: round(100.0 * v, 1)
                 for k, v in top_axis_means.items()
