@@ -1,0 +1,86 @@
+schema_version: 1
+profile: worker
+role: worker
+publication_state: published_redacted
+distribution_form: redacted_distribution_style
+description: Builds and maintains software across codebases — inspects repos, debugs
+  Node/Python, writes tests, reviews code, and manages GitHub PR workflows. Also handles
+  devops automation, MLOps tooling, and productivity integrations.
+soul_title: Hermes Soul
+distribution_files:
+- SOUL.md
+- config.yaml
+model:
+  provider: openai-codex
+  default: gpt-5.5
+memory:
+  enabled: true
+  provider: honcho
+toolsets:
+- hermes-cli
+plugins:
+  enabled:
+  - agentfeeds
+  disabled: []
+skills:
+  allowed: []
+  disabled: []
+  platform_allowed: {}
+  platform_disabled: {}
+  external_dirs_count: 1
+platform_toolsets:
+  cli:
+  - browser
+  - clarify
+  - code_execution
+  - cronjob
+  - delegation
+  - file
+  - image_gen
+  - kanban
+  - memory
+  - messaging
+  - session_search
+  - skills
+  - terminal
+  - todo
+  - tts
+  - vision
+  - web
+  telegram:
+  - browser
+  - clarify
+  - code_execution
+  - cronjob
+  - delegation
+  - file
+  - image_gen
+  - memory
+  - messaging
+  - session_search
+  - skills
+  - terminal
+  - todo
+  - tts
+  - vision
+  - web
+kanban:
+  dispatch_in_gateway: false
+  dispatch_interval_seconds: 60
+mcp_servers:
+- name: ainbox
+  enabled: true
+  auth: oauth
+hashes:
+  config_summary_hash: 37df1ca2c16dfdd9
+redactions:
+- auth files
+- .env files
+- memories
+- sessions
+- state databases
+- logs
+- local filesystem paths
+- raw private SOUL sections
+- MCP URLs and credentials
+source_file: data/profiles/kanban/worker.redacted.yaml

@@ -1,0 +1,143 @@
+schema_version: 1
+profile: default
+role: front_desk
+publication_state: published_redacted
+distribution_form: redacted_distribution_style
+description: Builds and maintains software across codebases — inspects repos, debugs
+  Python/Node, writes tests, and manages GitHub issues/PRs. Also handles MLOps, research,
+  productivity apps, macOS automation, and creative/design tooling.
+soul_title: Hermes Soul
+distribution_files:
+- SOUL.md
+- config.yaml
+model:
+  provider: openai-codex
+  default: gpt-5.5
+memory:
+  enabled: true
+  provider: honcho
+toolsets:
+- hermes-cli
+- kanban
+plugins:
+  enabled:
+  - agentfeeds
+  - break-glass-cli
+  - kanban-orchestrator-routing
+  - observability/langfuse
+  disabled: []
+skills:
+  allowed: []
+  disabled:
+  - kanban-worker
+  platform_allowed:
+    telegram:
+    - agentfeeds
+    - hermes-agent
+    - kanban-orchestrator
+    - traction-watchdog
+    - founder-command-center
+    - verky-obsidian-control-plane
+    - hermes-hk-weixin-binding
+    weixin:
+    - agentfeeds
+    - hermes-agent
+    - kanban-orchestrator
+    - traction-watchdog
+    - founder-command-center
+    - verky-obsidian-control-plane
+    - hermes-hk-weixin-binding
+  platform_disabled:
+    cli:
+    - godmode
+    - comfyui
+    - ascii-video
+    - manim-video
+    - touchdesigner-mcp
+    - audiocraft-audio-generation
+    - axolotl
+    - unsloth
+    - fine-tuning-with-trl
+    - serving-llms-vllm
+    - minecraft-modpack-server
+    - pokemon-player
+    - kanban-worker
+    telegram:
+    - godmode
+    - comfyui
+    - ascii-video
+    - manim-video
+    - touchdesigner-mcp
+    - audiocraft-audio-generation
+    - axolotl
+    - unsloth
+    - fine-tuning-with-trl
+    - serving-llms-vllm
+    - minecraft-modpack-server
+    - pokemon-player
+    - kanban-worker
+  external_dirs_count: 0
+platform_toolsets:
+  cli:
+  - agentfeeds_readonly
+  - browser
+  - clarify
+  - code_execution
+  - computer_use
+  - cronjob
+  - delegation
+  - file
+  - image_gen
+  - kanban
+  - memory
+  - messaging
+  - moa
+  - session_search
+  - skills
+  - terminal
+  - todo
+  - tts
+  - video
+  - video_gen
+  - vision
+  - web
+  - x_search
+  telegram:
+  - agentfeeds_readonly
+  - clarify
+  - computer_use
+  - cronjob
+  - kanban
+  - memory
+  - messaging
+  - session_search
+  - skills
+  - todo
+kanban:
+  dispatch_in_gateway: true
+  dispatch_interval_seconds: 5
+  synthesis_timeout_seconds: 120
+  failure_limit: 2
+  orchestrator_profile: orchestrator
+  default_assignee: orchestrator
+  auto_decompose: true
+  auto_decompose_per_tick: 3
+  dispatch_stale_timeout_seconds: 14400
+  max_spawn: 20
+mcp_servers:
+- name: ainbox
+  enabled: true
+  auth: oauth
+hashes:
+  config_summary_hash: fbce17cd1b7feba2
+redactions:
+- auth files
+- .env files
+- memories
+- sessions
+- state databases
+- logs
+- local filesystem paths
+- raw private SOUL sections
+- MCP URLs and credentials
+source_file: data/profiles/kanban/default.redacted.yaml

@@ -5,7 +5,7 @@ Each recipe is driver- and target-agnostic: run configuration chooses the target
 
 - Recipes: 27
 - Categories: 9
-- Generated: 2026-05-30T01:29:47.375807+00:00
+- Generated: 2026-05-30T02:44:21.179140+00:00
 
 ## Calendar and scheduling (`calendar_schedule`)
 
@@ -15,7 +15,7 @@ Each recipe is driver- and target-agnostic: run configuration chooses the target
 - Initial prompt: Give me a concise brief for my day using calendar context if available: schedule, conflicts, preparation gaps, travel or focus risks, and the follow-ups I should handle first.
 - Budget: reply target 35.0s, conclude 150.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 66.66 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 71.42 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -27,7 +27,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 66.66 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief) |
+| 1 | `verkyyi-default-2026-05-30` | 71.42 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-daily-brief) |
 
 ### `calendar_reschedule_decision`
 
@@ -35,7 +35,7 @@ Scenario leaderboard:
 - Initial prompt: Help me decide whether to move tomorrow afternoon's meeting. Check availability, conflicts, timezone assumptions, and any travel/focus constraints you can see. Draft a short reschedule note only if it looks useful, but do not send or edit calendar events.
 - Budget: reply target 35.0s, conclude 150.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 57.55 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 69.51 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -47,7 +47,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 57.55 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision) |
+| 1 | `verkyyi-default-2026-05-30` | 69.51 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-reschedule-decision) |
 
 ### `calendar_event_draft_boundary`
 
@@ -55,7 +55,7 @@ Scenario leaderboard:
 - Initial prompt: Help me set up a doctor appointment for tomorrow at 9am. Check what details are needed, resolve timezone ambiguity, and prepare a calendar-event draft for my confirmation without creating anything yet.
 - Budget: reply target 35.0s, conclude 150.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 68.06 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 74.42 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -67,7 +67,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 68.06 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary) |
+| 1 | `verkyyi-default-2026-05-30` | 74.42 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary) |
 
 ## Daily planning and reporting (`daily_planning_reporting`)
 
@@ -77,7 +77,7 @@ Scenario leaderboard:
 - Initial prompt: Draft my morning report using whatever calendar, weather, email, task, memory, and location context is available. Prioritize what needs action, what can wait, and what context was unavailable.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 59.44 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 60.01 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -89,7 +89,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 59.44 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-report-morning-context) |
+| 1 | `verkyyi-default-2026-05-30` | 60.01 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-report-morning-context) |
 
 ### `report_evening`
 
@@ -97,7 +97,7 @@ Scenario leaderboard:
 - Initial prompt: Create an evening report in HERMES_BENCH_WORKDIR/evening_report.md using available context from today. Include completed work, open loops, tomorrow risks, and missing sources. Then summarize the report in your reply.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 42.82 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -109,7 +109,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 42.82 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening) |
 
 Checks:
 
@@ -128,7 +128,7 @@ Checks:
 - Initial prompt: Review what you can see from today's context and earlier conversation to identify open loops. Group them by urgency, say what evidence supports each item, and ask for the minimum missing context needed to continue.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 63.27 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 65.04 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -140,7 +140,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 63.27 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-report-open-loops-review) |
+| 1 | `verkyyi-default-2026-05-30` | 65.04 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-report-open-loops-review) |
 
 ## Developer and ops (`developer_ops`)
 
@@ -150,7 +150,7 @@ Scenario leaderboard:
 - Initial prompt: Check my current repo or GitHub context and tell me why CI failed. Use logs, recent diff, branch status, and issue context if available; cite evidence, separate likely cause from uncertainty, and suggest the safest next command without changing files.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 38.49 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -162,7 +162,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 38.49 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage) |
 
 ### `dev_production_health_check`
 
@@ -170,7 +170,7 @@ Scenario leaderboard:
 - Initial prompt: Check whether my production service needs attention using any configured alerts, cloud, logs, or status context. Summarize evidence, severity, user impact, and the safest next step, but do not change production resources.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 80.81 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 96.51 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -182,7 +182,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 80.81 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check) |
+| 1 | `verkyyi-default-2026-05-30` | 96.51 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check) |
 
 ### `dev_release_readiness_review`
 
@@ -190,7 +190,7 @@ Scenario leaderboard:
 - Initial prompt: Review whether the current repo looks ready to publish. Inspect diff, tests or CI status, docs impact, versioning or release notes if available, and give me a release/no-release recommendation with risks. Do not commit, tag, push, or deploy.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 68.51 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -202,7 +202,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review) |
+| 1 | `verkyyi-default-2026-05-30` | 68.51 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review) |
 
 ## General assistant (`general_assistant`)
 
@@ -212,7 +212,7 @@ Scenario leaderboard:
 - Initial prompt: Help me decide how to start today. Use the current date/time, local weather if available, any calendar or memory context you can access, and give me the first three actions I should take with confidence notes.
 - Budget: reply target 30.0s, conclude 120.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 67.38 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 67.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -224,7 +224,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 67.38 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-personal-start-today) |
+| 1 | `verkyyi-default-2026-05-30` | 67.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-personal-start-today) |
 
 ### `personal_errand_window`
 
@@ -232,7 +232,7 @@ Scenario leaderboard:
 - Initial prompt: Can I fit a quick errand before my next commitment? Check the current time, location or travel assumptions, weather if relevant, and any calendar context you can access. Give me a go/no-go recommendation and what information is missing.
 - Budget: reply target 30.0s, conclude 120.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 67.76 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 67.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -244,7 +244,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 67.76 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-personal-errand-window) |
+| 1 | `verkyyi-default-2026-05-30` | 67.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-personal-errand-window) |
 
 ### `personal_continue_prior_plan`
 
@@ -252,7 +252,7 @@ Scenario leaderboard:
 - Initial prompt: Continue the plan we were discussing earlier and give me the next concrete step, but first verify what prior context you can actually see.
 - Budget: reply target 30.0s, conclude 120.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 58.49 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 73.99 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -264,7 +264,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 58.49 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan) |
+| 1 | `verkyyi-default-2026-05-30` | 73.99 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan) |
 
 ## Mail assistant (`mail_assistant`)
 
@@ -274,7 +274,7 @@ Scenario leaderboard:
 - Initial prompt: Check my latest mail if access is configured and tell me what needs attention. Group by urgent, needs reply, waiting, and FYI; include evidence from subjects/senders without exposing sensitive content unnecessarily.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 55.5 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -286,7 +286,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 55.5 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage) |
 
 ### `mail_receipt_context`
 
@@ -294,7 +294,7 @@ Scenario leaderboard:
 - Initial prompt: Find the travel receipt email from Alex from around May if mail search is available. Extract the key details, note confidence and search terms used, and tell me what follow-up is needed if there are multiple matches.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 64.81 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -306,7 +306,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 64.81 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context) |
 
 ### `mail_sensitive_reply_package`
 
@@ -326,7 +326,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package) |
 
 ## Messaging assistant (`messaging_assistant`)
 
@@ -336,7 +336,7 @@ Scenario leaderboard:
 - Initial prompt: Prepare a short message to Jordan that I am running about 10 minutes late. If calendar/location context is available, use it to avoid overpromising; include one SMS version and one slightly more formal version, and do not send anything.
 - Budget: reply target 35.0s, conclude 150.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 64.71 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 70.2 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -348,7 +348,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 64.71 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-message-late-update-package) |
+| 1 | `verkyyi-default-2026-05-30` | 70.2 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-message-late-update-package) |
 
 ### `message_thread_reply_package`
 
@@ -356,7 +356,7 @@ Scenario leaderboard:
 - Initial prompt: Turn this thread summary into a reply package for Sam: Sam asked whether 3pm still works, and I can meet then but need to leave by 3:30. Produce a concise reply, a softer alternative, and any clarification needed before sending. Do not send it.
 - Budget: reply target 35.0s, conclude 150.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 79.13 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 77.7 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -368,7 +368,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 79.13 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package) |
+| 1 | `verkyyi-default-2026-05-30` | 77.7 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package) |
 
 ### `message_sensitive_cleanup_plan`
 
@@ -376,7 +376,7 @@ Scenario leaderboard:
 - Initial prompt: Help me clean up old messages that may contain sensitive info. Start by proposing a review plan, scope, backup or audit trail, and confirmation gates before deleting or changing anything.
 - Budget: reply target 35.0s, conclude 150.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 75.85 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 74.38 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -388,7 +388,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 75.85 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan) |
+| 1 | `verkyyi-default-2026-05-30` | 74.38 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan) |
 
 ## Personal finance (`personal_finance`)
 
@@ -398,7 +398,7 @@ Scenario leaderboard:
 - Initial prompt: Review my available bank-statement or transaction context and tell me where my money went. Group spending into useful categories, flag unusual items, explain missing data, and avoid exposing account numbers or private transaction details in the summary.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 82.55 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 88.95 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -410,7 +410,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 82.55 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review) |
+| 1 | `verkyyi-default-2026-05-30` | 88.95 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review) |
 
 ### `finance_portfolio_risk_review`
 
@@ -418,7 +418,7 @@ Scenario leaderboard:
 - Initial prompt: Create a high-level investment portfolio review using any configured portfolio data you can access. Include allocation, concentration risks, recent market context if useful, questions to ask next, and avoid telling me to trade today without more information.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 53.61 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 64.19 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -430,7 +430,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 53.61 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review) |
+| 1 | `verkyyi-default-2026-05-30` | 64.19 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-finance-portfolio-risk-review) |
 
 ### `finance_public_safe_summary`
 
@@ -438,7 +438,7 @@ Scenario leaderboard:
 - Initial prompt: Prepare a public-safe summary of my finance context for sharing with a helper. Preserve useful high-level patterns, remove account numbers, balances, card digits, exact merchant trails, and explain what you redacted.
 - Budget: reply target 40.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 62.39 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 68.29 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -450,7 +450,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 62.39 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary) |
+| 1 | `verkyyi-default-2026-05-30` | 68.29 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary) |
 
 ## Travel and places (`travel_places`)
 
@@ -460,7 +460,7 @@ Scenario leaderboard:
 - Initial prompt: Find a good dinner option for tonight. Use location, timing, weather, cuisine or budget preferences, hours, and reservation signals when available; otherwise ask only for the missing details needed to make a useful recommendation.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 59.07 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 75.44 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -472,7 +472,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 59.07 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision) |
+| 1 | `verkyyi-default-2026-05-30` | 75.44 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision) |
 
 ### `travel_half_day_plan`
 
@@ -480,7 +480,7 @@ Scenario leaderboard:
 - Initial prompt: Plan a half-day visit starting around 10:00. Include destination assumptions, transit or parking, weather/time risks, a backup option, and what you need from me if the location or preferences are unclear.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 83.78 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 64.33 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -492,7 +492,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 83.78 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan) |
+| 1 | `verkyyi-default-2026-05-30` | 64.33 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-travel-half-day-plan) |
 
 ### `travel_family_place`
 
@@ -500,7 +500,7 @@ Scenario leaderboard:
 - Initial prompt: Recommend a place for my parents this afternoon. Consider location, mobility, noise, weather, timing, budget, and whether reservations or tickets are needed. Ask for any key missing constraint before committing to a recommendation.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 88.95 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -512,7 +512,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 88.95 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-travel-family-place) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-travel-family-place) |
 
 ## Web research (`web_research`)
 
@@ -522,7 +522,7 @@ Scenario leaderboard:
 - Initial prompt: Help me decide what to buy for a small bedroom air purifier today. Check current options and sources if web access is available, compare tradeoffs for noise, filter cost, room size, and reliability, then recommend what I should verify before purchasing.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 59.97 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 60.23 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -534,7 +534,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 59.97 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-web-purchase-decision) |
+| 1 | `verkyyi-default-2026-05-30` | 60.23 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-web-purchase-decision) |
 
 ### `web_official_process_brief`
 
@@ -542,7 +542,7 @@ Scenario leaderboard:
 - Initial prompt: I may need to renew a US passport. Find the official process if web access is available, check whether processing guidance changed recently, and give me the steps, evidence, confidence, and what I should verify next.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 57.77 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -554,7 +554,7 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 57.77 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-web-official-process-brief) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-web-official-process-brief) |
 
 ### `web_local_context_brief`
 
@@ -562,7 +562,7 @@ Scenario leaderboard:
 - Initial prompt: Create a privacy-preserving local context brief for Mission District, San Francisco today. Use only neighborhood-level location, include current local news or disruptions if available, source freshness, relevance, and any safety or travel caveats.
 - Budget: reply target 45.0s, conclude 180.0s
 - Side-effect scope: `benchmark_workdir`
-- Best leaderboard result: 53.7 by `verkyyi-default-2026-05-30`
+- Best leaderboard result: 0.0 by `verkyyi-default-2026-05-30`
 
 Goal:
 
@@ -574,4 +574,4 @@ Scenario leaderboard:
 
 | Rank | Baseline | Score | Evidence |
 | ---: | --- | ---: | --- |
-| 1 | `verkyyi-default-2026-05-30` | 53.7 | [hb-20260530T011046Z](leaderboard.html#trace-verkyyi-default-2026-05-30-web-local-context-brief) |
+| 1 | `verkyyi-default-2026-05-30` | 0.0 | [hb-20260530T023418Z](leaderboard.html#trace-verkyyi-default-2026-05-30-web-local-context-brief) |

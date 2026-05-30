@@ -1,0 +1,88 @@
+schema_version: 1
+profile: worker-research
+role: worker
+publication_state: published_redacted
+distribution_form: redacted_distribution_style
+description: 'Research-focused worker for literature review and technical synthesis:
+  searches arXiv/LLM wikis, drafts research papers, and turns findings into clear
+  plans, docs, diagrams, or GitHub-ready engineering tasks.'
+soul_title: Hermes Soul
+distribution_files:
+- SOUL.md
+- config.yaml
+model:
+  provider: openai-codex
+  default: gpt-5.5
+memory:
+  enabled: false
+  provider: honcho
+toolsets:
+- hermes-cli
+plugins:
+  enabled:
+  - agentfeeds
+  disabled: []
+skills:
+  allowed:
+  - kanban-worker
+  - hermes-agent
+  - agentfeeds
+  - blogwatcher
+  - youtube-content
+  - arxiv
+  - llm-wiki
+  - polymarket
+  - market-data-streams
+  - ocr-and-documents
+  - maps
+  disabled: []
+  platform_allowed: {}
+  platform_disabled: {}
+  external_dirs_count: 0
+platform_toolsets:
+  cli:
+  - browser
+  - code_execution
+  - file
+  - kanban
+  - session_search
+  - skills
+  - todo
+  - web
+  telegram:
+  - browser
+  - clarify
+  - code_execution
+  - cronjob
+  - delegation
+  - file
+  - image_gen
+  - memory
+  - messaging
+  - session_search
+  - skills
+  - terminal
+  - todo
+  - tts
+  - vision
+  - web
+kanban:
+  dispatch_in_gateway: false
+  dispatch_interval_seconds: 60
+mcp_servers:
+- name: ainbox
+  enabled: false
+  auth: oauth
+hashes:
+  config_summary_hash: e953887122295635
+redactions:
+- auth files
+- .env files
+- memories
+- sessions
+- state databases
+- logs
+- local filesystem paths
+- raw private SOUL sections
+- MCP URLs and credentials
+source_file: data/profiles/kanban/worker-research.redacted.yaml

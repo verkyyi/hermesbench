@@ -5,11 +5,11 @@ description: Redacted distribution-style baseline for a local Hermes default pro
 author: verkyyi
 license: MIT
 benchmark:
-  run_id: hb-20260530T011046Z
-  score: 59.72
-  observed_runtime_s: 585
-  runtime_note: Wall-clock from captured report file birth/modification times on the
-    runner host.
+  run_id: hb-20260530T023418Z
+  score: 50.26
+  observed_runtime_s: 635
+  runtime_note: Wall-clock measured by the coding-agent wrapper around the full-bundle
+    API run.
   suite_count: 9
   registered_suite_count: 11
   prompt_cases: 27
@@ -20,29 +20,29 @@ benchmark:
   evaluator_driver: codex
   agentic_max_turns_default: 2
   controller_timeout_s: 240
-  driver_scenario_closed_rate: 0.963
-  turns_sent: 25
+  driver_scenario_closed_rate: 0.852
+  turns_sent: 27
   turn_budget: 54
   command: HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency
     3 --case-concurrency 3 --trials 1 --json
   score_breakdown:
     top_axes:
-      capability_truthfulness: 56.5
-      reliability_safety: 92.6
-      efficiency_ux: 47.3
+      capability_truthfulness: 59.7
+      efficiency_ux: 50.2
+      reliability_safety: 70.4
     axes:
-      task_fulfillment: 56.5
-      evidence_truthfulness: 56.5
-      outcome_reached: 92.6
-      runtime_scope_safety: 92.6
-      responsiveness: 24.8
-      communication_quality: 69.8
-      closure: 92.6
-      artifact_correctness: 56.5
-      stability: 92.6
+      appropriateness: 59.7
+      artifact_correctness: 59.7
+      closure: 70.4
+      coherence: 69.6
+      communication_quality: 69.6
+      evidence_truthfulness: 59.7
+      outcome_reached: 70.4
+      responsiveness: 30.9
+      runtime_scope_safety: 70.4
       scope_discipline: 100.0
-      appropriateness: 56.5
-      coherence: 69.8
+      stability: 70.4
+      task_fulfillment: 59.7
     coverage:
       scored_suites: 9
       registered_suites: 11
@@ -59,14 +59,18 @@ benchmark:
       - responsiveness
       - communication_quality
 profile_fingerprint:
-  hermesbench_git_sha: 37097ee8194a59a63140deac36820234e803ccb6
+  hermesbench_git_sha: 52fa6e382578fd034597acf0b3f74295230c55ce+dirty
   profile_hash: e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355
 runtime_config:
   execution_surface:
     id: kanban_delegation
     label: Kanban delegation
+    comparison_role: Kanban-enabled baseline
     kanban_enabled: true
     prompt_case_contract: framework_agnostic
+    notes: Bundled prompt use cases are intended to run on either surface. Kanban-enabled
+      configurations may perform better on delegation, progress, and long-work closure
+      behavior; explicit multi-profile checks live in opt-in runtime suites.
   model:
     default: gpt-5.5
     provider: openai-codex
@@ -199,11 +203,3 @@ redaction:
   - workspace/
   - local paths
   - personal skill allowlists
-notes:
-- Use this as a comparable current-taxonomy benchmark baseline, not as an installable
-  Hermes profile distribution.
-- The 2026-05-29 legacy taxonomy baselines were removed in this refresh.
-- delegated_closure was skipped because it remains opt-in for delegated/multi-profile
-  execution.
-- gateway_ack_policy skipped because the local Hermes Agent evals.responsiveness module
-  was not importable in this run.

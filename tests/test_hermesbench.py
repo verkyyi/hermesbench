@@ -508,14 +508,14 @@ def test_observability_extracts_upstream_state_telemetry_and_trajectory(tmp_path
                 finish_reason TEXT
             );
         """)
-        conn.execute("INSERT INTO sessions VALUES (?,?,?,?,?,?,?)", ("sess-1", "hermesbench", "model-x", 1.0, 3, 1, 1))
+        conn.execute("INSERT INTO sessions VALUES (?,?,?,?,?,?,?)", ("sess-1", "hermesbench", "model-x", 1710000000.0, 3, 1, 1))
         conn.execute(
             "INSERT INTO messages VALUES (?,?,?,?,?,?,?,?,?)",
-            (1, "sess-1", "assistant", "", None, '[{"id":"call-1","function":{"name":"terminal","arguments":"{\\"command\\":\\"echo user@example.com\\"}"}}]', None, 1.0, "tool_calls"),
+            (1, "sess-1", "assistant", "", None, '[{"id":"call-1","function":{"name":"terminal","arguments":"{\\"command\\":\\"echo user@example.com\\"}"}}]', None, 1710000000.0, "tool_calls"),
         )
         conn.execute(
             "INSERT INTO messages VALUES (?,?,?,?,?,?,?,?,?)",
-            (2, "sess-1", "tool", "{\"output\":\"call 415-555-1212\"}", "call-1", None, "terminal", 2.0, None),
+            (2, "sess-1", "tool", "{\"output\":\"call 415-555-1212\"}", "call-1", None, "terminal", 1710000001.0, None),
         )
 
     (workdir / "trajectory_samples.jsonl").write_text(json.dumps({
@@ -537,7 +537,12 @@ def test_observability_extracts_upstream_state_telemetry_and_trajectory(tmp_path
     terminal_call = next(tool for tool in out["tools"] if tool["name"] == "terminal" and tool["status"] == "observed")
     terminal_result = next(tool for tool in out["tools"] if tool["name"] == "terminal" and tool["status"] == "observed_result")
     assert terminal_call["args"]["command"] == "echo <redacted:email>"
+    assert terminal_call["time"]["offset_ms"] == 0.0
+    assert terminal_call["time"]["timestamp_utc"] == "2024-03-09T16:00:00+00:00"
+    assert terminal_call["time"]["source"] == "state_db.messages.timestamp"
     assert terminal_result["result"]["output"] == "call <redacted:phone>"
+    assert terminal_result["time"]["offset_ms"] == 1000.0
+    assert terminal_result["time"]["timestamp_utc"] == "2024-03-09T16:00:01+00:00"
     assert out["retention"]["tool_privacy_filter"] == "standard_public_safe_v1"
     assert out["session"]["tool_call_count"] == 1
     assert "<isolated_home>" in out["sources"]["state_db"]["path"]
@@ -711,6 +716,178 @@ def test_task_catalog_can_be_enriched_with_scenario_leaderboards(monkeypatch):
     assert "<summary>View</summary>" not in html
 
 
+def test_public_trace_events_render_tool_timeline_without_raw_json(monkeypatch, tmp_path: Path):
+    monkeypatch.delenv("HERMESBENCH_SUITE_PATH", raising=False)
+    baseline = tmp_path / "baseline"
+    baseline.mkdir()
+    (baseline / "run-manifest.json").write_text(json.dumps({
+        "run_id": "hb-test",
+        "timestamp_utc": "2026-05-30T00:00:00+00:00",
+        "overall_score": 72.0,
+        "observed_runtime_s": 19,
+    }), encoding="utf-8")
+    (baseline / "case-results.jsonl").write_text(json.dumps({
+        "case": "personal_start_today",
+        "suite_id": "general_assistant",
+        "expectation": "answer",
+        "score": 72.0,
+        "mechanical": {"responded": True, "concluded": True, "stable": True, "turns_sent": 1, "turn_budget": 1, "wall_ms": 19000},
+        "driver_decision": {"scenario_closed": True, "closure_type": "answer", "reason": "closed"},
+        "judge": {"reason": "used observed context"},
+        "public_transcript": [{
+            "turn": 1,
+            "user": "What should I do today?",
+            "assistant": "Review the plan.",
+        }],
+        "observability": {
+            "tools": [
+                {
+                    "name": "terminal",
+                    "source": "state_db.messages.tool_calls",
+                    "status": "observed",
+                    "tool_call_id": "call-1",
+                    "args": {"command": "echo user@example.com && pwd /Users/verkyyi/project"},
+                    "time": {"offset_ms": 5000, "source": "state_db.messages.timestamp", "confidence": "recorded"},
+                    "args_retention": "included_redacted",
+                    "result_retention": "omitted_public_safe",
+                },
+                {
+                    "name": "terminal",
+                    "source": "state_db.messages.tool_name",
+                    "status": "observed_result",
+                    "tool_call_id": "call-1",
+                    "result": {"output": "call 415-555-1212"},
+                    "time": {"offset_ms": 5200, "source": "state_db.messages.timestamp", "confidence": "recorded"},
+                    "args_retention": "omitted_public_safe",
+                    "result_retention": "included_redacted",
+                },
+            ],
+        },
+        "used_tools": ["terminal", "session_search"],
+        "trace_retention": {
+            "public_transcript": "included_pii_redacted",
+            "raw_transcript": "omitted_public_safe",
+        },
+    }) + "\n", encoding="utf-8")
+
+    trace = public_artifacts.build_trace_for_baseline(baseline)
+    case = trace["cases"][0]
+    assert [event["type"] for event in case["public_events"]] == [
+        "user_message",
+        "tool_step",
+        "assistant_message",
+        "judge_result",
+        "tool_step",
+    ]
+    assert case["public_events"][0]["time"]["label"] == "T+0s"
+    assert case["public_events"][1]["time"]["label"] == "T+5.0s"
+    assert case["public_events"][1]["duration_ms"] == 200.0
+    assert "echo <redacted:email>" in case["public_events"][1]["input_summary"]
+    assert "call <redacted:phone>" in case["public_events"][1]["output_summary"]
+    assert case["public_events"][2]["time"]["label"] == "T+19.0s"
+    assert case["public_events"][2]["time"]["source"] == "case.wall_ms"
+    assert case["public_events"][4]["time"]["label"] == "time not captured"
+    assert case["public_events"][4]["time"]["confidence"] == "unavailable"
+    assert case["observed_tools"] == ["session_search", "terminal"]
+    html = public_artifacts.render_traces_html({"trace_count": 1}, [trace])
+    assert "Trace Timeline" in html
+    assert "Tool</span>" in html
+    assert "Tool result" not in html
+    assert "T+0s" in html
+    assert "T+5.0s" in html
+    assert "T+19.0s" in html
+    assert "time not captured" in html
+    assert "observed_name_only" in html
+    assert "<pre><code>[" not in html
+    assert "user@example.com" not in html
+    assert "415-555-1212" not in html
+    assert "/Users/verkyyi" not in html
+
+
+def test_profile_architecture_index_links_distribution_shape_and_scores(tmp_path: Path):
+    baselines = tmp_path / "baselines"
+    baseline = baselines / "demo-baseline"
+    baseline.mkdir(parents=True)
+    (baseline / "run-manifest.json").write_text(json.dumps({
+        "run_id": "hb-demo",
+        "timestamp_utc": "2026-05-30T00:00:00+00:00",
+        "overall_score": 88.0,
+        "profile_fingerprint": {"profile_hash": "hash-demo"},
+    }), encoding="utf-8")
+    (baseline / "score.json").write_text(json.dumps({
+        "profile": {
+            "model_provider": "openai-codex",
+            "model": "gpt-demo",
+            "profile_hash": "hash-demo",
+            "execution_surface": {"id": "kanban_delegation", "label": "Kanban delegation", "kanban_enabled": True},
+            "memory_provider": "honcho",
+            "memory_enabled": True,
+            "toolsets": ["hermes-cli", "kanban"],
+            "plugins_enabled": ["kanban-orchestrator-routing"],
+            "agent_skills": {"count": 2, "hash": "skills-hash", "sample": ["agentfeeds"]},
+        },
+        "suite_scores": {"developer_ops": 92.0, "mail_assistant": 40.0},
+        "score_breakdown": {"top_axes": {"capability_truthfulness": 90.0}},
+    }), encoding="utf-8")
+    (baseline / "profile-snapshot.redacted.yaml").write_text("""
+config:
+  kanban:
+    orchestrator_profile: orchestrator
+execution_surface:
+  id: kanban_delegation
+  label: Kanban delegation
+  kanban_enabled: true
+capability_surface:
+  target:
+    profile: default
+""", encoding="utf-8")
+    trace = {
+        "baseline_id": "demo-baseline",
+        "run_id": "hb-demo",
+        "overall_score": 88.0,
+        "case_count": 2,
+        "skipped_suites": [{"suite_id": "delegated_closure", "skip_reason": "opt in"}],
+        "cases": [
+            {"case": "dev_ci_failure_triage", "suite_id": "developer_ops", "score": 92.0, "task": {"title": "CI failure"}, "observed_tools": ["terminal"], "used_skills": ["agentfeeds"]},
+            {"case": "mail_attention_triage", "suite_id": "mail_assistant", "score": 40.0, "task": {"title": "Mail triage"}},
+        ],
+    }
+
+    index = public_artifacts.build_profile_architecture_index(baselines, [trace])
+    profile = index["profiles"][0]
+    assert index["profile_count"] == 1
+    assert profile["distribution"]["form"] == "redacted_distribution_style"
+    assert profile["execution_surface"]["id"] == "kanban_delegation"
+    assert profile["roles"][0]["role"] == "front_desk"
+    assert any(role["role"] == "orchestrator" and role["status"] == "present_not_exercised" for role in profile["roles"])
+    assert profile["profile_units"][0]["profile"] == "default"
+    assert any(unit["publication_state"] == "missing_required_profile" for unit in profile["profile_units"])
+    assert "recreate a local Hermes profile distribution" in profile["profile_units"][0]["implementation_prompt"]
+    assert profile["snapshot_summary"]["target"]["profile"] == "default"
+    assert profile["observed_usage"]["tools"] == ["terminal"]
+    assert profile["observed_usage"]["skills"] == ["agentfeeds"]
+    assert profile["related_scores"]["top_suites"][0]["suite_id"] == "developer_ops"
+    assert profile["related_scores"]["improvement_scenarios"][0]["case"] == "mail_attention_triage"
+    html = public_artifacts.render_profiles_html(index)
+    assert "Profile Setup and Recipe Performance" in html
+    assert "Profile readout" in html
+    assert "What Was Tested" in html
+    assert "Profile Units in This Setup" in html
+    assert "Where It Performs" in html
+    assert "Copy publication checklist" in html
+    assert "Used Tools and Skills" in html
+    assert "Configuration Inventory and Local Implementation Guidance" in html
+    assert "Snapshot Summary" in html
+    assert "Configured inventory" in html
+    assert "Strong Suites" in html
+    assert "score-insight" in html
+    assert "Profile snapshot</a>" not in html
+    assert "Copy local implementation prompt" in html
+    assert "Copy benchmark loop prompt" not in html
+    assert "profile distribution baselines" in html
+    assert "leaderboard.html#trace-demo-baseline-dev-ci-failure-triage" in html
+
+
 def test_case_result_keeps_redacted_public_transcript_by_default(monkeypatch):
     monkeypatch.delenv("HERMES_BENCH_INCLUDE_RAW_TRACES", raising=False)
     out = suite_mod._redacted_case_result({
@@ -744,11 +921,15 @@ def test_public_artifacts_are_available_from_api(monkeypatch, tmp_path: Path):
     summary = api.build_public_artifacts(repo)
     assert summary["tasks"] == 27
     assert summary["traces"] == 0
+    assert summary["profiles"] == 0
     assert (repo / "data" / "tasks" / "tasks.json").exists()
+    assert (repo / "data" / "profiles" / "index.json").exists()
     assert (repo / "site" / "recipes.html").exists()
+    assert (repo / "site" / "profiles.html").exists()
     assert (repo / "site" / "leaderboard.html").exists()
     assert (repo / "site" / "tasks.html").exists()
     assert (repo / "site" / "data" / "tasks" / "tasks.json").exists()
+    assert (repo / "site" / "data" / "profiles" / "index.json").exists()
     assert (repo / "site" / "data" / "traces" / "index.json").exists()
 
 

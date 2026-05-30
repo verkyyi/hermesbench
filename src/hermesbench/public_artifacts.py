@@ -10,9 +10,11 @@ for local debugging.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
 from html import escape
 import json
 from pathlib import Path
+import re
 import shutil
 from typing import Any
 
@@ -20,7 +22,12 @@ import yaml
 
 from hermesbench import usecases
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
+_PUBLIC_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_PUBLIC_PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}(?!\d)")
+_PUBLIC_TOKEN_RE = re.compile(r"\b(?:sk|ghp|gho|xoxb|xoxp|AKIA)[A-Za-z0-9_\-]{12,}\b", re.IGNORECASE)
+_PUBLIC_LOCAL_PATH_RE = re.compile(r"(?<![\w.-])(?:/Users/[^,\s;:'\")]+|/home/[^,\s;:'\")]+|/tmp/[^,\s;:'\")]+|/var/folders/[^,\s;:'\")]+|/private/var/folders/[^,\s;:'\")]+)")
+_PUBLIC_ENV_FILE_RE = re.compile(r"(?<![\w.-])\.env(?![\w.-])")
 
 
 def _now() -> str:
@@ -70,6 +77,333 @@ def _anchor(value: Any) -> str:
 
 def _title_from_id(case_id: str) -> str:
     return str(case_id).replace("_", " ").replace("-", " ").title()
+
+
+def _short_text(value: Any, limit: int = 220) -> str:
+    text = str(value or "").replace("\r\n", "\n").strip()
+    text = _PUBLIC_EMAIL_RE.sub("<redacted:email>", text)
+    text = _PUBLIC_PHONE_RE.sub("<redacted:phone>", text)
+    text = _PUBLIC_TOKEN_RE.sub("<redacted:token>", text)
+    text = _PUBLIC_LOCAL_PATH_RE.sub("<redacted:path>", text)
+    text = _PUBLIC_ENV_FILE_RE.sub("<redacted:env-file>", text)
+    if len(text) <= limit:
+        return text
+    return text[: max(0, limit - 3)].rstrip() + "..."
+
+
+def _public_safe_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(key): _public_safe_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_public_safe_value(item) for item in value]
+    if isinstance(value, str):
+        return _short_text(value, max(len(value), 220))
+    return value
+
+
+def _summarize_public_value(value: Any, *, empty: str, limit: int = 220) -> str:
+    if value in (None, "", [], {}):
+        return empty
+    if isinstance(value, dict):
+        parts = []
+        for key, item in list(value.items())[:6]:
+            if isinstance(item, (dict, list)):
+                item_text = f"{type(item).__name__} with {len(item)} item" + ("" if len(item) == 1 else "s")
+            else:
+                item_text = str(item)
+            parts.append(f"{key}: {item_text}")
+        suffix = f"; +{len(value) - 6} more" if len(value) > 6 else ""
+        return _short_text("; ".join(parts) + suffix, limit)
+    if isinstance(value, list):
+        parts = [str(item) for item in value[:6]]
+        suffix = f"; +{len(value) - 6} more" if len(value) > 6 else ""
+        return _short_text("; ".join(parts) + suffix, limit)
+    return _short_text(value, limit)
+
+
+def _float_or_none(value: Any) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _relative_time_label(ms: Any) -> str:
+    value = _float_or_none(ms)
+    if value is None:
+        return "time not captured"
+    if value == 0:
+        return "T+0s"
+    if value < 1000:
+        return f"T+{value:.0f}ms"
+    seconds = value / 1000.0
+    if seconds < 60:
+        return f"T+{seconds:.1f}s"
+    minutes = int(seconds // 60)
+    remainder = seconds - minutes * 60
+    return f"T+{minutes}m {remainder:.1f}s"
+
+
+def _timing(offset_ms: Any = None, *, duration_ms: Any = None, source: str, confidence: str) -> dict:
+    offset = _float_or_none(offset_ms)
+    duration = _float_or_none(duration_ms)
+    return {
+        "offset_ms": offset,
+        "duration_ms": duration,
+        "label": _relative_time_label(offset),
+        "source": source,
+        "confidence": confidence,
+    }
+
+
+def _event_time_from_source(event: dict, *, fallback: dict | None = None) -> dict:
+    if isinstance(event.get("time"), dict):
+        time = dict(event["time"])
+        offset = _float_or_none(time.get("offset_ms"))
+        duration = _float_or_none(time.get("duration_ms"))
+        time["offset_ms"] = offset
+        time["duration_ms"] = duration
+        time["label"] = _short_text(time.get("label") or _relative_time_label(offset), 80)
+        if time.get("timestamp_utc"):
+            time["timestamp_utc"] = _short_text(time.get("timestamp_utc"), 80)
+        time["source"] = _short_text(time.get("source") or "provided_public_event", 80)
+        time["confidence"] = _short_text(time.get("confidence") or "provided", 40)
+        return time
+    for key in ("offset_ms", "elapsed_ms", "timestamp_ms", "start_ms"):
+        if event.get(key) is not None:
+            return _timing(
+                event.get(key),
+                duration_ms=event.get("duration_ms"),
+                source=f"public_event.{key}",
+                confidence="recorded",
+            )
+    if fallback:
+        return fallback
+    return _timing(None, source="not_captured", confidence="unavailable")
+
+
+def _event_sort_key(event: dict, original_index: int = 0) -> tuple[int, float, int]:
+    time = event.get("time") if isinstance(event.get("time"), dict) else {}
+    offset = _float_or_none(time.get("offset_ms"))
+    if offset is not None:
+        return (0, offset, original_index)
+    timestamp = _short_text(time.get("timestamp_utc"), 80) if time.get("timestamp_utc") else ""
+    if timestamp:
+        try:
+            parsed = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+            return (1, parsed.timestamp() * 1000.0, original_index)
+        except ValueError:
+            return (1, float(original_index), original_index)
+    return (2, float("inf"), original_index)
+
+
+def _merge_tool_events(events: list[dict]) -> list[dict]:
+    merged: list[dict] = []
+    pending_by_id: dict[str, int] = {}
+    pending_by_name: dict[str, list[int]] = {}
+
+    def pending_add(event: dict) -> None:
+        idx = len(merged)
+        merged.append(event)
+        call_id = str(event.get("tool_call_id") or "")
+        name = str(event.get("tool_name") or "")
+        if call_id:
+            pending_by_id[call_id] = idx
+        elif name:
+            pending_by_name.setdefault(name, []).append(idx)
+
+    def pending_take(event: dict) -> int | None:
+        call_id = str(event.get("tool_call_id") or "")
+        name = str(event.get("tool_name") or "")
+        if call_id and call_id in pending_by_id:
+            return pending_by_id.pop(call_id)
+        if name and pending_by_name.get(name):
+            return pending_by_name[name].pop(0)
+        return None
+
+    def merge_into(call: dict, result: dict) -> dict:
+        call_time = call.get("time") if isinstance(call.get("time"), dict) else {}
+        result_time = result.get("time") if isinstance(result.get("time"), dict) else {}
+        duration_ms = call.get("duration_ms")
+        call_offset = _float_or_none(call_time.get("offset_ms"))
+        result_offset = _float_or_none(result_time.get("offset_ms"))
+        if duration_ms is None and call_offset is not None and result_offset is not None and result_offset >= call_offset:
+            duration_ms = round(result_offset - call_offset, 3)
+        return {
+            **call,
+            "type": "tool_step",
+            "label": "Tool",
+            "status": "observed_result" if result.get("status") else call.get("status"),
+            "source": call.get("source") or result.get("source"),
+            "result_source": result.get("source"),
+            "duration_ms": duration_ms,
+            "output_summary": result.get("output_summary") or call.get("output_summary"),
+            "result_time": result_time,
+            "retention": {
+                "args": (call.get("retention") or {}).get("args", "-"),
+                "result": (result.get("retention") or {}).get("result", "-"),
+            },
+        }
+
+    for event in events:
+        event_type = str(event.get("type") or "")
+        if event_type == "tool_call" and event.get("status") != "observed_name_only":
+            pending_add(event)
+            continue
+        if event_type == "tool_result":
+            idx = pending_take(event)
+            if idx is not None:
+                merged[idx] = merge_into(merged[idx], event)
+            else:
+                merged.append({
+                    **event,
+                    "type": "tool_step",
+                    "label": "Tool",
+                })
+            continue
+        if event_type == "tool_call":
+            merged.append({
+                **event,
+                "type": "tool_step",
+                "label": "Tool observed",
+            })
+            continue
+        merged.append(event)
+    return merged
+
+
+def _normalize_public_events(row: dict, public_transcript: list[dict]) -> list[dict]:
+    """Return public-safe trace events for website rendering.
+
+    Existing runs may only have a redacted transcript plus name-only tool
+    summaries. Newer runs can provide observability tools with redacted args and
+    results. This function keeps the website schema stable across both.
+    """
+    mechanical = row.get("mechanical") if isinstance(row.get("mechanical"), dict) else {}
+    case_wall_ms = mechanical.get("wall_ms")
+    if isinstance(row.get("public_events"), list):
+        events = row["public_events"]
+    else:
+        events = []
+        for turn in public_transcript:
+            turn_id = turn.get("turn")
+            if turn.get("user"):
+                events.append({
+                    "type": "user_message",
+                    "turn": turn_id,
+                    "label": f"Turn {turn_id} user",
+                    "text": turn.get("user"),
+                    "time": _timing(0, source="turn_start", confidence="coarse"),
+                })
+            if turn.get("assistant") or turn.get("error"):
+                assistant_wall = turn.get("wall_ms") if turn.get("wall_ms") is not None else (
+                    case_wall_ms if len(public_transcript) == 1 else None
+                )
+                source = "transcript.wall_ms" if turn.get("wall_ms") is not None else (
+                    "case.wall_ms" if assistant_wall is not None else "not_captured"
+                )
+                events.append({
+                    "type": "assistant_message",
+                    "turn": turn_id,
+                    "label": f"Turn {turn_id} assistant",
+                    "text": turn.get("assistant"),
+                    "error": turn.get("error"),
+                    "timed_out": turn.get("timed_out"),
+                    "duration_ms": turn.get("wall_ms"),
+                    "time": _timing(
+                        assistant_wall,
+                        duration_ms=turn.get("wall_ms"),
+                        source=source,
+                        confidence="coarse" if source == "case.wall_ms" else "recorded" if source == "transcript.wall_ms" else "unavailable",
+                    ),
+                })
+
+        observability = row.get("observability") if isinstance(row.get("observability"), dict) else {}
+        tool_rows = [
+            item for item in (observability.get("tools") or [])
+            if isinstance(item, dict) and item.get("name")
+        ]
+        name_only_tools = sorted({str(item) for item in (row.get("used_tools") or []) if item} - {
+            str(item.get("name")) for item in tool_rows if item.get("name")
+        })
+        for item in tool_rows:
+            status = str(item.get("status") or "observed")
+            event_type = "tool_result" if status == "observed_result" else "tool_call"
+            events.append({
+                "type": event_type,
+                "label": "Tool result" if event_type == "tool_result" else "Tool call",
+                "tool_name": item.get("name"),
+                "tool_call_id": item.get("tool_call_id"),
+                "status": status,
+                "source": item.get("source"),
+                "input_summary": _summarize_public_value(
+                    item.get("args"),
+                    empty=str(item.get("args_retention") or "arguments omitted public-safe"),
+                ),
+                "output_summary": _summarize_public_value(
+                    item.get("result"),
+                    empty=str(item.get("result_retention") or "result omitted public-safe"),
+                ),
+                "retention": {
+                    "args": item.get("args_retention") or "omitted_public_safe",
+                    "result": item.get("result_retention") or "omitted_public_safe",
+                },
+                "time": _event_time_from_source(item),
+            })
+
+        for name in name_only_tools:
+            events.append({
+                "type": "tool_call",
+                "label": "Tool observed",
+                "tool_name": name,
+                "status": "observed_name_only",
+                "input_summary": "Tool usage was recorded by the benchmark summary; call arguments were not captured in the public artifact.",
+                "output_summary": "Tool output was not captured in the public artifact.",
+                "retention": {
+                    "args": "omitted_public_safe",
+                    "result": "omitted_public_safe",
+                },
+                "time": _timing(None, source="not_captured_in_past_run", confidence="unavailable"),
+            })
+
+        judge = row.get("judge") if isinstance(row.get("judge"), dict) else {}
+        if judge.get("reason"):
+            events.append({
+                "type": "judge_result",
+                "label": "Judge result",
+                "status": "recorded",
+                "text": _short_text(judge.get("reason"), 240),
+                "time": _timing(case_wall_ms, source="case.wall_ms", confidence="coarse") if case_wall_ms is not None else _timing(None, source="not_captured", confidence="unavailable"),
+            })
+
+    normalized = []
+    for original_index, event in enumerate(events, start=1):
+        if not isinstance(event, dict):
+            continue
+        event_type = str(event.get("type") or "system_note")
+        normalized.append({
+            "index": original_index,
+            "type": event_type,
+            "turn": event.get("turn"),
+            "label": _short_text(event.get("label") or event_type.replace("_", " ").title(), 80),
+            "tool_name": _short_text(event.get("tool_name"), 80) if event.get("tool_name") else None,
+            "tool_call_id": _short_text(event.get("tool_call_id"), 80) if event.get("tool_call_id") else None,
+            "status": _short_text(event.get("status"), 80) if event.get("status") else None,
+            "source": _short_text(event.get("source"), 120) if event.get("source") else None,
+            "duration_ms": event.get("duration_ms"),
+            "time": _event_time_from_source(event),
+            "text": _short_text(event.get("text"), 800) if event.get("text") else None,
+            "error": _short_text(event.get("error"), 260) if event.get("error") else None,
+            "timed_out": event.get("timed_out"),
+            "input_summary": _short_text(event.get("input_summary"), 360) if event.get("input_summary") else None,
+            "output_summary": _short_text(event.get("output_summary"), 360) if event.get("output_summary") else None,
+            "retention": event.get("retention") if isinstance(event.get("retention"), dict) else {},
+        })
+    sorted_events = sorted(normalized, key=lambda event: _event_sort_key(event, int(event.get("index") or 0)))
+    merged_events = _merge_tool_events(sorted_events)
+    for idx, event in enumerate(merged_events, start=1):
+        event["index"] = idx
+    return merged_events
 
 
 def _list_field(case: dict, *names: str) -> list[str]:
@@ -218,6 +552,16 @@ def build_trace_for_baseline(baseline_dir: Path, task_catalog: dict | None = Non
     cases: list[dict] = []
     for idx, row in enumerate(rows, start=1):
         task = tasks_by_id.get(str(row.get("case") or ""))
+        public_transcript = _public_safe_value(row.get("public_transcript") or [])
+        observability = _public_safe_value(row.get("observability")) if isinstance(row.get("observability"), dict) else {}
+        observed_tool_names = sorted({
+            str(item)
+            for item in [
+                *(row.get("used_tools") or []),
+                *(tool.get("name") for tool in (observability.get("tools") or []) if isinstance(tool, dict)),
+            ]
+            if item
+        })
         cases.append({
             "index": idx,
             "case": row.get("case"),
@@ -240,7 +584,11 @@ def build_trace_for_baseline(baseline_dir: Path, task_catalog: dict | None = Non
                 "raw_target_reply": "omitted_public_safe",
                 "raw_transcript": "omitted_public_safe",
             },
-            "public_transcript": row.get("public_transcript") or [],
+            "public_transcript": public_transcript,
+            "public_events": _normalize_public_events(row, public_transcript),
+            "observed_tools": observed_tool_names,
+            "used_skills": row.get("used_skills") or [],
+            "observability": observability,
             "raw_transcript": row.get("raw_transcript"),
         })
     return {
@@ -315,6 +663,179 @@ def _read_yaml(path: Path) -> dict:
         return {}
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     return data if isinstance(data, dict) else {}
+
+
+def _sha16(value: Any) -> str:
+    payload = json.dumps(value, sort_keys=True, default=str).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()[:16]
+
+
+def _safe_skill_config(skills: dict) -> dict:
+    return {
+        "allowed": _string_list(skills.get("allowed")),
+        "disabled": _string_list(skills.get("disabled")),
+        "platform_allowed": {
+            str(key): _string_list(value)
+            for key, value in (skills.get("platform_allowed") or {}).items()
+            if isinstance(value, list)
+        },
+        "platform_disabled": {
+            str(key): _string_list(value)
+            for key, value in (skills.get("platform_disabled") or {}).items()
+            if isinstance(value, list)
+        },
+        "external_dirs_count": len(_string_list(skills.get("external_dirs"))),
+    }
+
+
+def _safe_mcp_servers(config: dict) -> list[dict]:
+    rows = []
+    for name, server in (config.get("mcp_servers") or {}).items():
+        if not isinstance(server, dict):
+            continue
+        rows.append({
+            "name": str(name),
+            "enabled": bool(server.get("enabled")),
+            "auth": server.get("auth"),
+        })
+    return sorted(rows, key=lambda row: row["name"])
+
+
+def _safe_profile_snapshot(*, name: str, role: str, root: Path) -> dict | None:
+    profile_dir = root if name == "default" else root / "profiles" / name
+    config_path = profile_dir / "config.yaml"
+    profile_path = profile_dir / "profile.yaml"
+    soul_path = profile_dir / "SOUL.md"
+    if not config_path.exists():
+        return None
+    config = _read_yaml(config_path)
+    profile_meta = _read_yaml(profile_path)
+    soul_title = ""
+    if soul_path.exists():
+        for line in soul_path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if line.startswith("#"):
+                soul_title = line.strip("# ").strip()
+                break
+    model = config.get("model") or {}
+    memory = config.get("memory") or {}
+    plugins = config.get("plugins") or {}
+    skills = config.get("skills") or {}
+    platform_toolsets = config.get("platform_toolsets") or {}
+    safe = {
+        "schema_version": 1,
+        "profile": name,
+        "role": role,
+        "publication_state": "published_redacted",
+        "distribution_form": "redacted_distribution_style",
+        "description": profile_meta.get("description"),
+        "soul_title": soul_title,
+        "distribution_files": ["SOUL.md", "config.yaml"],
+        "model": {
+            "provider": model.get("provider"),
+            "default": model.get("default"),
+        },
+        "memory": {
+            "enabled": memory.get("memory_enabled"),
+            "provider": memory.get("provider"),
+        },
+        "toolsets": _string_list(config.get("toolsets")),
+        "plugins": {
+            "enabled": _string_list(plugins.get("enabled")),
+            "disabled": _string_list(plugins.get("disabled")),
+        },
+        "skills": _safe_skill_config(skills),
+        "platform_toolsets": {
+            "cli": _string_list(platform_toolsets.get("cli")),
+            "telegram": _string_list(platform_toolsets.get("telegram")),
+        },
+        "kanban": {
+            key: value
+            for key, value in (config.get("kanban") or {}).items()
+            if key in {
+                "dispatch_in_gateway",
+                "dispatch_interval_seconds",
+                "orchestrator_profile",
+                "default_assignee",
+                "auto_decompose",
+                "auto_decompose_per_tick",
+                "dispatch_stale_timeout_seconds",
+                "max_spawn",
+                "synthesis_timeout_seconds",
+                "failure_limit",
+            }
+        },
+        "mcp_servers": _safe_mcp_servers(config),
+        "hashes": {},
+        "redactions": [
+            "auth files",
+            ".env files",
+            "memories",
+            "sessions",
+            "state databases",
+            "logs",
+            "local filesystem paths",
+            "raw private SOUL sections",
+            "MCP URLs and credentials",
+        ],
+    }
+    safe["hashes"] = {
+        "config_summary_hash": _sha16({
+            "model": safe["model"],
+            "memory": safe["memory"],
+            "toolsets": safe["toolsets"],
+            "plugins": safe["plugins"],
+            "skills": safe["skills"],
+            "platform_toolsets": safe["platform_toolsets"],
+            "kanban": safe["kanban"],
+        }),
+    }
+    return safe
+
+
+def sync_local_kanban_profile_snapshots(profiles_root: Path) -> list[dict]:
+    """Write public-safe local kanban profile snapshots when local Hermes profiles exist."""
+    local_root = Path.home() / ".hermes"
+    if not (local_root / "config.yaml").exists():
+        return []
+    specs = [
+        ("default", "front_desk"),
+        ("orchestrator", "orchestrator"),
+        ("worker", "worker"),
+        ("worker-code", "worker"),
+        ("worker-fast", "worker"),
+        ("worker-ops", "worker"),
+        ("worker-report", "worker"),
+        ("worker-research", "worker"),
+    ]
+    out_dir = profiles_root / "kanban"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    snapshots = []
+    for name, role in specs:
+        snapshot = _safe_profile_snapshot(name=name, role=role, root=local_root)
+        if not snapshot:
+            continue
+        rel_path = out_dir / f"{name}.redacted.yaml"
+        snapshot["source_file"] = f"data/profiles/kanban/{rel_path.name}"
+        _write_text(rel_path, yaml.safe_dump(snapshot, sort_keys=False, allow_unicode=True))
+        snapshots.append(snapshot)
+    _write_text(
+        out_dir / "README.md",
+        "# Kanban Profile Snapshots\n\n"
+        "Public-safe redacted distribution-style snapshots for the local Hermes kanban profile collaboration design.\n"
+        "These files intentionally omit credentials, memories, sessions, logs, local paths, state databases, and raw private SOUL content.\n",
+    )
+    return snapshots
+
+
+def _published_profile_snapshots(profiles_root: Path) -> list[dict]:
+    snapshots = []
+    for path in sorted((profiles_root / "kanban").glob("*.redacted.yaml")):
+        snapshot = _read_yaml(path)
+        if not snapshot:
+            continue
+        snapshot.setdefault("source_file", f"data/profiles/kanban/{path.name}")
+        snapshots.append(snapshot)
+    return snapshots
 
 
 def _distribution_metadata(baseline_dir: Path) -> dict:
@@ -431,10 +952,246 @@ def _profile_roles(profile: dict, snapshot: dict, trace: dict) -> list[dict]:
     return roles
 
 
-def build_profile_architecture_index(baselines_root: Path, traces: list[dict]) -> dict:
+def _snapshot_summary(snapshot: dict, profile: dict) -> dict:
+    config = snapshot.get("config") or {}
+    kanban = config.get("kanban") or {}
+    capability = snapshot.get("capability_surface") or {}
+    target = capability.get("target") or {}
+    tools = capability.get("tools") or {}
+    skills = capability.get("agent_skills") or {}
+    inventory = skills.get("inventory") or profile.get("agent_skills") or {}
+    return {
+        "target": {
+            "ui": target.get("ui"),
+            "profile": target.get("profile"),
+            "platform": target.get("platform"),
+        },
+        "model": (config.get("model") or {}).get("default") or profile.get("model"),
+        "model_provider": (config.get("model") or {}).get("provider") or profile.get("model_provider"),
+        "memory": {
+            "provider": (config.get("memory") or {}).get("provider") or profile.get("memory_provider"),
+            "enabled": (config.get("memory") or {}).get("memory_enabled") if config.get("memory") else profile.get("memory_enabled"),
+        },
+        "kanban": {
+            "orchestrator_profile": kanban.get("orchestrator_profile"),
+            "default_assignee": kanban.get("default_assignee"),
+            "auto_decompose": kanban.get("auto_decompose"),
+            "max_spawn": kanban.get("max_spawn"),
+        },
+        "tools": {
+            "root_toolsets": _string_list(tools.get("root_toolsets") or profile.get("toolsets")),
+            "platform_toolsets": _string_list(tools.get("platform_toolsets")),
+            "platform_toolset_hash": tools.get("platform_toolset_hash"),
+        },
+        "agent_skills": {
+            "count": inventory.get("count"),
+            "hash": inventory.get("hash"),
+            "sample": _string_list(inventory.get("sample"))[:12],
+            "disabled": _string_list(skills.get("globally_disabled"))[:12],
+            "platform_disabled": _string_list(skills.get("platform_disabled"))[:12],
+            "platform_allowed": _string_list(skills.get("platform_allowed"))[:12],
+        },
+        "bench_env": {
+            key: value
+            for key, value in (snapshot.get("bench_env") or {}).items()
+            if str(key).startswith("HERMES_BENCH") or str(key) == "HERMES_RUN_LLM_EVALS"
+        },
+    }
+
+
+def _observed_usage(trace: dict) -> dict:
+    tools: set[str] = set()
+    skills: set[str] = set()
+    cases: dict[str, dict[str, set[str]]] = {}
+    for case in trace.get("cases") or []:
+        case_id = str(case.get("case") or "")
+        case_tools: set[str] = set()
+        case_skills: set[str] = set()
+        for name in _string_list(case.get("observed_tools")):
+            tools.add(name)
+            case_tools.add(name)
+        for name in _string_list(case.get("used_skills")):
+            skills.add(name)
+            case_skills.add(name)
+        observability = case.get("observability") if isinstance(case.get("observability"), dict) else {}
+        for item in observability.get("tools") or []:
+            if isinstance(item, dict) and item.get("name"):
+                name = str(item["name"])
+                tools.add(name)
+                case_tools.add(name)
+        for name in _string_list(observability.get("skills")):
+            skills.add(name)
+            case_skills.add(name)
+        for event in case.get("public_events") or []:
+            if isinstance(event, dict) and event.get("tool_name"):
+                name = str(event["tool_name"])
+                tools.add(name)
+                case_tools.add(name)
+        if case_id and (case_tools or case_skills):
+            cases[case_id] = {"tools": case_tools, "skills": case_skills}
+    return {
+        "recorded": bool(tools or skills),
+        "tools": sorted(tools),
+        "skills": sorted(skills),
+        "cases": [
+            {"case": case_id, "tools": sorted(value["tools"]), "skills": sorted(value["skills"])}
+            for case_id, value in sorted(cases.items())
+        ],
+        "default_display": "observed_only",
+        "empty_note": "No public used-tool or used-skill telemetry was recorded for this baseline.",
+    }
+
+
+def _profile_units(roles: list[dict], distribution: dict, baseline_id: str, related: dict, snapshots: list[dict]) -> list[dict]:
+    units: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+    role_status: dict[tuple[str, str], dict] = {}
+    for role in roles:
+        role_name = str(role.get("role") or "")
+        profile_name = str(role.get("profile") or "")
+        if role_name and profile_name:
+            role_status[(role_name, profile_name)] = role
+    for snapshot in snapshots:
+        role_name = str(snapshot.get("role") or "worker")
+        profile_name = str(snapshot.get("profile") or "")
+        key = (role_name, profile_name)
+        if key in seen:
+            continue
+        seen.add(key)
+        matched_role = role_status.get(key)
+        if not matched_role and role_name == "worker":
+            matched_role = role_status.get(("worker", "not_published"))
+        status = (matched_role or {}).get("status") or ("exercised" if role_name == "front_desk" else "present_not_exercised")
+        evidence = (matched_role or {}).get("evidence") or "uploaded local redacted kanban profile snapshot"
+        installable = bool(distribution.get("repo_url"))
+        install_command = (
+            f"hermes profile install {distribution.get('repo_url')} --alias {profile_name}"
+            if installable else None
+        )
+        implementation_prompt = f"""Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: {baseline_id}
+Profile role: {role_name}
+Profile name: {profile_name}
+Distribution form: {distribution.get('form') or 'unknown'}
+Score evidence: {related.get('leaderboard_url')}
+Trace JSON: {related.get('trace_json')}
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway."""
+        units.append({
+            "role": role_name,
+            "profile": profile_name,
+            "status": status,
+            "evidence": evidence,
+            "description": snapshot.get("description"),
+            "soul_title": snapshot.get("soul_title"),
+            "source_file": snapshot.get("source_file"),
+            "toolsets": _string_list(snapshot.get("toolsets")),
+            "plugins_enabled": _string_list((snapshot.get("plugins") or {}).get("enabled")),
+            "skills_allowed": _string_list((snapshot.get("skills") or {}).get("allowed")),
+            "platform_toolsets_cli": _string_list((snapshot.get("platform_toolsets") or {}).get("cli")),
+            "model": snapshot.get("model") or {},
+            "memory": snapshot.get("memory") or {},
+            "hashes": snapshot.get("hashes") or {},
+            "distribution_form": snapshot.get("distribution_form") or distribution.get("form"),
+            "publication_state": "installable_distribution" if installable else "published_redacted",
+            "required_for_bundle": bool(role_name in {"front_desk", "orchestrator", "worker"}),
+            "installable": installable,
+            "install_command": install_command,
+            "implementation_prompt": implementation_prompt,
+            "cta_label": "Copy install command" if installable else "Copy local implementation prompt",
+            "note": (
+                "Install this profile distribution locally, then link it into the configuration bundle."
+                if installable
+                else "This profile is published as redacted evidence, so recreate it locally from the public shape."
+            ),
+        })
+    for role in roles:
+        role_name = str(role.get("role") or "")
+        profile_name = str(role.get("profile") or "")
+        if role_name == "routing_delegation" or (role_name, profile_name) in seen or profile_name in {"", "not_published"}:
+            continue
+        installable = bool(distribution.get("repo_url"))
+        install_command = (
+            f"hermes profile install {distribution.get('repo_url')} --alias {profile_name}"
+            if installable else None
+        )
+        implementation_prompt = f"""Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: {baseline_id}
+Profile role: {role_name}
+Profile name: {profile_name}
+Distribution form: {distribution.get('form') or 'unknown'}
+Score evidence: {related.get('leaderboard_url')}
+Trace JSON: {related.get('trace_json')}
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway."""
+        units.append({
+            "role": role_name,
+            "profile": profile_name,
+            "status": role.get("status"),
+            "evidence": role.get("evidence"),
+            "distribution_form": distribution.get("form"),
+            "publication_state": "installable_distribution" if installable else "published_redacted",
+            "required_for_bundle": True,
+            "installable": installable,
+            "install_command": install_command,
+            "implementation_prompt": implementation_prompt,
+            "cta_label": "Copy install command" if installable else "Copy local implementation prompt",
+            "note": "Install this profile distribution locally, then link it into the configuration bundle." if installable else "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+        })
+        seen.add((role_name, profile_name))
+    for role in roles:
+        role_name = str(role.get("role") or "")
+        profile_name = str(role.get("profile") or "")
+        if role_name == "routing_delegation" or (role_name, profile_name) in seen or profile_name not in {"", "not_published"}:
+            continue
+        if role_name == "worker" and any(unit.get("role") == "worker" for unit in units):
+            continue
+        publication_prompt = f"""Publish the missing HermesBench profile evidence for this kanban-related profile slot.
+
+Baseline: {baseline_id}
+Profile role: {role_name}
+Current published profile name: {profile_name or 'not_published'}
+Score evidence: {related.get('leaderboard_url')}
+Trace JSON: {related.get('trace_json')}
+
+Required action:
+Add an installable Hermes profile distribution link or a redacted distribution-style snapshot for this single profile. Keep it tied to the same configuration bundle role.
+
+Do not publish credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config."""
+        units.append({
+            "role": role_name,
+            "profile": profile_name,
+            "status": role.get("status"),
+            "evidence": role.get("evidence"),
+            "distribution_form": distribution.get("form"),
+            "publication_state": "missing_required_profile",
+            "required_for_bundle": True,
+            "installable": False,
+            "install_command": None,
+            "implementation_prompt": publication_prompt,
+            "cta_label": "Copy publication checklist",
+            "note": "This kanban-related profile slot is required for a complete public baseline and still needs profile evidence uploaded.",
+        })
+    return units
+
+
+def build_profile_architecture_index(baselines_root: Path, traces: list[dict], profiles_root: Path | None = None) -> dict:
     """Return public profile/distribution architecture metadata linked to scores."""
     trace_by_baseline = {trace.get("baseline_id"): trace for trace in traces}
     architectures: list[dict] = []
+    published_snapshots = _published_profile_snapshots(profiles_root) if profiles_root else []
     for baseline_dir in baseline_dirs(baselines_root):
         trace = trace_by_baseline.get(baseline_dir.name)
         if not trace:
@@ -448,6 +1205,19 @@ def build_profile_architecture_index(baselines_root: Path, traces: list[dict]) -
         suite_scores = _suite_score_rows(score.get("suite_scores") or trace.get("suite_scores") or {})
         high = _scenario_score_rows(trace, reverse=True)[:5]
         low = _scenario_score_rows(trace, reverse=False)[:5]
+        roles = _profile_roles(profile, snapshot, trace)
+        distribution = _distribution_metadata(baseline_dir)
+        related_scores = {
+            "overall": manifest.get("overall_score") or trace.get("overall_score"),
+            "score_breakdown": score.get("score_breakdown") or trace.get("score_breakdown") or {},
+            "suite_scores": suite_scores,
+            "top_suites": suite_scores[:5],
+            "improvement_suites": sorted(suite_scores, key=lambda row: (float(row.get("score") or 0.0), row["suite_id"]))[:5],
+            "top_scenarios": high,
+            "improvement_scenarios": low,
+            "leaderboard_url": f"leaderboard.html#trace-{_anchor(baseline_dir.name)}",
+            "trace_json": f"data/traces/{baseline_dir.name}/trace.json",
+        }
         architectures.append({
             "baseline_id": baseline_dir.name,
             "run_id": manifest.get("run_id") or trace.get("run_id"),
@@ -459,7 +1229,7 @@ def build_profile_architecture_index(baselines_root: Path, traces: list[dict]) -
                 "kanban_enabled": bool(surface.get("kanban_enabled")),
                 "prompt_case_contract": surface.get("prompt_case_contract") or "framework_agnostic",
             },
-            "distribution": _distribution_metadata(baseline_dir),
+            "distribution": distribution,
             "profile_fingerprint": manifest.get("profile_fingerprint") or trace.get("profile_fingerprint") or {},
             "profile_hash": profile.get("profile_hash") or (manifest.get("profile_fingerprint") or {}).get("profile_hash"),
             "model_provider": profile.get("model_provider"),
@@ -476,22 +1246,16 @@ def build_profile_architecture_index(baselines_root: Path, traces: list[dict]) -
                 "sample": _string_list(skills.get("sample"))[:12],
                 "truncated": bool(skills.get("truncated")),
             },
-            "roles": _profile_roles(profile, snapshot, trace),
-            "related_scores": {
-                "overall": manifest.get("overall_score") or trace.get("overall_score"),
-                "score_breakdown": score.get("score_breakdown") or trace.get("score_breakdown") or {},
-                "suite_scores": suite_scores,
-                "top_suites": suite_scores[:5],
-                "improvement_suites": sorted(suite_scores, key=lambda row: (float(row.get("score") or 0.0), row["suite_id"]))[:5],
-                "top_scenarios": high,
-                "improvement_scenarios": low,
-                "leaderboard_url": f"leaderboard.html#trace-{_anchor(baseline_dir.name)}",
-                "trace_json": f"data/traces/{baseline_dir.name}/trace.json",
-            },
-            "benchmark_loop": {
-                "benchmark": "Run HermesBench against an installed profile distribution or the current target profile.",
-                "current_performance": "Use overall, suite, axis, and scenario scores from related_scores.",
-                "improve_from_high_scores": "Sort profile architectures by target suite/scenario score and reuse the public distribution shape.",
+            "roles": roles,
+            "profile_units": _profile_units(roles, distribution, baseline_dir.name, related_scores, published_snapshots),
+            "snapshot_summary": _snapshot_summary(snapshot, profile),
+            "observed_usage": _observed_usage(trace),
+            "related_scores": related_scores,
+            "implementation_loop": {
+                "learn": "Inspect the strong suites/scenarios to see where this profile shape worked.",
+                "install_or_copy": "Install an installable profile distribution, or recreate a local profile from the redacted public shape.",
+                "bundle": "Link single profiles into a shared configuration bundle through roles such as front desk, orchestrator, and worker.",
+                "verify": "After local implementation, run HermesBench to verify behavior without changing the publication pathway.",
             },
             "source_files": {
                 "baseline": f"data/baselines/{baseline_dir.name}",
@@ -509,6 +1273,7 @@ def build_profile_architecture_index(baselines_root: Path, traces: list[dict]) -
         "schema_version": SCHEMA_VERSION,
         "generated_at": _now(),
         "profile_count": len(architectures),
+        "profile_unit_count": sum(len(item.get("profile_units") or []) for item in architectures),
         "source": "public HermesBench baselines plus profile distribution snapshots",
         "distribution_contract": "docs/profile-distribution-baselines.md",
         "profiles": architectures,
@@ -721,6 +1486,115 @@ def _render_text_block(text: Any) -> str:
     return f'<div class="text-block">{escape(str(text or ""))}</div>'
 
 
+def _event_label(event_type: str) -> str:
+    return {
+        "user_message": "User",
+        "assistant_message": "Assistant",
+        "tool_call": "Tool call",
+        "tool_result": "Tool result",
+        "tool_step": "Tool",
+        "judge_result": "Judge",
+        "error": "Error",
+        "timeout": "Timeout",
+        "system_note": "Note",
+    }.get(event_type, _label_text(event_type))
+
+
+def _render_public_event(event: dict) -> str:
+    event_type = str(event.get("type") or "system_note")
+    event_class = _anchor(event_type)
+    timing = event.get("time") if isinstance(event.get("time"), dict) else {}
+    meta = []
+    if timing.get("timestamp_utc"):
+        meta.append(str(timing.get("timestamp_utc")))
+    if timing.get("source"):
+        timing_source = str(timing.get("source")).replace("_", " ").replace(".", " ")
+        meta.append(f"timing {timing_source}")
+    if event.get("turn") is not None:
+        meta.append(f"turn {event.get('turn')}")
+    if event.get("status"):
+        meta.append(str(event.get("status")))
+    if timing.get("duration_ms") is not None:
+        meta.append(f"duration {_duration_ms(timing.get('duration_ms'))}")
+    meta_html = f'<span class="event-meta">{escape(" · ".join(meta))}</span>' if meta else ""
+    time_html = f'<time class="event-time">{escape(str(timing.get("label") or "time not captured"))}</time>'
+    tool_name = event.get("tool_name")
+    tool_bits = []
+    if tool_name:
+        tool_bits.append(f"<div><dt>Tool</dt><dd><code>{escape(str(tool_name))}</code></dd></div>")
+    if event.get("source"):
+        tool_bits.append(f"<div><dt>Source</dt><dd>{escape(str(event.get('source')))}</dd></div>")
+    if event.get("tool_call_id"):
+        tool_bits.append(f"<div><dt>Call id</dt><dd><code>{escape(str(event.get('tool_call_id')))}</code></dd></div>")
+    retention = event.get("retention") or {}
+    if retention:
+        tool_bits.append(
+            "<div><dt>Retention</dt><dd>"
+            + escape(f"args {retention.get('args', '-')}, result {retention.get('result', '-')}")
+            + "</dd></div>"
+        )
+    tool_detail = f'<dl class="mini-defs event-tool-meta">{"".join(tool_bits)}</dl>' if tool_bits else ""
+    input_html = (
+        f'<div class="event-summary"><span>Input</span>{_render_text_block(event.get("input_summary"))}</div>'
+        if event.get("input_summary") else ""
+    )
+    output_html = (
+        f'<div class="event-summary"><span>Output</span>{_render_text_block(event.get("output_summary"))}</div>'
+        if event.get("output_summary") else ""
+    )
+    text_html = _render_text_block(event.get("text")) if event.get("text") else ""
+    error_html = f'<div class="message-error">Error: {escape(str(event.get("error")))}</div>' if event.get("error") else ""
+    timeout_html = '<div class="message-error">Timed out</div>' if event.get("timed_out") else ""
+    return f"""
+      <article class="event-card event-{escape(event_class)}">
+        <div class="event-index">{escape(str(event.get('index') or ''))}</div>
+        <div class="event-body">
+          <header>
+            {time_html}
+            <span class="event-type">{escape(_event_label(event_type))}</span>
+            <strong>{escape(str(event.get('label') or _event_label(event_type)))}</strong>
+            {meta_html}
+          </header>
+          {tool_detail}
+          {text_html}
+          {input_html}
+          {output_html}
+          {error_html}
+          {timeout_html}
+        </div>
+      </article>
+    """
+
+
+def _render_trace_timeline(case: dict) -> str:
+    events = case.get("public_events") or []
+    retention = case.get("trace_retention") or {}
+    if not events:
+        return f"""
+          <div class="transcript-empty">
+            No public trace events are available for this case.
+            Retention: {escape(str(retention.get('public_transcript') or 'not available'))}.
+          </div>
+        """
+    tool_events = [
+        event for event in events
+        if str(event.get("type")) in {"tool_call", "tool_result", "tool_step"}
+    ]
+    message_events = [
+        event for event in events
+        if str(event.get("type")) in {"user_message", "assistant_message"}
+    ]
+    redactions = retention.get("redactions") or []
+    redaction_text = ", ".join(str(item).replace("_", " ") for item in redactions) if redactions else "standard public redaction"
+    return f"""
+      <div class="transcript-retention">
+        {len(events)} public events · {len(message_events)} messages · {len(tool_events)} tool events.
+        Redactions: {escape(redaction_text)}.
+      </div>
+      <div class="event-timeline">{''.join(_render_public_event(event) for event in events)}</div>
+    """
+
+
 def _render_transcript(case: dict) -> str:
     transcript = case.get("public_transcript") or []
     retention = case.get("trace_retention") or {}
@@ -868,14 +1742,30 @@ def render_trace_markdown(trace: dict) -> str:
         if task.get("prompt"):
             lines.extend(["Prompt:", "", "```text", task["prompt"], "```", ""])
         if case.get("public_transcript"):
-            lines.extend([
-                "Public transcript:",
-                "",
-                "```json",
-                json.dumps(case["public_transcript"], indent=2),
-                "```",
-                "",
-            ])
+            lines.extend(["Public transcript:", ""])
+            for idx, turn in enumerate(case["public_transcript"], start=1):
+                lines.extend([
+                    f"- Turn {idx} user: {_md_cell(turn.get('user'))}",
+                    f"- Turn {idx} assistant: {_md_cell(turn.get('assistant'))}",
+                ])
+                if turn.get("error"):
+                    lines.append(f"- Turn {idx} error: {_md_cell(turn.get('error'))}")
+            lines.append("")
+        if case.get("public_events"):
+            lines.extend(["Public trace events:", ""])
+            for event in case["public_events"]:
+                event_bits = [
+                    f"{event.get('index')}. {_event_label(str(event.get('type') or 'system_note'))}",
+                    str(event.get("tool_name") or event.get("label") or ""),
+                ]
+                if event.get("status"):
+                    event_bits.append(f"status {event.get('status')}")
+                if event.get("input_summary"):
+                    event_bits.append(f"input {event.get('input_summary')}")
+                if event.get("output_summary"):
+                    event_bits.append(f"output {event.get('output_summary')}")
+                lines.append("- " + _md_cell(" — ".join(bit for bit in event_bits if bit)))
+            lines.append("")
         lines.extend([
             f"Driver: {driver.get('reason') or driver}",
             "",
@@ -901,6 +1791,7 @@ def _page_shell(title: str, body: str) -> str:
       <nav>
         <a href="index.html#quickstart">Quick start</a>
         <a href="recipes.html">Recipes</a>
+        <a href="profiles.html">Profiles</a>
         <a href="leaderboard.html">Leaderboard</a>
         <a href="index.html#contribute">Contribute</a>
         <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
@@ -910,6 +1801,7 @@ def _page_shell(title: str, body: str) -> str:
     <footer>
       <span>HermesBench</span>
       <a href="recipes.html">Recipes</a>
+      <a href="profiles.html">Profiles</a>
       <a href="leaderboard.html">Leaderboard</a>
       <a href="llms.txt">llms.txt</a>
       <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">Methodology</a>
@@ -1187,6 +2079,517 @@ Follow the skill's "Run Current Hermes Configuration" workflow using run_scenari
     return _page_shell("Recipes", body)
 
 
+def _render_tag_spans(items: list[str], *, limit: int = 8) -> str:
+    shown = items[:limit]
+    extra = len(items) - len(shown)
+    html = "".join(f"<span>{escape(item)}</span>" for item in shown)
+    if extra > 0:
+        html += f"<span>+{extra} more</span>"
+    return html or "<span>None published</span>"
+
+
+def _render_role_cards(profile: dict) -> str:
+    cards = []
+    for role in profile.get("roles") or []:
+        cards.append(f"""
+          <article class="role-card">
+            <div>
+              <span class="mini-heading">Role</span>
+              <strong><code>{escape(str(role.get('role') or '-'))}</code></strong>
+            </div>
+            <div>
+              <span class="mini-heading">Profile</span>
+              <span>{escape(str(role.get('profile') or '-'))}</span>
+            </div>
+            <div>
+              <span class="mini-heading">Status</span>
+              <span>{escape(_label_text(role.get('status')))}</span>
+            </div>
+            <p>{escape(str(role.get('evidence') or '-'))}</p>
+          </article>
+        """)
+    return "".join(cards) or '<p class="note">No public profile roles were published.</p>'
+
+
+def _render_score_cards(rows: list[dict], *, link_cases: bool = False) -> str:
+    rendered = []
+    for row in rows:
+        label = row.get("case") if link_cases else row.get("suite_id")
+        title = row.get("title") or label
+        if link_cases:
+            label_html = f'<a class="score-title" href="{escape(str(row.get("trace_url")))}">{escape(str(title))}</a>'
+            meta = f"<code>{escape(str(label))}</code>"
+        else:
+            label_html = f'<span class="score-title">{escape(_label_text(label))}</span>'
+            meta = f"<code>{escape(str(label))}</code>"
+        rendered.append(f"""
+          <article class="score-insight">
+            <div>
+              {label_html}
+              <span class="table-subtext">{meta}</span>
+            </div>
+            <strong>{escape(_score(row.get('score')))}</strong>
+          </article>
+        """)
+    return "".join(rendered) or '<p class="note">No score rows available.</p>'
+
+
+def _score_row_title(row: dict | None, *, link_case: bool = False) -> str:
+    if not row:
+        return "No data"
+    label = row.get("case") if link_case else row.get("suite_id")
+    title = row.get("title") or label
+    if link_case and row.get("trace_url"):
+        return f'<a href="{escape(str(row.get("trace_url")))}">{escape(str(title))}</a>'
+    return escape(_label_text(title))
+
+
+def _score_row_meta(row: dict | None, *, link_case: bool = False) -> str:
+    if not row:
+        return "-"
+    label = row.get("case") if link_case else row.get("suite_id")
+    return escape(str(label or "-"))
+
+
+def _render_profile_readout(profile: dict, related: dict) -> str:
+    top_suite = (related.get("top_suites") or [None])[0]
+    low_suite = (related.get("improvement_suites") or [None])[0]
+    top_case = (related.get("top_scenarios") or [None])[0]
+    low_case = (related.get("improvement_scenarios") or [None])[0]
+    return f"""
+      <section class="profile-readout">
+        <div class="readout-head">
+          <div>
+            <p class="eyebrow">Profile readout</p>
+            <h3>Setup and Recipe Performance</h3>
+            <p class="note">Start here: this is the benchmarked setup, what it scored, and where the profile shape currently works or fails.</p>
+          </div>
+          <a class="button primary" href="{escape(str(related.get('leaderboard_url')))}">Open evidence</a>
+        </div>
+        <div class="profile-scoreboard">
+          <article class="score-kpi primary">
+            <span>Overall recipe score</span>
+            <strong>{escape(_score(profile.get('overall_score')))}</strong>
+            <small>Across published HermesBench recipes</small>
+          </article>
+          <article class="score-kpi">
+            <span>Best suite</span>
+            <strong>{escape(_score((top_suite or {}).get('score')))}</strong>
+            <small>{_score_row_title(top_suite)} <code>{_score_row_meta(top_suite)}</code></small>
+          </article>
+          <article class="score-kpi warn">
+            <span>Needs work</span>
+            <strong>{escape(_score((low_suite or {}).get('score')))}</strong>
+            <small>{_score_row_title(low_suite)} <code>{_score_row_meta(low_suite)}</code></small>
+          </article>
+          <article class="score-kpi">
+            <span>Best recipe</span>
+            <strong>{escape(_score((top_case or {}).get('score')))}</strong>
+            <small>{_score_row_title(top_case, link_case=True)} <code>{_score_row_meta(top_case, link_case=True)}</code></small>
+          </article>
+          <article class="score-kpi warn">
+            <span>Weakest recipe</span>
+            <strong>{escape(_score((low_case or {}).get('score')))}</strong>
+            <small>{_score_row_title(low_case, link_case=True)} <code>{_score_row_meta(low_case, link_case=True)}</code></small>
+          </article>
+        </div>
+      </section>
+    """
+
+
+def _render_profile_setup(profile: dict, surface: dict, distribution: dict, memory: dict, role_statuses: str, related: dict) -> str:
+    return f"""
+      <section class="profile-layer setup-layer">
+        <div class="layer-head">
+          <p class="eyebrow">Setup</p>
+          <h3>What Was Tested</h3>
+          <p class="note">Only benchmark-relevant setup is shown by default. Full configured inventory stays collapsed below because configured tools are not proof of recipe behavior.</p>
+        </div>
+        <div class="profile-overview-grid">
+          <dl class="detail-grid profile-metrics">
+            <div><dt>Surface</dt><dd>{escape(str(surface.get('label') or '-'))}</dd></div>
+            <div><dt>Model</dt><dd>{escape(str(profile.get('model_provider') or '-'))} / {escape(str(profile.get('model') or '-'))}</dd></div>
+            <div><dt>Memory</dt><dd>{escape(str(memory.get('provider') or '-'))}, {escape('enabled' if memory.get('enabled') else 'disabled')}</dd></div>
+            <div><dt>Distribution</dt><dd>{escape(str(distribution.get('form') or '-'))}</dd></div>
+            <div><dt>Profile units</dt><dd>{escape(str(len(profile.get('profile_units') or [])))}</dd></div>
+            <div><dt>Role status</dt><dd>{escape(role_statuses)}</dd></div>
+            <div><dt>Profile hash</dt><dd><code>{escape(_short(profile.get('profile_hash'), 18))}</code></dd></div>
+            <div><dt>Trace</dt><dd><a href="{escape(str(related.get('trace_json')))}">Trace JSON</a></dd></div>
+          </dl>
+          <div class="profile-link-panel">
+            <a class="button primary" href="{escape(str(related.get('leaderboard_url')))}">Leaderboard evidence</a>
+            <a class="button" href="{escape(str(related.get('trace_json')))}">Trace JSON</a>
+          </div>
+        </div>
+        <div class="profile-columns">
+          <section>
+            <h4>Distribution Shape</h4>
+            <dl class="mini-defs">
+              <div><dt>Form</dt><dd>{escape(str(distribution.get('form') or '-'))}</dd></div>
+              <div><dt>Repo</dt><dd>{escape(str(distribution.get('repo_url') or 'not published'))}</dd></div>
+              <div><dt>Version</dt><dd>{escape(str(distribution.get('version') or distribution.get('commit') or 'not published'))}</dd></div>
+              <div><dt>Contract</dt><dd><a href="https://github.com/verkyyi/hermesbench/blob/main/docs/profile-distribution-baselines.md">profile distribution baselines</a></dd></div>
+            </dl>
+          </section>
+          <section>
+            <h4>Bundle Roles</h4>
+            <dl class="mini-defs">
+              <div><dt>Surface</dt><dd>{escape(str(surface.get('label') or '-'))}</dd></div>
+              <div><dt>Contract</dt><dd>{escape(str(surface.get('prompt_case_contract') or '-'))}</dd></div>
+              <div><dt>Roles</dt><dd>{escape(role_statuses)}</dd></div>
+              <div><dt>Unit count</dt><dd>{escape(str(len(profile.get('profile_units') or [])))}</dd></div>
+            </dl>
+          </section>
+        </div>
+        <div class="role-card-list">{_render_bundle_roles(profile)}</div>
+      </section>
+    """
+
+
+def _render_recipe_performance(related: dict) -> str:
+    return f"""
+      <section class="profile-layer performance-layer">
+        <div class="layer-head">
+          <p class="eyebrow">Recipes</p>
+          <h3>Where It Performs</h3>
+          <p class="note">Suites show broad profile fit. Individual recipes point to concrete evidence for wins and regressions.</p>
+        </div>
+        <div class="profile-columns performance-columns">
+          <section>
+            <h3>Strong Suites</h3>
+            <div class="score-insight-list">{_render_score_cards(related.get('top_suites') or [])}</div>
+          </section>
+          <section>
+            <h3>Improvement Suites</h3>
+            <div class="score-insight-list">{_render_score_cards(related.get('improvement_suites') or [])}</div>
+          </section>
+          <section>
+            <h3>Strong Recipes</h3>
+            <div class="score-insight-list">{_render_score_cards(related.get('top_scenarios') or [], link_cases=True)}</div>
+          </section>
+          <section>
+            <h3>Improvement Recipes</h3>
+            <div class="score-insight-list">{_render_score_cards(related.get('improvement_scenarios') or [], link_cases=True)}</div>
+          </section>
+        </div>
+      </section>
+    """
+
+
+def _render_snapshot_summary(summary: dict, distribution: dict) -> str:
+    target = summary.get("target") or {}
+    memory = summary.get("memory") or {}
+    kanban = summary.get("kanban") or {}
+    tools = summary.get("tools") or {}
+    skills = summary.get("agent_skills") or {}
+    bench_env = summary.get("bench_env") or {}
+    bench_env_tags = [f"{key}={value}" for key, value in bench_env.items()]
+    snapshot_path = distribution.get("snapshot")
+    source_note = f"Source: {snapshot_path}" if snapshot_path else "Source: profile fingerprint only"
+    return f"""
+      <section class="profile-snapshot">
+        <h3>Snapshot Summary</h3>
+        <p class="note">{escape(source_note)}. Private credentials, memories, sessions, local paths, logs, and raw state are omitted.</p>
+        <dl class="detail-grid profile-metrics">
+          <div><dt>Target</dt><dd>{escape(str(target.get('ui') or '-'))} / {escape(str(target.get('profile') or '-'))}</dd></div>
+          <div><dt>Platform</dt><dd>{escape(str(target.get('platform') or '-'))}</dd></div>
+          <div><dt>Model</dt><dd>{escape(str(summary.get('model_provider') or '-'))} / {escape(str(summary.get('model') or '-'))}</dd></div>
+          <div><dt>Memory</dt><dd>{escape(str(memory.get('provider') or '-'))}, {escape('enabled' if memory.get('enabled') else 'disabled')}</dd></div>
+          <div><dt>Orchestrator</dt><dd>{escape(str(kanban.get('orchestrator_profile') or '-'))}</dd></div>
+          <div><dt>Max spawn</dt><dd>{escape(str(kanban.get('max_spawn') or '-'))}</dd></div>
+        </dl>
+        <details class="configured-inventory">
+          <summary>Configured inventory</summary>
+          <p class="note">This is configuration inventory, not proof of use. The default usage view only shows tools and skills observed in public traces.</p>
+          <dl class="detail-grid profile-metrics">
+            <div><dt>Tool hash</dt><dd><code>{escape(str(tools.get('platform_toolset_hash') or '-'))}</code></dd></div>
+            <div><dt>Skill hash</dt><dd><code>{escape(str(skills.get('hash') or '-'))}</code></dd></div>
+          </dl>
+          <div class="profile-columns">
+            <section>
+              <h4>Platform Toolsets</h4>
+              <div class="tag-list">{_render_tag_spans(tools.get('platform_toolsets') or [], limit=14)}</div>
+            </section>
+            <section>
+              <h4>AgentSkill Sample</h4>
+              <div class="tag-list">{_render_tag_spans(skills.get('sample') or [], limit=14)}</div>
+            </section>
+            <section>
+              <h4>Disabled Skills</h4>
+              <div class="tag-list">{_render_tag_spans((skills.get('disabled') or []) + (skills.get('platform_disabled') or []), limit=14)}</div>
+            </section>
+            <section>
+              <h4>Benchmark Env</h4>
+              <div class="tag-list">{_render_tag_spans(bench_env_tags, limit=14)}</div>
+            </section>
+          </div>
+        </details>
+      </section>
+    """
+
+
+def _render_observed_usage(usage: dict) -> str:
+    if not usage.get("recorded"):
+        return f"""
+          <section class="profile-snapshot">
+            <h3>Used Tools and Skills</h3>
+            <p class="note">{escape(str(usage.get('empty_note') or 'No public used-tool or used-skill telemetry was recorded.'))}</p>
+          </section>
+        """
+    return f"""
+      <section class="profile-snapshot">
+        <h3>Used Tools and Skills</h3>
+        <p class="note">Observed in public traces for this scored configuration. Configured-but-unused inventory is hidden in Snapshot Summary.</p>
+        <div class="profile-columns">
+          <section>
+            <h4>Used Tools</h4>
+            <div class="tag-list">{_render_tag_spans(usage.get('tools') or [], limit=18)}</div>
+          </section>
+          <section>
+            <h4>Used Skills</h4>
+            <div class="tag-list">{_render_tag_spans(usage.get('skills') or [], limit=18)}</div>
+          </section>
+        </div>
+      </section>
+    """
+
+
+def _render_profile_units(profile: dict) -> str:
+    units = profile.get("profile_units") or []
+    if not units:
+        return '<p class="note">No reusable profile units were published for this configuration.</p>'
+    cards = []
+    for unit in units:
+        copy_text = unit.get("install_command") or unit.get("implementation_prompt") or ""
+        state = str(unit.get("publication_state") or "")
+        state_class = " missing" if state == "missing_required_profile" else ""
+        model = unit.get("model") or {}
+        memory = unit.get("memory") or {}
+        hashes = unit.get("hashes") or {}
+        primary_tags = (unit.get("toolsets") or []) + (unit.get("skills_allowed") or [])[:4]
+        cards.append(f"""
+          <details class="profile-unit-card{state_class}">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">{escape(_label_text(unit.get('role')))} profile</span>
+                <h4>{escape(str(unit.get('profile') or '-'))}</h4>
+                {f'<span class="profile-unit-subtitle">{escape(_short(unit.get("description"), 120))}</span>' if unit.get("description") else ''}
+              </div>
+              <span class="profile-unit-role">{escape(_label_text(unit.get('role')))}</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              {_render_tag_spans(primary_tags, limit=7)}
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: {escape(_label_text(unit.get('status')))}</span>
+                <span>{escape(str(unit.get('distribution_form') or '-'))}</span>
+                <span>{escape(_label_text(unit.get('publication_state')))}</span>
+              </div>
+              <p>{escape(str(unit.get('evidence') or '-'))}</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>{escape(str(model.get('provider') or '-'))} / {escape(str(model.get('default') or '-'))}</dd></div>
+                <div><dt>Memory</dt><dd>{escape(str(memory.get('provider') or '-'))}, {escape('enabled' if memory.get('enabled') else 'disabled')}</dd></div>
+                <div><dt>Source</dt><dd>{escape(str(unit.get('source_file') or '-'))}</dd></div>
+                <div><dt>Config hash</dt><dd><code>{escape(str(hashes.get('config_summary_hash') or '-'))}</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list">{_render_tag_spans(unit.get('toolsets') or [], limit=16)}</div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list">{_render_tag_spans(unit.get('plugins_enabled') or [], limit=16)}</div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list">{_render_tag_spans(unit.get('skills_allowed') or [], limit=18)}</div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list">{_render_tag_spans(unit.get('platform_toolsets_cli') or [], limit=18)}</div>
+                </section>
+              </div>
+            </div>
+            <p class="note">{escape(str(unit.get('note') or ''))}</p>
+            {f'<pre class="install-command"><code>{escape(str(unit.get("install_command")))}</code></pre>' if unit.get("install_command") else ''}
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="{escape(copy_text, quote=True)}">{escape(str(unit.get('cta_label') or 'Copy implementation prompt'))}</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+        """)
+    return "".join(cards)
+
+
+def _render_bundle_roles(profile: dict) -> str:
+    roles = profile.get("roles") or []
+    if not roles:
+        return '<p class="note">No bundle roles were published.</p>'
+    rows = []
+    for role in roles:
+        rows.append(f"""
+          <article class="role-card">
+            <div>
+              <span class="mini-heading">Role</span>
+              <strong><code>{escape(str(role.get('role') or '-'))}</code></strong>
+            </div>
+            <div>
+              <span class="mini-heading">Profile</span>
+              <span>{escape(str(role.get('profile') or '-'))}</span>
+            </div>
+            <div>
+              <span class="mini-heading">Status</span>
+              <span>{escape(_label_text(role.get('status')))}</span>
+            </div>
+            <p>{escape(str(role.get('evidence') or '-'))}</p>
+          </article>
+        """)
+    return "".join(rows)
+
+
+def render_profiles_html(profile_index: dict) -> str:
+    profiles = profile_index.get("profiles") or []
+    profile_count = len(profiles)
+    unit_count = int(profile_index.get("profile_unit_count") or 0)
+    profile_count_label = "configuration bundle" if profile_count == 1 else "configuration bundles"
+    surface_options = "\n".join(
+        f'<option value="{escape(str(surface_id))}">{escape(_label_text(surface_id))}</option>'
+        for surface_id in sorted({
+            str((profile.get("execution_surface") or {}).get("id") or "direct")
+            for profile in profiles
+        })
+    )
+    profile_rows: list[str] = []
+    for profile in profiles:
+        baseline_id = str(profile.get("baseline_id") or "")
+        surface = profile.get("execution_surface") or {}
+        distribution = profile.get("distribution") or {}
+        memory = profile.get("memory") or {}
+        related = profile.get("related_scores") or {}
+        snapshot_summary = profile.get("snapshot_summary") or {}
+        observed_usage = profile.get("observed_usage") or {}
+        role_statuses = ", ".join(sorted({str(role.get("status")) for role in profile.get("roles") or [] if role.get("status")})) or "unknown"
+        search_text = " ".join([
+            baseline_id,
+            str(profile.get("model_provider") or ""),
+            str(profile.get("model") or ""),
+            str(surface.get("id") or ""),
+            str(distribution.get("form") or ""),
+            " ".join(profile.get("toolsets") or []),
+            " ".join(profile.get("plugins_enabled") or []),
+            " ".join(str(role.get("profile") or "") for role in profile.get("roles") or []),
+            " ".join(str(unit.get("profile") or "") for unit in profile.get("profile_units") or []),
+            " ".join(str(row.get("suite_id") or "") for row in related.get("suite_scores") or []),
+        ]).lower()
+        profile_rows.append(f"""
+          <details class="profile-row" id="profile-{escape(_anchor(baseline_id))}" data-profile-row data-search="{escape(search_text)}" data-surface="{escape(str(surface.get('id') or 'direct'))}">
+            <summary>
+              <span class="profile-summary-main">
+                <span>
+                  <span class="profile-title">{escape(baseline_id)}</span>
+                  <span class="table-subtext">{escape(str(surface.get('label') or _label_text(surface.get('id'))))} · {escape(str(len(profile.get('profile_units') or [])))} profile units · {escape(str(distribution.get('form') or 'profile_fingerprint_only'))}</span>
+                </span>
+              </span>
+              <span class="profile-summary-score">{escape(_score(profile.get('overall_score')))}</span>
+            </summary>
+            <div class="profile-detail">
+              {_render_profile_readout(profile, related)}
+
+              {_render_profile_setup(profile, surface, distribution, memory, role_statuses, related)}
+
+              <section class="profile-layer unit-layer">
+                <div class="layer-head">
+                  <p class="eyebrow">Units</p>
+                  <h3>Profile Units in This Setup</h3>
+                  <p class="note">These cards explain the reusable profiles behind the scored configuration. Open a card only when you need implementation-level shape.</p>
+                </div>
+                <div class="profile-unit-list">{_render_profile_units(profile)}</div>
+              </section>
+
+              {_render_recipe_performance(related)}
+
+              {_render_observed_usage(observed_usage)}
+
+              <details class="profile-secondary-detail">
+                <summary>Configuration Inventory and Local Implementation Guidance</summary>
+                {_render_snapshot_summary(snapshot_summary, distribution)}
+                <section class="profile-loop">
+                  <h3>Learn and Implement Locally</h3>
+                  <ol>
+                    <li>Start from the reusable profile cards above; install the distribution when published, or copy the local implementation prompt for redacted profiles.</li>
+                    <li>Use strong suites and recipes to understand why this profile shape performed well.</li>
+                    <li>Bundle multiple profiles only through the published roles, keeping single profiles as the base unit.</li>
+                  </ol>
+                </section>
+              </details>
+            </div>
+          </details>
+        """)
+    body = f"""
+      <section class="recipe-search-hero">
+        <p class="recipe-badge">{profile_count} {profile_count_label} · {unit_count} profile units</p>
+        <h1>Profile Setup and Recipe Performance</h1>
+        <p class="lede">Understand the tested profile shape first: what setup ran, which profile units were involved, and how the bundle performed on HermesBench recipes.</p>
+        <div class="showcase-strip">
+          <span>{profile_index.get('profile_count', 0)} scored setup</span>
+          <span>{unit_count} profile units</span>
+          <span>recipe evidence before config inventory</span>
+        </div>
+      </section>
+      <section class="section compact">
+        <div class="profile-list" data-profile-list>
+          {''.join(profile_rows) if profile_rows else '<p class="note">No public profile architecture baselines have been generated yet.</p>'}
+        </div>
+        <script>
+          (() => {{
+            const rows = Array.from(document.querySelectorAll("[data-profile-row]"));
+            const copyText = async (text) => {{
+              if (navigator.clipboard?.writeText) {{
+                await navigator.clipboard.writeText(text);
+                return;
+              }}
+              const area = document.createElement("textarea");
+              area.value = text;
+              area.setAttribute("readonly", "");
+              area.style.position = "fixed";
+              area.style.left = "-9999px";
+              document.body.appendChild(area);
+              area.select();
+              document.execCommand("copy");
+              area.remove();
+            }};
+            document.querySelectorAll("[data-copy]").forEach((button) => {{
+              button.addEventListener("click", async (event) => {{
+                event.preventDefault();
+                event.stopPropagation();
+                const reaction = button.parentElement?.querySelector("[data-copy-reaction]");
+                try {{
+                  await copyText(button.dataset.copy || "");
+                  if (reaction) reaction.textContent = "Copied";
+                }} catch (error) {{
+                  if (reaction) reaction.textContent = "Copy failed";
+                }}
+                setTimeout(() => {{
+                  if (reaction) reaction.textContent = "";
+                }}, 1400);
+              }});
+            }});
+            const hash = (location.hash || "").slice(1);
+            if (hash) {{
+              const row = document.getElementById(hash);
+              if (row?.matches("[data-profile-row]")) {{
+                row.open = true;
+              }}
+            }}
+          }})();
+        </script>
+      </section>
+    """
+    return _page_shell("Profiles", body)
+
+
 def render_traces_html(index: dict, traces: list[dict]) -> str:
     trace_blocks: list[str] = []
     for trace in traces:
@@ -1194,12 +2597,24 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
         case_details = []
         suite_count = len({case.get("suite_id") for case in trace["cases"] if case.get("suite_id")})
         transcript_turns = sum(len(case.get("public_transcript") or []) for case in trace["cases"])
+        event_count = sum(len(case.get("public_events") or []) for case in trace["cases"])
+        tool_event_count = sum(
+            1
+            for case in trace["cases"]
+            for event in (case.get("public_events") or [])
+            if str(event.get("type")) in {"tool_call", "tool_result", "tool_step"}
+        )
         for case in trace["cases"]:
             driver = case.get("driver_decision") or {}
             judge = case.get("judge") or {}
             mech = case.get("mechanical") or {}
             task = case.get("task") or {}
             prompt = task.get("prompt") or "Task definition came from a prior suite set; see the stored case-result row."
+            case_events = case.get("public_events") or []
+            case_tool_events = [
+                event for event in case_events
+                if str(event.get("type")) in {"tool_call", "tool_result", "tool_step"}
+            ]
             case_rows.append(f"""
               <tr>
                 <td>
@@ -1208,6 +2623,7 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                 </td>
                 <td><code>{escape(str(case.get('suite_id')))}</code></td>
                 <td class="numeric strong">{escape(_score(case.get('score')))}</td>
+                <td class="numeric">{escape(str(len(case_tool_events)))}</td>
                 <td>{escape(_label_text(driver.get('closure_type') or driver.get('scenario_closed')))}</td>
                 <td>{escape(_short(judge.get('reason'), 150))}</td>
               </tr>
@@ -1221,6 +2637,8 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                 <dl class="detail-grid trace-score-grid">
                   {_render_case_score_tiles(case)}
                   <div><dt>Closure</dt><dd>{escape(_label_text(driver.get('closure_type') or driver.get('scenario_closed')))}</dd></div>
+                  <div><dt>Trace events</dt><dd>{escape(str(len(case_events)))}</dd></div>
+                  <div><dt>Tool events</dt><dd>{escape(str(len(case_tool_events)))}</dd></div>
                   <div><dt>Turns</dt><dd>{escape(str(mech.get('turns_sent')))} / {escape(str(mech.get('turn_budget')))}</dd></div>
                   <div><dt>Wall time</dt><dd>{escape(_duration_ms(mech.get('wall_ms')))}</dd></div>
                 </dl>
@@ -1243,9 +2661,13 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                     </div>
                   </section>
                   <section>
-                    <h3>Public Transcript</h3>
-                    {_render_transcript(case)}
+                    <h3>Trace Timeline</h3>
+                    {_render_trace_timeline(case)}
                   </section>
+                  <details class="conversation-only">
+                    <summary>Conversation-only transcript</summary>
+                    {_render_transcript(case)}
+                  </details>
                 </div>
                 <details class="advanced-evidence">
                   <summary>Axes, checks, and side effects</summary>
@@ -1255,11 +2677,11 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
               </details>
             """)
         trace_blocks.append(f"""
-        <section class="section compact">
+        <section class="section compact" id="trace-{escape(_anchor(trace['baseline_id']))}">
           <div class="section-head">
             <p class="eyebrow">{escape(str(trace.get('run_id')))}</p>
             <h2>{escape(trace['baseline_id'])}</h2>
-            <p>Score {trace.get('overall_score')} · runtime {trace.get('observed_runtime_s')}s · {trace.get('case_count')} cases · {suite_count} suites · {transcript_turns} transcript turns</p>
+            <p>Score {trace.get('overall_score')} · runtime {trace.get('observed_runtime_s')}s · {trace.get('case_count')} cases · {suite_count} suites · {event_count} trace events · {tool_event_count} tool events</p>
             <p><a href="https://github.com/verkyyi/hermesbench/tree/main/data/traces/{escape(trace['baseline_id'])}">Leaderboard evidence files</a></p>
           </div>
           <div class="scorecard leaderboard-scorecard">
@@ -1267,6 +2689,7 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
               ("overall score", trace.get("overall_score"), None),
               ("cases", trace.get("case_count"), f"{suite_count} suites"),
               ("runtime", trace.get("observed_runtime_s"), "seconds"),
+              ("events", event_count, f"{tool_event_count} tool events"),
               ("transcripts", transcript_turns, "public turns"),
             ])}
           </div>
@@ -1274,7 +2697,7 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
           {_render_skipped_suites(trace)}
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Case</th><th>Suite</th><th>Score</th><th>Closure</th><th>Judge summary</th></tr></thead>
+              <thead><tr><th>Case</th><th>Suite</th><th>Score</th><th>Tools</th><th>Closure</th><th>Judge summary</th></tr></thead>
               <tbody>{''.join(case_rows)}</tbody>
             </table>
           </div>
@@ -1308,6 +2731,7 @@ def build_public_artifacts(repo_root: Path) -> dict:
     tasks_root = data_root / "tasks"
     baselines_root = data_root / "baselines"
     traces_root = data_root / "traces"
+    profiles_root = data_root / "profiles"
     site_root = repo_root / "site"
 
     catalog = build_task_catalog()
@@ -1320,23 +2744,33 @@ def build_public_artifacts(repo_root: Path) -> dict:
 
     index = build_trace_index(baselines_root, traces_root)
     _write_json(traces_root / "index.json", index)
+    if (repo_root / ".git").exists():
+        sync_local_kanban_profile_snapshots(profiles_root)
+    profile_index = build_profile_architecture_index(baselines_root, traces, profiles_root)
+    _write_json(profiles_root / "index.json", profile_index)
 
     catalog = enrich_task_catalog_with_leaderboards(catalog, traces)
     _write_json(tasks_root / "tasks.json", catalog)
     _write_text(tasks_root / "README.md", render_tasks_markdown(catalog))
 
     _write_text(site_root / "recipes.html", render_tasks_html(catalog))
+    _write_text(site_root / "profiles.html", render_profiles_html(profile_index))
     _write_text(site_root / "leaderboard.html", render_traces_html(index, traces))
     _write_text(site_root / "tasks.html", _redirect_page("Recipes", "recipes.html"))
     _write_text(site_root / "traces.html", _redirect_page("Leaderboard", "leaderboard.html"))
     _mirror_tree(tasks_root, site_root / "data" / "tasks")
+    _mirror_tree(profiles_root, site_root / "data" / "profiles")
     _mirror_tree(traces_root, site_root / "data" / "traces")
     return {
         "tasks": catalog["task_count"],
         "traces": index["trace_count"],
+        "profiles": profile_index["profile_count"],
+        "profile_units": profile_index["profile_unit_count"],
         "tasks_path": str(tasks_root / "tasks.json"),
         "traces_path": str(traces_root / "index.json"),
+        "profiles_path": str(profiles_root / "index.json"),
         "site_recipes": str(site_root / "recipes.html"),
+        "site_profiles": str(site_root / "profiles.html"),
         "site_leaderboard": str(site_root / "leaderboard.html"),
         "site_tasks": str(site_root / "tasks.html"),
         "site_traces": str(site_root / "traces.html"),

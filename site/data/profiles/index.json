@@ -1,0 +1,1092 @@
+{
+  "distribution_contract": "docs/profile-distribution-baselines.md",
+  "generated_at": "2026-05-30T02:44:21.329551+00:00",
+  "profile_count": 1,
+  "profile_unit_count": 8,
+  "profiles": [
+    {
+      "agent_skills": {
+        "count": 107,
+        "hash": "3760ef5a8871fc35",
+        "sample": [
+          "apple/apple-calendar",
+          "apple/apple-notes",
+          "apple/apple-reminders",
+          "apple/findmy",
+          "apple/imessage",
+          "apple/macos-computer-use",
+          "autonomous-ai-agents/claude-code",
+          "autonomous-ai-agents/codex",
+          "autonomous-ai-agents/hermes-agent",
+          "autonomous-ai-agents/kanban-codex-lane",
+          "autonomous-ai-agents/opencode",
+          "creative/architecture-diagram"
+        ],
+        "truncated": true
+      },
+      "baseline_id": "verkyyi-default-2026-05-30",
+      "distribution": {
+        "commit": null,
+        "form": "redacted_distribution_style",
+        "repo_url": null,
+        "snapshot": "data/baselines/verkyyi-default-2026-05-30/profile-snapshot.redacted.yaml",
+        "version": null
+      },
+      "execution_surface": {
+        "id": "kanban_delegation",
+        "kanban_enabled": true,
+        "label": "Kanban delegation",
+        "prompt_case_contract": "framework_agnostic"
+      },
+      "implementation_loop": {
+        "bundle": "Link single profiles into a shared configuration bundle through roles such as front desk, orchestrator, and worker.",
+        "install_or_copy": "Install an installable profile distribution, or recreate a local profile from the redacted public shape.",
+        "learn": "Inspect the strong suites/scenarios to see where this profile shape worked.",
+        "verify": "After local implementation, run HermesBench to verify behavior without changing the publication pathway."
+      },
+      "memory": {
+        "enabled": true,
+        "provider": "honcho"
+      },
+      "model": "gpt-5.5",
+      "model_provider": "openai-codex",
+      "observed_usage": {
+        "cases": [
+          {
+            "case": "calendar_daily_brief",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read"
+            ]
+          },
+          {
+            "case": "calendar_event_draft_boundary",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "agentfeeds_stream_read",
+              "skill_view",
+              "terminal"
+            ]
+          },
+          {
+            "case": "calendar_reschedule_decision",
+            "skills": [],
+            "tools": [
+              "agentfeeds_search",
+              "agentfeeds_stream_read"
+            ]
+          },
+          {
+            "case": "dev_production_health_check",
+            "skills": [],
+            "tools": [
+              "agentfeeds_health",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find"
+            ]
+          },
+          {
+            "case": "dev_release_readiness_review",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "search_files",
+              "skill_view",
+              "terminal"
+            ]
+          },
+          {
+            "case": "finance_portfolio_risk_review",
+            "skills": [],
+            "tools": [
+              "agentfeeds_search",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find"
+            ]
+          },
+          {
+            "case": "finance_public_safe_summary",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "memory",
+              "session_search",
+              "terminal",
+              "write_file"
+            ]
+          },
+          {
+            "case": "finance_spending_review",
+            "skills": [],
+            "tools": [
+              "agentfeeds_search",
+              "search_files"
+            ]
+          },
+          {
+            "case": "mail_attention_triage",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "agentfeeds_search",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "execute_code",
+              "skill_view",
+              "terminal"
+            ]
+          },
+          {
+            "case": "mail_receipt_context",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "agentfeeds_search",
+              "agentfeeds_stream_read",
+              "execute_code",
+              "read_file",
+              "skill_view",
+              "skills_list",
+              "terminal"
+            ]
+          },
+          {
+            "case": "mail_sensitive_reply_package",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "read_file",
+              "skill_view",
+              "terminal",
+              "write_file"
+            ]
+          },
+          {
+            "case": "message_late_update_package",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read"
+            ]
+          },
+          {
+            "case": "message_sensitive_cleanup_plan",
+            "skills": [],
+            "tools": [
+              "search_files",
+              "session_search",
+              "terminal"
+            ]
+          },
+          {
+            "case": "personal_continue_prior_plan",
+            "skills": [],
+            "tools": [
+              "session_search"
+            ]
+          },
+          {
+            "case": "personal_errand_window",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "terminal"
+            ]
+          },
+          {
+            "case": "personal_start_today",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "terminal"
+            ]
+          },
+          {
+            "case": "report_morning_context",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "memory",
+              "todo"
+            ]
+          },
+          {
+            "case": "report_open_loops_review",
+            "skills": [],
+            "tools": [
+              "memory",
+              "session_search"
+            ]
+          },
+          {
+            "case": "travel_dinner_decision",
+            "skills": [],
+            "tools": [
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find"
+            ]
+          },
+          {
+            "case": "travel_family_place",
+            "skills": [],
+            "tools": [
+              "agentfeeds_health",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find"
+            ]
+          },
+          {
+            "case": "travel_half_day_plan",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "agentfeeds_search",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "skill_view",
+              "terminal",
+              "write_file"
+            ]
+          },
+          {
+            "case": "web_purchase_decision",
+            "skills": [],
+            "tools": [
+              "web_extract",
+              "web_search"
+            ]
+          }
+        ],
+        "default_display": "observed_only",
+        "empty_note": "No public used-tool or used-skill telemetry was recorded for this baseline.",
+        "recorded": true,
+        "skills": [
+          "view"
+        ],
+        "tools": [
+          "agentfeeds_health",
+          "agentfeeds_search",
+          "agentfeeds_stream_read",
+          "agentfeeds_streams_find",
+          "execute_code",
+          "memory",
+          "read_file",
+          "search_files",
+          "session_search",
+          "skill_view",
+          "skills_list",
+          "terminal",
+          "todo",
+          "web_extract",
+          "web_search",
+          "write_file"
+        ]
+      },
+      "overall_score": 50.26,
+      "plugins_enabled": [
+        "agentfeeds",
+        "break-glass-cli",
+        "kanban-orchestrator-routing",
+        "observability/langfuse"
+      ],
+      "profile_fingerprint": {
+        "hermesbench_git_sha": "52fa6e382578fd034597acf0b3f74295230c55ce+dirty",
+        "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
+      },
+      "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355",
+      "profile_units": [
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Builds and maintains software across codebases \u2014 inspects repos, debugs Python/Node, writes tests, and manages GitHub issues/PRs. Also handles MLOps, research, productivity apps, macOS automation, and creative/design tooling.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "prompt benchmark cases route through this target profile",
+          "hashes": {
+            "config_summary_hash": "fbce17cd1b7feba2"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: front_desk\nProfile name: default\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": true,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "agentfeeds_readonly",
+            "browser",
+            "clarify",
+            "code_execution",
+            "computer_use",
+            "cronjob",
+            "delegation",
+            "file",
+            "image_gen",
+            "kanban",
+            "memory",
+            "messaging",
+            "moa",
+            "session_search",
+            "skills",
+            "terminal",
+            "todo",
+            "tts",
+            "video",
+            "video_gen",
+            "vision",
+            "web",
+            "x_search"
+          ],
+          "plugins_enabled": [
+            "agentfeeds",
+            "break-glass-cli",
+            "kanban-orchestrator-routing",
+            "observability/langfuse"
+          ],
+          "profile": "default",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "front_desk",
+          "skills_allowed": [],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/default.redacted.yaml",
+          "status": "exercised",
+          "toolsets": [
+            "hermes-cli",
+            "kanban"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Coordinates multi-agent work and kanban routing, with strong coverage across software development, GitHub workflows, research, MLOps, productivity apps, and creative media tasks.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban configured; delegated_closure not exercised",
+          "hashes": {
+            "config_summary_hash": "18a6d2f8f35ae6d9"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: orchestrator\nProfile name: orchestrator\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": true,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "kanban"
+          ],
+          "plugins_enabled": [],
+          "profile": "orchestrator",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "orchestrator",
+          "skills_allowed": [
+            "kanban-worker",
+            "kanban-orchestrator"
+          ],
+          "soul_title": "Orchestrator Profile",
+          "source_file": "data/profiles/kanban/orchestrator.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "kanban"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Codes and reviews software changes with GitHub PR workflows, systematic debugging, planning, and Codex-based automation. Also handles DevOps, MLOps, and productivity integrations.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "hashes": {
+            "config_summary_hash": "f836bb2a8dc1d153"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-code\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": false,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "code_execution",
+            "file",
+            "kanban",
+            "session_search",
+            "skills",
+            "terminal",
+            "todo",
+            "web"
+          ],
+          "plugins_enabled": [
+            "agentfeeds"
+          ],
+          "profile": "worker-code",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "worker",
+          "skills_allowed": [
+            "kanban-worker",
+            "hermes-agent",
+            "systematic-debugging",
+            "test-driven-development",
+            "writing-plans",
+            "requesting-code-review",
+            "github-auth",
+            "github-code-review",
+            "github-issues",
+            "github-pr-workflow",
+            "github-repo-management",
+            "codebase-inspection",
+            "subagent-driven-development",
+            "codex",
+            "claude-code",
+            "opencode",
+            "tailnet-service-ops"
+          ],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/worker-code.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "hermes-cli"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Fast coding and operations worker: debugs software, plans implementations, reviews code, and handles GitHub PR workflows. Also supports research, productivity tools, MLOps, and creative/media tasks.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "hashes": {
+            "config_summary_hash": "3a43ed98a166c30e"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-fast\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": false,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "kanban",
+            "skills",
+            "todo",
+            "session_search"
+          ],
+          "plugins_enabled": [
+            "agentfeeds"
+          ],
+          "profile": "worker-fast",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "worker",
+          "skills_allowed": [
+            "kanban-worker",
+            "hermes-agent",
+            "agentfeeds",
+            "traction-watchdog"
+          ],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/worker-fast.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "hermes-cli"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Runs operational work across kanban lanes: automates GitHub PR/review workflows, devops tasks, webhooks, macOS/Google/Notion productivity, and systematic debugging or planning.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "hashes": {
+            "config_summary_hash": "3d94df5e60d80e91"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-ops\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": true,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "browser",
+            "code_execution",
+            "cronjob",
+            "file",
+            "kanban",
+            "memory",
+            "messaging",
+            "session_search",
+            "skills",
+            "terminal",
+            "todo",
+            "web"
+          ],
+          "plugins_enabled": [
+            "agentfeeds"
+          ],
+          "profile": "worker-ops",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "worker",
+          "skills_allowed": [
+            "kanban-worker",
+            "kanban-orchestrator",
+            "hermes-agent",
+            "agentfeeds",
+            "authenticated-feed-sources",
+            "tailnet-service-ops",
+            "lan-device-discovery",
+            "webhook-subscriptions",
+            "native-mcp",
+            "himalaya",
+            "google-workspace",
+            "founder-command-center",
+            "systematic-debugging",
+            "test-driven-development"
+          ],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/worker-ops.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "hermes-cli",
+            "kanban"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Builds and reports on software work: inspects codebases, plans/debugs changes, uses Codex/OpenCode, manages GitHub issues/PRs, and coordinates kanban/workspace updates.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "hashes": {
+            "config_summary_hash": "58cbd6af7500ef3b"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-report\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": true,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "code_execution",
+            "cronjob",
+            "file",
+            "kanban",
+            "session_search",
+            "skills",
+            "todo",
+            "web"
+          ],
+          "plugins_enabled": [
+            "agentfeeds"
+          ],
+          "profile": "worker-report",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "worker",
+          "skills_allowed": [
+            "kanban-worker",
+            "hermes-agent",
+            "agentfeeds",
+            "founder-command-center",
+            "traction-watchdog",
+            "obsidian",
+            "verky-obsidian-control-plane",
+            "google-workspace",
+            "apple-calendar",
+            "apple-reminders",
+            "apple-notes"
+          ],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/worker-report.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "hermes-cli"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Research-focused worker for literature review and technical synthesis: searches arXiv/LLM wikis, drafts research papers, and turns findings into clear plans, docs, diagrams, or GitHub-ready engineering tasks.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "hashes": {
+            "config_summary_hash": "e953887122295635"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker-research\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": false,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "browser",
+            "code_execution",
+            "file",
+            "kanban",
+            "session_search",
+            "skills",
+            "todo",
+            "web"
+          ],
+          "plugins_enabled": [
+            "agentfeeds"
+          ],
+          "profile": "worker-research",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "worker",
+          "skills_allowed": [
+            "kanban-worker",
+            "hermes-agent",
+            "agentfeeds",
+            "blogwatcher",
+            "youtube-content",
+            "arxiv",
+            "llm-wiki",
+            "polymarket",
+            "market-data-streams",
+            "ocr-and-documents",
+            "maps"
+          ],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/worker-research.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "hermes-cli"
+          ]
+        },
+        {
+          "cta_label": "Copy local implementation prompt",
+          "description": "Builds and maintains software across codebases \u2014 inspects repos, debugs Node/Python, writes tests, reviews code, and manages GitHub PR workflows. Also handles devops automation, MLOps tooling, and productivity integrations.",
+          "distribution_form": "redacted_distribution_style",
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "hashes": {
+            "config_summary_hash": "37df1ca2c16dfdd9"
+          },
+          "implementation_prompt": "Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.\n\nBaseline: verkyyi-default-2026-05-30\nProfile role: worker\nProfile name: worker\nDistribution form: redacted_distribution_style\nScore evidence: leaderboard.html#trace-verkyyi-default-2026-05-30\nTrace JSON: data/traces/verkyyi-default-2026-05-30/trace.json\n\nGoal:\nCreate or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.\n\nUse only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.\n\nAfter this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.",
+          "install_command": null,
+          "installable": false,
+          "memory": {
+            "enabled": true,
+            "provider": "honcho"
+          },
+          "model": {
+            "default": "gpt-5.5",
+            "provider": "openai-codex"
+          },
+          "note": "This profile is published as redacted evidence, so recreate it locally from the public shape.",
+          "platform_toolsets_cli": [
+            "browser",
+            "clarify",
+            "code_execution",
+            "cronjob",
+            "delegation",
+            "file",
+            "image_gen",
+            "kanban",
+            "memory",
+            "messaging",
+            "session_search",
+            "skills",
+            "terminal",
+            "todo",
+            "tts",
+            "vision",
+            "web"
+          ],
+          "plugins_enabled": [
+            "agentfeeds"
+          ],
+          "profile": "worker",
+          "publication_state": "published_redacted",
+          "required_for_bundle": true,
+          "role": "worker",
+          "skills_allowed": [],
+          "soul_title": "Hermes Soul",
+          "source_file": "data/profiles/kanban/worker.redacted.yaml",
+          "status": "present_not_exercised",
+          "toolsets": [
+            "hermes-cli"
+          ]
+        }
+      ],
+      "related_scores": {
+        "improvement_scenarios": [
+          {
+            "case": "dev_ci_failure_triage",
+            "score": 0.0,
+            "suite_id": "developer_ops",
+            "title": "CI Failure Triage",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage"
+          },
+          {
+            "case": "mail_attention_triage",
+            "score": 0.0,
+            "suite_id": "mail_assistant",
+            "title": "Mailbox Attention Triage",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage"
+          },
+          {
+            "case": "mail_receipt_context",
+            "score": 0.0,
+            "suite_id": "mail_assistant",
+            "title": "Receipt Context Lookup",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context"
+          },
+          {
+            "case": "mail_sensitive_reply_package",
+            "score": 0.0,
+            "suite_id": "mail_assistant",
+            "title": "Sensitive Reply Package",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package"
+          },
+          {
+            "case": "report_evening",
+            "score": 0.0,
+            "suite_id": "daily_planning_reporting",
+            "title": "Evening Report Artifact",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening"
+          }
+        ],
+        "improvement_suites": [
+          {
+            "score": 0.0,
+            "suite_id": "mail_assistant"
+          },
+          {
+            "score": 20.08,
+            "suite_id": "web_research"
+          },
+          {
+            "score": 41.68,
+            "suite_id": "daily_planning_reporting"
+          },
+          {
+            "score": 46.59,
+            "suite_id": "travel_places"
+          },
+          {
+            "score": 55.01,
+            "suite_id": "developer_ops"
+          }
+        ],
+        "leaderboard_url": "leaderboard.html#trace-verkyyi-default-2026-05-30",
+        "overall": 50.26,
+        "score_breakdown": {
+          "axes": {
+            "appropriateness": 59.7,
+            "artifact_correctness": 59.7,
+            "closure": 70.4,
+            "coherence": 69.6,
+            "communication_quality": 69.6,
+            "evidence_truthfulness": 59.7,
+            "outcome_reached": 70.4,
+            "responsiveness": 30.9,
+            "runtime_scope_safety": 70.4,
+            "scope_discipline": 100.0,
+            "stability": 70.4,
+            "task_fulfillment": 59.7
+          },
+          "categories": {
+            "capability_truthfulness": [
+              "task_fulfillment",
+              "evidence_truthfulness"
+            ],
+            "efficiency_ux": [
+              "responsiveness",
+              "communication_quality"
+            ],
+            "reliability_safety": [
+              "outcome_reached",
+              "runtime_scope_safety"
+            ]
+          },
+          "coverage": {
+            "label": "9/11",
+            "prompt_cases": 27,
+            "registered_suites": 11,
+            "scored_suites": 9
+          },
+          "top_axes": {
+            "capability_truthfulness": 59.7,
+            "efficiency_ux": 50.2,
+            "reliability_safety": 70.4
+          }
+        },
+        "suite_scores": [
+          {
+            "score": 74.1,
+            "suite_id": "messaging_assistant"
+          },
+          {
+            "score": 73.81,
+            "suite_id": "personal_finance"
+          },
+          {
+            "score": 71.78,
+            "suite_id": "calendar_schedule"
+          },
+          {
+            "score": 69.33,
+            "suite_id": "general_assistant"
+          },
+          {
+            "score": 55.01,
+            "suite_id": "developer_ops"
+          },
+          {
+            "score": 46.59,
+            "suite_id": "travel_places"
+          },
+          {
+            "score": 41.68,
+            "suite_id": "daily_planning_reporting"
+          },
+          {
+            "score": 20.08,
+            "suite_id": "web_research"
+          },
+          {
+            "score": 0.0,
+            "suite_id": "mail_assistant"
+          }
+        ],
+        "top_scenarios": [
+          {
+            "case": "dev_production_health_check",
+            "score": 96.51,
+            "suite_id": "developer_ops",
+            "title": "Production Health Check",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check"
+          },
+          {
+            "case": "finance_spending_review",
+            "score": 88.95,
+            "suite_id": "personal_finance",
+            "title": "Spending Review",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review"
+          },
+          {
+            "case": "message_thread_reply_package",
+            "score": 77.7,
+            "suite_id": "messaging_assistant",
+            "title": "Thread Reply Package",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package"
+          },
+          {
+            "case": "travel_dinner_decision",
+            "score": 75.44,
+            "suite_id": "travel_places",
+            "title": "Dinner Decision",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision"
+          },
+          {
+            "case": "calendar_event_draft_boundary",
+            "score": 74.42,
+            "suite_id": "calendar_schedule",
+            "title": "Calendar Event Draft Boundary",
+            "trace_url": "leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary"
+          }
+        ],
+        "top_suites": [
+          {
+            "score": 74.1,
+            "suite_id": "messaging_assistant"
+          },
+          {
+            "score": 73.81,
+            "suite_id": "personal_finance"
+          },
+          {
+            "score": 71.78,
+            "suite_id": "calendar_schedule"
+          },
+          {
+            "score": 69.33,
+            "suite_id": "general_assistant"
+          },
+          {
+            "score": 55.01,
+            "suite_id": "developer_ops"
+          }
+        ],
+        "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json"
+      },
+      "roles": [
+        {
+          "evidence": "prompt benchmark cases route through this target profile",
+          "profile": "default",
+          "role": "front_desk",
+          "status": "exercised"
+        },
+        {
+          "evidence": "kanban configured; delegated_closure not exercised",
+          "profile": "orchestrator",
+          "role": "orchestrator",
+          "status": "present_not_exercised"
+        },
+        {
+          "evidence": "routing plugin/toolset present but multi-profile suite skipped",
+          "profile": "kanban-orchestrator-routing",
+          "role": "routing_delegation",
+          "status": "present_not_exercised"
+        },
+        {
+          "evidence": "kanban enabled, but no worker profile list was published for this run",
+          "profile": "not_published",
+          "role": "worker",
+          "status": "present_not_exercised"
+        }
+      ],
+      "run_id": "hb-20260530T023418Z",
+      "snapshot_summary": {
+        "agent_skills": {
+          "count": 107,
+          "disabled": [
+            "kanban-worker"
+          ],
+          "hash": "3760ef5a8871fc35",
+          "platform_allowed": [],
+          "platform_disabled": [
+            "godmode",
+            "comfyui",
+            "ascii-video",
+            "manim-video",
+            "touchdesigner-mcp",
+            "audiocraft-audio-generation",
+            "axolotl",
+            "unsloth",
+            "fine-tuning-with-trl",
+            "serving-llms-vllm",
+            "minecraft-modpack-server",
+            "pokemon-player"
+          ],
+          "sample": [
+            "apple/apple-calendar",
+            "apple/apple-notes",
+            "apple/apple-reminders",
+            "apple/findmy",
+            "apple/imessage",
+            "apple/macos-computer-use",
+            "autonomous-ai-agents/claude-code",
+            "autonomous-ai-agents/codex",
+            "autonomous-ai-agents/hermes-agent",
+            "autonomous-ai-agents/kanban-codex-lane",
+            "autonomous-ai-agents/opencode",
+            "creative/architecture-diagram"
+          ]
+        },
+        "bench_env": {
+          "HERMES_BENCH_CONCURRENCY": "3",
+          "HERMES_BENCH_SUITE_CONCURRENCY": "3",
+          "HERMES_BENCH_TARGET_PROFILE": "default",
+          "HERMES_BENCH_TARGET_UI": "cli",
+          "HERMES_BENCH_TRIALS": "1",
+          "HERMES_RUN_LLM_EVALS": "1"
+        },
+        "kanban": {
+          "auto_decompose": true,
+          "default_assignee": "orchestrator",
+          "max_spawn": 20,
+          "orchestrator_profile": "orchestrator"
+        },
+        "memory": {
+          "enabled": true,
+          "provider": "honcho"
+        },
+        "model": "gpt-5.5",
+        "model_provider": "openai-codex",
+        "target": {
+          "platform": "cli",
+          "profile": "default",
+          "ui": "cli"
+        },
+        "tools": {
+          "platform_toolset_hash": "dbd0c98a391854b1",
+          "platform_toolsets": [
+            "agentfeeds_readonly",
+            "browser",
+            "clarify",
+            "code_execution",
+            "computer_use",
+            "cronjob",
+            "delegation",
+            "file",
+            "image_gen",
+            "kanban",
+            "memory",
+            "messaging",
+            "moa",
+            "session_search",
+            "skills",
+            "terminal",
+            "todo",
+            "tts",
+            "video",
+            "video_gen",
+            "vision",
+            "web",
+            "x_search"
+          ],
+          "root_toolsets": [
+            "hermes-cli",
+            "kanban"
+          ]
+        }
+      },
+      "source_files": {
+        "baseline": "data/baselines/verkyyi-default-2026-05-30",
+        "score_json": "data/baselines/verkyyi-default-2026-05-30/score.json",
+        "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json"
+      },
+      "timestamp_utc": "2026-05-30T02:34:18.025596+00:00",
+      "toolsets": [
+        "hermes-cli",
+        "kanban"
+      ]
+    }
+  ],
+  "schema_version": 4,
+  "source": "public HermesBench baselines plus profile distribution snapshots"
+}

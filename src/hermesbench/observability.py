@@ -7,6 +7,7 @@ home/workdir, and it probes every SQLite schema before reading columns.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
 import re
 import sqlite3
@@ -24,6 +25,10 @@ _PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-
 _SECRET_URL_PARAM_RE = re.compile(
     r"(?i)([?&](?:api[_-]?key|auth|code|password|secret|sig|signature|token)=)[^&\s]+"
 )
+_LOCAL_PATH_RE = re.compile(
+    r"(?<![\w.-])(?:/Users/[^,\s;:'\")]+|/home/[^,\s;:'\")]+|/tmp/[^,\s;:'\")]+|/var/folders/[^,\s;:'\")]+|/private/var/folders/[^,\s;:'\")]+)"
+)
+_ENV_FILE_RE = re.compile(r"(?<![\w.-])\.env(?![\w.-])")
 
 
 def _connect(path: Path) -> sqlite3.Connection:
@@ -62,6 +67,13 @@ def _json_loads(value: Any, default: Any = None) -> Any:
         return default
 
 
+def _float_or_none(value: Any) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def _redact_value(value: Any, *, max_chars: int = 240) -> Any:
     if isinstance(value, dict):
         out = {}
@@ -77,6 +89,8 @@ def _redact_value(value: Any, *, max_chars: int = 240) -> Any:
         text = _PHONE_RE.sub("<redacted:phone>", text)
         text = re.sub(r"\b(?:sk|ghp|gho|xoxb|xoxp|AKIA)[A-Za-z0-9_\-]{12,}\b", "<redacted:token>", text)
         text = _SECRET_URL_PARAM_RE.sub(r"\1<redacted>", text)
+        text = _LOCAL_PATH_RE.sub("<redacted:path>", text)
+        text = _ENV_FILE_RE.sub("<redacted:env-file>", text)
         return text[:max_chars] + ("..." if len(text) > max_chars else "")
     return value
 
@@ -108,8 +122,39 @@ def _tool_name_from_call(call: Any) -> str | None:
     return None
 
 
-def _extract_tool_calls_from_message(row: dict) -> list[dict]:
+def _message_time(row: dict, session: dict | None) -> dict:
+    timestamp = _float_or_none(row.get("timestamp"))
+    if timestamp is None:
+        return {}
+    started_at = _float_or_none((session or {}).get("started_at"))
+    out = {
+        "timestamp": timestamp,
+        "timestamp_source": "state_db.messages.timestamp",
+    }
+    timestamp_sec = timestamp / 1000.0 if timestamp > 1e11 else timestamp
+    if timestamp_sec > 1_000_000_000:
+        out["time"] = {
+            "timestamp_utc": datetime.fromtimestamp(timestamp_sec, tz=timezone.utc).isoformat(),
+            "source": "state_db.messages.timestamp",
+            "confidence": "recorded",
+        }
+    if started_at is not None:
+        timestamp_ms = timestamp if timestamp > 1e11 else timestamp * 1000.0
+        started_at_ms = started_at if started_at > 1e11 else started_at * 1000.0
+        offset_ms = timestamp_ms - started_at_ms
+        if offset_ms >= 0:
+            out["time"] = {
+                **(out.get("time") or {}),
+                "offset_ms": round(offset_ms, 3),
+                "source": "state_db.messages.timestamp",
+                "confidence": "recorded",
+            }
+    return out
+
+
+def _extract_tool_calls_from_message(row: dict, session: dict | None = None) -> list[dict]:
     calls = []
+    timing = _message_time(row, session)
     for call in _json_loads(row.get("tool_calls"), []) or []:
         name = _tool_name_from_call(call)
         if not name:
@@ -122,6 +167,7 @@ def _extract_tool_calls_from_message(row: dict) -> list[dict]:
             "args": _redact_value(_tool_arguments(call)) if isinstance(call, dict) else {},
             "args_retention": "included_redacted",
             "result_retention": "omitted_public_safe",
+            **timing,
         })
     return calls
 
@@ -186,6 +232,8 @@ def _redact_paths(value: Any, *, home: Path, workdir: Path) -> Any:
         text = value
         text = text.replace(str(workdir), "<benchmark_workdir>")
         text = text.replace(str(home), "<isolated_home>")
+        text = _LOCAL_PATH_RE.sub("<redacted:path>", text)
+        text = _ENV_FILE_RE.sub("<redacted:env-file>", text)
         return text
     return value
 
@@ -305,8 +353,9 @@ def _read_state_db(home: Path, session_id: str | None) -> tuple[dict, dict | Non
                             "tool_name": msg.get("tool_name"),
                             "has_tool_calls": bool(msg.get("tool_calls")),
                             "finish_reason": msg.get("finish_reason"),
+                            **_message_time(msg, session),
                         })
-                        tools.extend(_extract_tool_calls_from_message(msg))
+                        tools.extend(_extract_tool_calls_from_message(msg, session))
                         if msg.get("role") == "tool" and msg.get("tool_name"):
                             tools.append({
                                 "name": str(msg["tool_name"]),
@@ -316,6 +365,7 @@ def _read_state_db(home: Path, session_id: str | None) -> tuple[dict, dict | Non
                                 "args_retention": "omitted_public_safe",
                                 "result": _redact_value(_tool_result(msg.get("content"))),
                                 "result_retention": "included_redacted",
+                                **_message_time(msg, session),
                             })
             return source, session, messages, _dedupe_tools(tools)
     except sqlite3.Error as exc:

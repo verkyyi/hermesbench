@@ -52,6 +52,11 @@ def _public_observability(mech: dict) -> dict:
             **({"tool_call_id": item.get("tool_call_id")} if item.get("tool_call_id") else {}),
             **({"args": item.get("args")} if "args" in item else {}),
             **({"result": item.get("result")} if "result" in item else {}),
+            **({"time": item.get("time")} if isinstance(item.get("time"), dict) else {}),
+            **({"timestamp": item.get("timestamp")} if item.get("timestamp") is not None else {}),
+            **({"timestamp_source": item.get("timestamp_source")} if item.get("timestamp_source") else {}),
+            **({"offset_ms": item.get("offset_ms")} if item.get("offset_ms") is not None else {}),
+            **({"duration_ms": item.get("duration_ms")} if item.get("duration_ms") is not None else {}),
             "args_retention": item.get("args_retention", "omitted_public_safe"),
             "result_retention": item.get("result_retention", "omitted_public_safe"),
         }

@@ -1,0 +1,1049 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profiles - HermesBench</title>
+    <meta name="description" content="HermesBench scenario recipes and public leaderboard evidence." />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html">HermesBench</a>
+      <nav>
+        <a href="index.html#quickstart">Quick start</a>
+        <a href="recipes.html">Recipes</a>
+        <a href="profiles.html">Profiles</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="index.html#contribute">Contribute</a>
+        <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
+      </nav>
+    </header>
+    <main>
+      <section class="recipe-search-hero">
+        <p class="recipe-badge">1 configuration bundle · 8 profile units</p>
+        <h1>Profile Setup and Recipe Performance</h1>
+        <p class="lede">Understand the tested profile shape first: what setup ran, which profile units were involved, and how the bundle performed on HermesBench recipes.</p>
+        <div class="showcase-strip">
+          <span>1 scored setup</span>
+          <span>8 profile units</span>
+          <span>recipe evidence before config inventory</span>
+        </div>
+      </section>
+      <section class="section compact">
+        <div class="profile-list" data-profile-list>
+
+          <details class="profile-row" id="profile-verkyyi-default-2026-05-30" data-profile-row data-search="verkyyi-default-2026-05-30 openai-codex gpt-5.5 kanban_delegation redacted_distribution_style hermes-cli kanban agentfeeds break-glass-cli kanban-orchestrator-routing observability/langfuse default orchestrator kanban-orchestrator-routing not_published default orchestrator worker-code worker-fast worker-ops worker-report worker-research worker messaging_assistant personal_finance calendar_schedule general_assistant developer_ops travel_places daily_planning_reporting web_research mail_assistant" data-surface="kanban_delegation">
+            <summary>
+              <span class="profile-summary-main">
+                <span>
+                  <span class="profile-title">verkyyi-default-2026-05-30</span>
+                  <span class="table-subtext">Kanban delegation · 8 profile units · redacted_distribution_style</span>
+                </span>
+              </span>
+              <span class="profile-summary-score">50.3</span>
+            </summary>
+            <div class="profile-detail">
+
+      <section class="profile-readout">
+        <div class="readout-head">
+          <div>
+            <p class="eyebrow">Profile readout</p>
+            <h3>Setup and Recipe Performance</h3>
+            <p class="note">Start here: this is the benchmarked setup, what it scored, and where the profile shape currently works or fails.</p>
+          </div>
+          <a class="button primary" href="leaderboard.html#trace-verkyyi-default-2026-05-30">Open evidence</a>
+        </div>
+        <div class="profile-scoreboard">
+          <article class="score-kpi primary">
+            <span>Overall recipe score</span>
+            <strong>50.3</strong>
+            <small>Across published HermesBench recipes</small>
+          </article>
+          <article class="score-kpi">
+            <span>Best suite</span>
+            <strong>74.1</strong>
+            <small>Messaging assistant <code>messaging_assistant</code></small>
+          </article>
+          <article class="score-kpi warn">
+            <span>Needs work</span>
+            <strong>0</strong>
+            <small>Mail assistant <code>mail_assistant</code></small>
+          </article>
+          <article class="score-kpi">
+            <span>Best recipe</span>
+            <strong>96.5</strong>
+            <small><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check">Production Health Check</a> <code>dev_production_health_check</code></small>
+          </article>
+          <article class="score-kpi warn">
+            <span>Weakest recipe</span>
+            <strong>0</strong>
+            <small><a href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage">CI Failure Triage</a> <code>dev_ci_failure_triage</code></small>
+          </article>
+        </div>
+      </section>
+
+
+
+      <section class="profile-layer setup-layer">
+        <div class="layer-head">
+          <p class="eyebrow">Setup</p>
+          <h3>What Was Tested</h3>
+          <p class="note">Only benchmark-relevant setup is shown by default. Full configured inventory stays collapsed below because configured tools are not proof of recipe behavior.</p>
+        </div>
+        <div class="profile-overview-grid">
+          <dl class="detail-grid profile-metrics">
+            <div><dt>Surface</dt><dd>Kanban delegation</dd></div>
+            <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+            <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+            <div><dt>Distribution</dt><dd>redacted_distribution_style</dd></div>
+            <div><dt>Profile units</dt><dd>8</dd></div>
+            <div><dt>Role status</dt><dd>exercised, present_not_exercised</dd></div>
+            <div><dt>Profile hash</dt><dd><code>e460b2161d6433093...</code></dd></div>
+            <div><dt>Trace</dt><dd><a href="data/traces/verkyyi-default-2026-05-30/trace.json">Trace JSON</a></dd></div>
+          </dl>
+          <div class="profile-link-panel">
+            <a class="button primary" href="leaderboard.html#trace-verkyyi-default-2026-05-30">Leaderboard evidence</a>
+            <a class="button" href="data/traces/verkyyi-default-2026-05-30/trace.json">Trace JSON</a>
+          </div>
+        </div>
+        <div class="profile-columns">
+          <section>
+            <h4>Distribution Shape</h4>
+            <dl class="mini-defs">
+              <div><dt>Form</dt><dd>redacted_distribution_style</dd></div>
+              <div><dt>Repo</dt><dd>not published</dd></div>
+              <div><dt>Version</dt><dd>not published</dd></div>
+              <div><dt>Contract</dt><dd><a href="https://github.com/verkyyi/hermesbench/blob/main/docs/profile-distribution-baselines.md">profile distribution baselines</a></dd></div>
+            </dl>
+          </section>
+          <section>
+            <h4>Bundle Roles</h4>
+            <dl class="mini-defs">
+              <div><dt>Surface</dt><dd>Kanban delegation</dd></div>
+              <div><dt>Contract</dt><dd>framework_agnostic</dd></div>
+              <div><dt>Roles</dt><dd>exercised, present_not_exercised</dd></div>
+              <div><dt>Unit count</dt><dd>8</dd></div>
+            </dl>
+          </section>
+        </div>
+        <div class="role-card-list">
+          <article class="role-card">
+            <div>
+              <span class="mini-heading">Role</span>
+              <strong><code>front_desk</code></strong>
+            </div>
+            <div>
+              <span class="mini-heading">Profile</span>
+              <span>default</span>
+            </div>
+            <div>
+              <span class="mini-heading">Status</span>
+              <span>Exercised</span>
+            </div>
+            <p>prompt benchmark cases route through this target profile</p>
+          </article>
+
+          <article class="role-card">
+            <div>
+              <span class="mini-heading">Role</span>
+              <strong><code>orchestrator</code></strong>
+            </div>
+            <div>
+              <span class="mini-heading">Profile</span>
+              <span>orchestrator</span>
+            </div>
+            <div>
+              <span class="mini-heading">Status</span>
+              <span>Present not exercised</span>
+            </div>
+            <p>kanban configured; delegated_closure not exercised</p>
+          </article>
+
+          <article class="role-card">
+            <div>
+              <span class="mini-heading">Role</span>
+              <strong><code>routing_delegation</code></strong>
+            </div>
+            <div>
+              <span class="mini-heading">Profile</span>
+              <span>kanban-orchestrator-routing</span>
+            </div>
+            <div>
+              <span class="mini-heading">Status</span>
+              <span>Present not exercised</span>
+            </div>
+            <p>routing plugin/toolset present but multi-profile suite skipped</p>
+          </article>
+
+          <article class="role-card">
+            <div>
+              <span class="mini-heading">Role</span>
+              <strong><code>worker</code></strong>
+            </div>
+            <div>
+              <span class="mini-heading">Profile</span>
+              <span>not_published</span>
+            </div>
+            <div>
+              <span class="mini-heading">Status</span>
+              <span>Present not exercised</span>
+            </div>
+            <p>kanban enabled, but no worker profile list was published for this run</p>
+          </article>
+        </div>
+      </section>
+
+
+              <section class="profile-layer unit-layer">
+                <div class="layer-head">
+                  <p class="eyebrow">Units</p>
+                  <h3>Profile Units in This Setup</h3>
+                  <p class="note">These cards explain the reusable profiles behind the scored configuration. Open a card only when you need implementation-level shape.</p>
+                </div>
+                <div class="profile-unit-list">
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Front desk profile</span>
+                <h4>default</h4>
+                <span class="profile-unit-subtitle">Builds and maintains software across codebases — inspects repos, debugs Python/Node, writes tests, and manages GitHub i...</span>
+              </div>
+              <span class="profile-unit-role">Front desk</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span><span>kanban</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>prompt benchmark cases route through this target profile</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/default.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>fbce17cd1b7feba2</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span><span>kanban</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span><span>break-glass-cli</span><span>kanban-orchestrator-routing</span><span>observability/langfuse</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>None published</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>agentfeeds_readonly</span><span>browser</span><span>clarify</span><span>code_execution</span><span>computer_use</span><span>cronjob</span><span>delegation</span><span>file</span><span>image_gen</span><span>kanban</span><span>memory</span><span>messaging</span><span>moa</span><span>session_search</span><span>skills</span><span>terminal</span><span>todo</span><span>tts</span><span>+5 more</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: front_desk
+Profile name: default
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Orchestrator profile</span>
+                <h4>orchestrator</h4>
+                <span class="profile-unit-subtitle">Coordinates multi-agent work and kanban routing, with strong coverage across software development, GitHub workflows, re...</span>
+              </div>
+              <span class="profile-unit-role">Orchestrator</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>kanban</span><span>kanban-worker</span><span>kanban-orchestrator</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban configured; delegated_closure not exercised</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/orchestrator.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>18a6d2f8f35ae6d9</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>kanban</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>None published</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>kanban-worker</span><span>kanban-orchestrator</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>kanban</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: orchestrator
+Profile name: orchestrator
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Worker profile</span>
+                <h4>worker-code</h4>
+                <span class="profile-unit-subtitle">Codes and reviews software changes with GitHub PR workflows, systematic debugging, planning, and Codex-based automation...</span>
+              </div>
+              <span class="profile-unit-role">Worker</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span><span>kanban-worker</span><span>hermes-agent</span><span>systematic-debugging</span><span>test-driven-development</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban enabled, but no worker profile list was published for this run</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, disabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/worker-code.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>f836bb2a8dc1d153</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>kanban-worker</span><span>hermes-agent</span><span>systematic-debugging</span><span>test-driven-development</span><span>writing-plans</span><span>requesting-code-review</span><span>github-auth</span><span>github-code-review</span><span>github-issues</span><span>github-pr-workflow</span><span>github-repo-management</span><span>codebase-inspection</span><span>subagent-driven-development</span><span>codex</span><span>claude-code</span><span>opencode</span><span>tailnet-service-ops</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>code_execution</span><span>file</span><span>kanban</span><span>session_search</span><span>skills</span><span>terminal</span><span>todo</span><span>web</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: worker
+Profile name: worker-code
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Worker profile</span>
+                <h4>worker-fast</h4>
+                <span class="profile-unit-subtitle">Fast coding and operations worker: debugs software, plans implementations, reviews code, and handles GitHub PR workflow...</span>
+              </div>
+              <span class="profile-unit-role">Worker</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span><span>kanban-worker</span><span>hermes-agent</span><span>agentfeeds</span><span>traction-watchdog</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban enabled, but no worker profile list was published for this run</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, disabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/worker-fast.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>3a43ed98a166c30e</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>kanban-worker</span><span>hermes-agent</span><span>agentfeeds</span><span>traction-watchdog</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>kanban</span><span>skills</span><span>todo</span><span>session_search</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: worker
+Profile name: worker-fast
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Worker profile</span>
+                <h4>worker-ops</h4>
+                <span class="profile-unit-subtitle">Runs operational work across kanban lanes: automates GitHub PR/review workflows, devops tasks, webhooks, macOS/Google/N...</span>
+              </div>
+              <span class="profile-unit-role">Worker</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span><span>kanban</span><span>kanban-worker</span><span>kanban-orchestrator</span><span>hermes-agent</span><span>agentfeeds</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban enabled, but no worker profile list was published for this run</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/worker-ops.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>3d94df5e60d80e91</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span><span>kanban</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>kanban-worker</span><span>kanban-orchestrator</span><span>hermes-agent</span><span>agentfeeds</span><span>authenticated-feed-sources</span><span>tailnet-service-ops</span><span>lan-device-discovery</span><span>webhook-subscriptions</span><span>native-mcp</span><span>himalaya</span><span>google-workspace</span><span>founder-command-center</span><span>systematic-debugging</span><span>test-driven-development</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>browser</span><span>code_execution</span><span>cronjob</span><span>file</span><span>kanban</span><span>memory</span><span>messaging</span><span>session_search</span><span>skills</span><span>terminal</span><span>todo</span><span>web</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: worker
+Profile name: worker-ops
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Worker profile</span>
+                <h4>worker-report</h4>
+                <span class="profile-unit-subtitle">Builds and reports on software work: inspects codebases, plans/debugs changes, uses Codex/OpenCode, manages GitHub issu...</span>
+              </div>
+              <span class="profile-unit-role">Worker</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span><span>kanban-worker</span><span>hermes-agent</span><span>agentfeeds</span><span>founder-command-center</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban enabled, but no worker profile list was published for this run</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/worker-report.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>58cbd6af7500ef3b</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>kanban-worker</span><span>hermes-agent</span><span>agentfeeds</span><span>founder-command-center</span><span>traction-watchdog</span><span>obsidian</span><span>verky-obsidian-control-plane</span><span>google-workspace</span><span>apple-calendar</span><span>apple-reminders</span><span>apple-notes</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>code_execution</span><span>cronjob</span><span>file</span><span>kanban</span><span>session_search</span><span>skills</span><span>todo</span><span>web</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: worker
+Profile name: worker-report
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Worker profile</span>
+                <h4>worker-research</h4>
+                <span class="profile-unit-subtitle">Research-focused worker for literature review and technical synthesis: searches arXiv/LLM wikis, drafts research papers...</span>
+              </div>
+              <span class="profile-unit-role">Worker</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span><span>kanban-worker</span><span>hermes-agent</span><span>agentfeeds</span><span>blogwatcher</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban enabled, but no worker profile list was published for this run</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, disabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/worker-research.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>e953887122295635</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>kanban-worker</span><span>hermes-agent</span><span>agentfeeds</span><span>blogwatcher</span><span>youtube-content</span><span>arxiv</span><span>llm-wiki</span><span>polymarket</span><span>market-data-streams</span><span>ocr-and-documents</span><span>maps</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>browser</span><span>code_execution</span><span>file</span><span>kanban</span><span>session_search</span><span>skills</span><span>todo</span><span>web</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: worker
+Profile name: worker-research
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+
+          <details class="profile-unit-card">
+            <summary class="profile-unit-head">
+              <div class="profile-unit-summary">
+                <span class="mini-heading">Worker profile</span>
+                <h4>worker</h4>
+                <span class="profile-unit-subtitle">Builds and maintains software across codebases — inspects repos, debugs Node/Python, writes tests, reviews code, and ma...</span>
+              </div>
+              <span class="profile-unit-role">Worker</span>
+            </summary>
+            <div class="tag-list profile-unit-tags">
+              <span>hermes-cli</span>
+            </div>
+            <div class="profile-unit-detail">
+              <div class="profile-unit-state">
+                <span>Status: Present not exercised</span>
+                <span>redacted_distribution_style</span>
+                <span>Published redacted</span>
+              </div>
+              <p>kanban enabled, but no worker profile list was published for this run</p>
+              <dl class="detail-grid profile-metrics">
+                <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+                <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+                <div><dt>Source</dt><dd>data/profiles/kanban/worker.redacted.yaml</dd></div>
+                <div><dt>Config hash</dt><dd><code>37df1ca2c16dfdd9</code></dd></div>
+              </dl>
+              <div class="profile-columns">
+                <section>
+                  <h5>Toolsets</h5>
+                  <div class="tag-list"><span>hermes-cli</span></div>
+                </section>
+                <section>
+                  <h5>Plugins</h5>
+                  <div class="tag-list"><span>agentfeeds</span></div>
+                </section>
+                <section>
+                  <h5>Allowed Skills</h5>
+                  <div class="tag-list"><span>None published</span></div>
+                </section>
+                <section>
+                  <h5>CLI Toolsets</h5>
+                  <div class="tag-list"><span>browser</span><span>clarify</span><span>code_execution</span><span>cronjob</span><span>delegation</span><span>file</span><span>image_gen</span><span>kanban</span><span>memory</span><span>messaging</span><span>session_search</span><span>skills</span><span>terminal</span><span>todo</span><span>tts</span><span>vision</span><span>web</span></div>
+                </section>
+              </div>
+            </div>
+            <p class="note">This profile is published as redacted evidence, so recreate it locally from the public shape.</p>
+
+            <div class="recipe-actions">
+              <button class="button primary copy-button" type="button" data-copy="Use this public HermesBench profile evidence to recreate a local Hermes profile distribution.
+
+Baseline: verkyyi-default-2026-05-30
+Profile role: worker
+Profile name: worker
+Distribution form: redacted_distribution_style
+Score evidence: leaderboard.html#trace-verkyyi-default-2026-05-30
+Trace JSON: data/traces/verkyyi-default-2026-05-30/trace.json
+
+Goal:
+Create or update a local Hermes profile distribution for this single profile. Preserve the profile-distribution model: distribution.yaml, SOUL.md, config.yaml, bundled skills, cron jobs, and MCP/tool connections as appropriate.
+
+Use only public-safe evidence from data/profiles/index.json, the linked trace, and the redacted snapshot summary. Do not copy credentials, .env files, memories, sessions, local paths, logs, state databases, raw private chats, or unredacted config.
+
+After this single profile is implemented, link it into the same configuration bundle role if needed rather than creating a separate benchmark pathway.">Copy local implementation prompt</button>
+              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
+            </div>
+          </details>
+        </div>
+              </section>
+
+
+      <section class="profile-layer performance-layer">
+        <div class="layer-head">
+          <p class="eyebrow">Recipes</p>
+          <h3>Where It Performs</h3>
+          <p class="note">Suites show broad profile fit. Individual recipes point to concrete evidence for wins and regressions.</p>
+        </div>
+        <div class="profile-columns performance-columns">
+          <section>
+            <h3>Strong Suites</h3>
+            <div class="score-insight-list">
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Messaging assistant</span>
+              <span class="table-subtext"><code>messaging_assistant</code></span>
+            </div>
+            <strong>74.1</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Personal finance</span>
+              <span class="table-subtext"><code>personal_finance</code></span>
+            </div>
+            <strong>73.8</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Calendar schedule</span>
+              <span class="table-subtext"><code>calendar_schedule</code></span>
+            </div>
+            <strong>71.8</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">General assistant</span>
+              <span class="table-subtext"><code>general_assistant</code></span>
+            </div>
+            <strong>69.3</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Developer ops</span>
+              <span class="table-subtext"><code>developer_ops</code></span>
+            </div>
+            <strong>55.0</strong>
+          </article>
+        </div>
+          </section>
+          <section>
+            <h3>Improvement Suites</h3>
+            <div class="score-insight-list">
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Mail assistant</span>
+              <span class="table-subtext"><code>mail_assistant</code></span>
+            </div>
+            <strong>0</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Web research</span>
+              <span class="table-subtext"><code>web_research</code></span>
+            </div>
+            <strong>20.1</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Daily planning reporting</span>
+              <span class="table-subtext"><code>daily_planning_reporting</code></span>
+            </div>
+            <strong>41.7</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Travel places</span>
+              <span class="table-subtext"><code>travel_places</code></span>
+            </div>
+            <strong>46.6</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <span class="score-title">Developer ops</span>
+              <span class="table-subtext"><code>developer_ops</code></span>
+            </div>
+            <strong>55.0</strong>
+          </article>
+        </div>
+          </section>
+          <section>
+            <h3>Strong Recipes</h3>
+            <div class="score-insight-list">
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-production-health-check">Production Health Check</a>
+              <span class="table-subtext"><code>dev_production_health_check</code></span>
+            </div>
+            <strong>96.5</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-finance-spending-review">Spending Review</a>
+              <span class="table-subtext"><code>finance_spending_review</code></span>
+            </div>
+            <strong>89.0</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package">Thread Reply Package</a>
+              <span class="table-subtext"><code>message_thread_reply_package</code></span>
+            </div>
+            <strong>77.7</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision">Dinner Decision</a>
+              <span class="table-subtext"><code>travel_dinner_decision</code></span>
+            </div>
+            <strong>75.4</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary">Calendar Event Draft Boundary</a>
+              <span class="table-subtext"><code>calendar_event_draft_boundary</code></span>
+            </div>
+            <strong>74.4</strong>
+          </article>
+        </div>
+          </section>
+          <section>
+            <h3>Improvement Recipes</h3>
+            <div class="score-insight-list">
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage">CI Failure Triage</a>
+              <span class="table-subtext"><code>dev_ci_failure_triage</code></span>
+            </div>
+            <strong>0</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-mail-attention-triage">Mailbox Attention Triage</a>
+              <span class="table-subtext"><code>mail_attention_triage</code></span>
+            </div>
+            <strong>0</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-mail-receipt-context">Receipt Context Lookup</a>
+              <span class="table-subtext"><code>mail_receipt_context</code></span>
+            </div>
+            <strong>0</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package">Sensitive Reply Package</a>
+              <span class="table-subtext"><code>mail_sensitive_reply_package</code></span>
+            </div>
+            <strong>0</strong>
+          </article>
+
+          <article class="score-insight">
+            <div>
+              <a class="score-title" href="leaderboard.html#trace-verkyyi-default-2026-05-30-report-evening">Evening Report Artifact</a>
+              <span class="table-subtext"><code>report_evening</code></span>
+            </div>
+            <strong>0</strong>
+          </article>
+        </div>
+          </section>
+        </div>
+      </section>
+
+
+
+      <section class="profile-snapshot">
+        <h3>Used Tools and Skills</h3>
+        <p class="note">Observed in public traces for this scored configuration. Configured-but-unused inventory is hidden in Snapshot Summary.</p>
+        <div class="profile-columns">
+          <section>
+            <h4>Used Tools</h4>
+            <div class="tag-list"><span>agentfeeds_health</span><span>agentfeeds_search</span><span>agentfeeds_stream_read</span><span>agentfeeds_streams_find</span><span>execute_code</span><span>memory</span><span>read_file</span><span>search_files</span><span>session_search</span><span>skill_view</span><span>skills_list</span><span>terminal</span><span>todo</span><span>web_extract</span><span>web_search</span><span>write_file</span></div>
+          </section>
+          <section>
+            <h4>Used Skills</h4>
+            <div class="tag-list"><span>view</span></div>
+          </section>
+        </div>
+      </section>
+
+
+              <details class="profile-secondary-detail">
+                <summary>Configuration Inventory and Local Implementation Guidance</summary>
+
+      <section class="profile-snapshot">
+        <h3>Snapshot Summary</h3>
+        <p class="note">Source: data/baselines/verkyyi-default-2026-05-30/profile-snapshot.redacted.yaml. Private credentials, memories, sessions, local paths, logs, and raw state are omitted.</p>
+        <dl class="detail-grid profile-metrics">
+          <div><dt>Target</dt><dd>cli / default</dd></div>
+          <div><dt>Platform</dt><dd>cli</dd></div>
+          <div><dt>Model</dt><dd>openai-codex / gpt-5.5</dd></div>
+          <div><dt>Memory</dt><dd>honcho, enabled</dd></div>
+          <div><dt>Orchestrator</dt><dd>orchestrator</dd></div>
+          <div><dt>Max spawn</dt><dd>20</dd></div>
+        </dl>
+        <details class="configured-inventory">
+          <summary>Configured inventory</summary>
+          <p class="note">This is configuration inventory, not proof of use. The default usage view only shows tools and skills observed in public traces.</p>
+          <dl class="detail-grid profile-metrics">
+            <div><dt>Tool hash</dt><dd><code>dbd0c98a391854b1</code></dd></div>
+            <div><dt>Skill hash</dt><dd><code>3760ef5a8871fc35</code></dd></div>
+          </dl>
+          <div class="profile-columns">
+            <section>
+              <h4>Platform Toolsets</h4>
+              <div class="tag-list"><span>agentfeeds_readonly</span><span>browser</span><span>clarify</span><span>code_execution</span><span>computer_use</span><span>cronjob</span><span>delegation</span><span>file</span><span>image_gen</span><span>kanban</span><span>memory</span><span>messaging</span><span>moa</span><span>session_search</span><span>+9 more</span></div>
+            </section>
+            <section>
+              <h4>AgentSkill Sample</h4>
+              <div class="tag-list"><span>apple/apple-calendar</span><span>apple/apple-notes</span><span>apple/apple-reminders</span><span>apple/findmy</span><span>apple/imessage</span><span>apple/macos-computer-use</span><span>autonomous-ai-agents/claude-code</span><span>autonomous-ai-agents/codex</span><span>autonomous-ai-agents/hermes-agent</span><span>autonomous-ai-agents/kanban-codex-lane</span><span>autonomous-ai-agents/opencode</span><span>creative/architecture-diagram</span></div>
+            </section>
+            <section>
+              <h4>Disabled Skills</h4>
+              <div class="tag-list"><span>kanban-worker</span><span>godmode</span><span>comfyui</span><span>ascii-video</span><span>manim-video</span><span>touchdesigner-mcp</span><span>audiocraft-audio-generation</span><span>axolotl</span><span>unsloth</span><span>fine-tuning-with-trl</span><span>serving-llms-vllm</span><span>minecraft-modpack-server</span><span>pokemon-player</span></div>
+            </section>
+            <section>
+              <h4>Benchmark Env</h4>
+              <div class="tag-list"><span>HERMES_BENCH_CONCURRENCY=3</span><span>HERMES_BENCH_SUITE_CONCURRENCY=3</span><span>HERMES_BENCH_TARGET_PROFILE=default</span><span>HERMES_BENCH_TARGET_UI=cli</span><span>HERMES_BENCH_TRIALS=1</span><span>HERMES_RUN_LLM_EVALS=1</span></div>
+            </section>
+          </div>
+        </details>
+      </section>
+
+                <section class="profile-loop">
+                  <h3>Learn and Implement Locally</h3>
+                  <ol>
+                    <li>Start from the reusable profile cards above; install the distribution when published, or copy the local implementation prompt for redacted profiles.</li>
+                    <li>Use strong suites and recipes to understand why this profile shape performed well.</li>
+                    <li>Bundle multiple profiles only through the published roles, keeping single profiles as the base unit.</li>
+                  </ol>
+                </section>
+              </details>
+            </div>
+          </details>
+
+        </div>
+        <script>
+          (() => {
+            const rows = Array.from(document.querySelectorAll("[data-profile-row]"));
+            const copyText = async (text) => {
+              if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+                return;
+              }
+              const area = document.createElement("textarea");
+              area.value = text;
+              area.setAttribute("readonly", "");
+              area.style.position = "fixed";
+              area.style.left = "-9999px";
+              document.body.appendChild(area);
+              area.select();
+              document.execCommand("copy");
+              area.remove();
+            };
+            document.querySelectorAll("[data-copy]").forEach((button) => {
+              button.addEventListener("click", async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const reaction = button.parentElement?.querySelector("[data-copy-reaction]");
+                try {
+                  await copyText(button.dataset.copy || "");
+                  if (reaction) reaction.textContent = "Copied";
+                } catch (error) {
+                  if (reaction) reaction.textContent = "Copy failed";
+                }
+                setTimeout(() => {
+                  if (reaction) reaction.textContent = "";
+                }, 1400);
+              });
+            });
+            const hash = (location.hash || "").slice(1);
+            if (hash) {
+              const row = document.getElementById(hash);
+              if (row?.matches("[data-profile-row]")) {
+                row.open = true;
+              }
+            }
+          })();
+        </script>
+      </section>
+    </main>
+    <footer>
+      <span>HermesBench</span>
+      <a href="recipes.html">Recipes</a>
+      <a href="profiles.html">Profiles</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="llms.txt">llms.txt</a>
+      <a href="https://github.com/verkyyi/hermesbench/blob/main/docs/METHODOLOGY.md">Methodology</a>
+    </footer>
+  </body>
+</html>

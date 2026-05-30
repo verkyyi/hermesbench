@@ -12,12 +12,12 @@ sessions, state, and personal skill allowlists.
 
 | field | value |
 |---|---:|
-| Run ID | `hb-20260530T011046Z` |
-| Overall score | `59.72` |
-| Observed runtime | `~9m 45s` |
+| Run ID | `hb-20260530T023418Z` |
+| Overall score | `50.26` |
+| Observed runtime | `~10m 35s` |
 | Evaluator driver | `codex` |
 | Profile hash | `e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355` |
-| HermesBench git SHA | `37097ee8194a59a63140deac36820234e803ccb6` |
+| HermesBench git SHA | `52fa6e382578fd034597acf0b3f74295230c55ce+dirty` |
 | Prompt cases | `27` |
 | Suites scored | `9/11` |
 | Trials per case | `1` |
@@ -34,21 +34,21 @@ HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurren
 
 | metric | score |
 |---|---:|
-| capability truthfulness | 56.5 |
-| reliability safety | 92.6 |
-| efficiency ux | 47.3 |
-| task fulfillment | 56.5 |
-| evidence truthfulness | 56.5 |
-| outcome reached | 92.6 |
-| runtime scope safety | 92.6 |
-| responsiveness | 24.8 |
-| communication quality | 69.8 |
-| closure | 92.6 |
-| artifact correctness | 56.5 |
-| stability | 92.6 |
+| capability truthfulness | 59.7 |
+| efficiency ux | 50.2 |
+| reliability safety | 70.4 |
+| appropriateness | 59.7 |
+| artifact correctness | 59.7 |
+| closure | 70.4 |
+| coherence | 69.6 |
+| communication quality | 69.6 |
+| evidence truthfulness | 59.7 |
+| outcome reached | 70.4 |
+| responsiveness | 30.9 |
+| runtime scope safety | 70.4 |
 | scope discipline | 100.0 |
-| appropriateness | 56.5 |
-| coherence | 69.8 |
+| stability | 70.4 |
+| task fulfillment | 59.7 |
 
 ## Runtime Shape
 
@@ -66,15 +66,15 @@ HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurren
 
 | suite | score |
 |---|---:|
-| `general_assistant` | 64.54 |
-| `calendar_schedule` | 64.09 |
-| `web_research` | 57.15 |
-| `daily_planning_reporting` | 55.18 |
-| `mail_assistant` | 40.10 |
-| `messaging_assistant` | 73.23 |
-| `travel_places` | 77.27 |
-| `personal_finance` | 66.18 |
-| `developer_ops` | 39.77 |
+| `general_assistant` | 69.33 |
+| `calendar_schedule` | 71.78 |
+| `web_research` | 20.08 |
+| `daily_planning_reporting` | 41.68 |
+| `mail_assistant` | 0.00 |
+| `messaging_assistant` | 74.10 |
+| `travel_places` | 46.59 |
+| `personal_finance` | 73.81 |
+| `developer_ops` | 55.01 |
 
 ## Skipped Suites
 
@@ -90,6 +90,5 @@ optional `evals.responsiveness` module.
 
 The baseline omits auth material, `.env`, raw memories, sessions, state
 databases, logs, private local paths, workspace contents, and personal skill
-allowlists. Public transcripts are included after manual redaction of local paths and
-secret names. Raw observability payloads remain omitted because they include
-command arguments and tool results beyond the user-visible transcript.
+allowlists. Public transcripts and observability summaries are included only in
+public-safe redacted form; raw target replies and controller outputs remain omitted.

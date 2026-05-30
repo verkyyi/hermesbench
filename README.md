@@ -92,7 +92,7 @@ linked baseline files.
 
 | configuration | score | cap/truth | rel/safety | eff/ux | fulfillment | evidence | outcome | safety | response | comms | coverage | profile snapshot |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
-| `verkyyi/default` | `59.72` | `56.5` | `92.6` | `47.3` | `56.5` | `56.5` | `92.6` | `92.6` | `24.8` | `69.8` | `9/11`, `27 cases` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins`, `107 skills` |
+| `verkyyi/default` | `50.26` | `59.7` | `70.4` | `50.2` | `59.7` | `59.7` | `70.4` | `70.4` | `30.9` | `69.6` | `9/11`, `27 cases` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins`, `107 skills` |
 
 Outcome reached is evidence-grounded: a transport-level reply is not enough; the
 driver/judge must see a valid terminal state. This baseline uses the balanced
@@ -121,11 +121,14 @@ Transparent recipe and leaderboard artifacts:
 - [`data/tasks/README.md`](data/tasks/README.md): human-readable recipe catalog.
 - [`data/tasks/tasks.json`](data/tasks/tasks.json): machine-readable scenario
   catalog with per-scenario public leaderboard rows.
+- [`data/profiles/index.json`](data/profiles/index.json): profile distribution
+  architecture index linked to scores and evidence.
 - [`data/traces/index.json`](data/traces/index.json): published leaderboard
   evidence index.
 - [`data/submissions/README.md`](data/submissions/README.md): public
   leaderboard submission contract.
 - [`site/recipes.html`](site/recipes.html): website recipe browser.
+- [`site/profiles.html`](site/profiles.html): website profile architecture browser.
 - [`site/leaderboard.html`](site/leaderboard.html): website leaderboard.
 
 Leaderboard evidence is public-safe by default: it shows the scenario, expected
