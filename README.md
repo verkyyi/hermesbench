@@ -92,12 +92,13 @@ linked baseline files.
 
 | configuration | score | cap/truth | rel/safety | eff/ux | fulfillment | evidence | outcome | safety | response | comms | coverage | profile snapshot |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
-| `verkyyi/default` | `50.26` | `59.7` | `70.4` | `50.2` | `59.7` | `59.7` | `70.4` | `70.4` | `30.9` | `69.6` | `9/11`, `27 cases` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins`, `107 skills` |
+| `verkyyi/default` | `78.20` | `80.7` | `78.4` | `83.4` | `75.8` | `75.8` | `85.2` | `85.2` | `20.1` | `83.4` | `9/11`, `27 cases` | `kanban`, `gpt-5.5`, `honcho`, `4 plugins`, `107 skills` |
 
 Outcome reached is evidence-grounded: a transport-level reply is not enough; the
 driver/judge must see a valid terminal state. This baseline uses the balanced
 3x2 scoring model, one trial per case, suite concurrency 3, and case concurrency
-3. It replaces the 2026-05-29 legacy taxonomy baselines.
+3. It replaces the earlier 2026-05-30 baseline run and the 2026-05-29 legacy
+taxonomy baselines.
 
 Two runtime suites are intentionally not part of the score: `delegated_closure`
 was skipped because delegated/multi-profile execution is opt-in, and

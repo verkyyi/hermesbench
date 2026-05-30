@@ -5,11 +5,13 @@ description: Redacted distribution-style baseline for a local Hermes default pro
 author: verkyyi
 license: MIT
 benchmark:
-  run_id: hb-20260530T023418Z
-  score: 50.26
-  observed_runtime_s: 635
-  runtime_note: Wall-clock measured by the coding-agent wrapper around the full-bundle
-    API run.
+  run_id: hb-20260530T220225Z
+  overall_score: 78.2
+  observed_runtime_s: 378
+  runtime_note: Lower-bound runtime from the longest stored suite duration; global
+    wall-clock was not captured in the trend store.
+  command: HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency
+    3 --case-concurrency 3 --trials 1 --json
   suite_count: 9
   registered_suite_count: 11
   prompt_cases: 27
@@ -20,29 +22,27 @@ benchmark:
   evaluator_driver: codex
   agentic_max_turns_default: 2
   controller_timeout_s: 240
-  driver_scenario_closed_rate: 0.852
-  turns_sent: 27
+  driver_scenario_closed_rate: 0.889
+  turns_sent: 25
   turn_budget: 54
-  command: HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency
-    3 --case-concurrency 3 --trials 1 --json
   score_breakdown:
     top_axes:
-      capability_truthfulness: 59.7
-      efficiency_ux: 50.2
-      reliability_safety: 70.4
+      capability_truthfulness: 80.7
+      efficiency_ux: 83.4
+      reliability_safety: 78.4
     axes:
-      appropriateness: 59.7
-      artifact_correctness: 59.7
-      closure: 70.4
-      coherence: 69.6
-      communication_quality: 69.6
-      evidence_truthfulness: 59.7
-      outcome_reached: 70.4
-      responsiveness: 30.9
-      runtime_scope_safety: 70.4
+      appropriateness: 75.8
+      artifact_correctness: 75.8
+      closure: 85.2
+      coherence: 83.4
+      communication_quality: 83.4
+      evidence_truthfulness: 75.8
+      outcome_reached: 85.2
+      responsiveness: 20.1
+      runtime_scope_safety: 85.2
       scope_discipline: 100.0
-      stability: 70.4
-      task_fulfillment: 59.7
+      stability: 85.2
+      task_fulfillment: 75.8
     coverage:
       scored_suites: 9
       registered_suites: 11
@@ -59,8 +59,8 @@ benchmark:
       - responsiveness
       - communication_quality
 profile_fingerprint:
-  hermesbench_git_sha: 52fa6e382578fd034597acf0b3f74295230c55ce+dirty
-  profile_hash: e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355
+  hermesbench_git_sha: e5e9cc40ba81b80b9ef38ba43d6ad59a81f3e9cf+dirty
+  profile_hash: 27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2
 runtime_config:
   execution_surface:
     id: kanban_delegation
@@ -195,7 +195,7 @@ redaction:
     profile distribution.
   omitted:
   - auth.json
-  - .env
+  - <redacted:env-file>
   - memories/
   - sessions/
   - state.db*
@@ -203,3 +203,4 @@ redaction:
   - workspace/
   - local paths
   - personal skill allowlists
+  - raw tool arguments/results

@@ -1,57 +1,51 @@
 {
-  "schema_version": 4,
-  "run_id": "hb-20260530T023418Z",
   "baseline_id": "verkyyi-default-2026-05-30",
   "files": [
     {
-      "path": "README.md",
-      "bytes": 3029,
-      "sha256": "d4dddb7958925d821ab20db2c995371747b3de14c2714fba574ee8f1be309bd4"
+      "bytes": 3211,
+      "path": "README.md"
     },
     {
-      "path": "case-results.jsonl",
-      "bytes": 570531,
-      "sha256": "07a43bcb5da71369fa50a66a8a125d82f8f47565af4f5c8cde7d7026e7b02123"
+      "bytes": 885,
+      "path": "artifact-manifest.json"
     },
     {
-      "path": "cost-usage.json",
+      "bytes": 528335,
+      "path": "case-results.jsonl"
+    },
+    {
       "bytes": 365,
-      "sha256": "f44869b21700606d53936ab44ea2695118941d9e6d1e168bb80fb09e54bcfc80"
+      "path": "cost-usage.json"
     },
     {
-      "path": "distribution-baseline.yaml",
-      "bytes": 5474,
-      "sha256": "938939c4ea76177e5c947d081d7e37a782c9c7afbd7d5dbcb70f578c9be2a176"
+      "bytes": 5562,
+      "path": "distribution-baseline.yaml"
     },
     {
-      "path": "judge-decisions.jsonl",
-      "bytes": 9375,
-      "sha256": "ea3c99286c0ef62b402cfc0e3beba1da9f67c6a715a92606c032c7d834eeefe9"
+      "bytes": 5380,
+      "path": "judge-decisions.jsonl"
     },
     {
-      "path": "profile-snapshot.redacted.yaml",
-      "bytes": 4852,
-      "sha256": "37b8c07cbfd4da9f15c6d20eddf70369900aae0f6596ce59a87049bbcca8c85a"
+      "bytes": 4822,
+      "path": "profile-snapshot.redacted.yaml"
     },
     {
-      "path": "run-manifest.json",
-      "bytes": 1593,
-      "sha256": "a213928ec89ca6b5793259ea325fa8e599a35f6eb8eac152f252fc2a32999abb"
+      "bytes": 1663,
+      "path": "run-manifest.json"
     },
     {
-      "path": "score.json",
-      "bytes": 3975,
-      "sha256": "b4bc8c3b25f76ec8483904dda2a9b50d56d94e304c857044602d14792da51307"
+      "bytes": 4011,
+      "path": "score.json"
     },
     {
-      "path": "suite-results.json",
-      "bytes": 27401,
-      "sha256": "4e00305bc29c84b45600e990946a4dbf1005bb30f4512a6a9f328c9ce711b5e5"
+      "bytes": 26565,
+      "path": "suite-results.json"
     },
     {
-      "path": "variance.json",
       "bytes": 229,
-      "sha256": "c318ee9ed77c61687b1ac87bf9ecfcd45a8836ebab1da835a3409199cab4828b"
+      "path": "variance.json"
     }
-  ]
+  ],
+  "run_id": "hb-20260530T220225Z",
+  "schema_version": 4
 }

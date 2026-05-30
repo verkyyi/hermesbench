@@ -1,11 +1,11 @@
 {
-  "schema_version": 4,
-  "run_id": "hb-20260530T023418Z",
-  "observed_runtime_s": 635,
-  "estimated_target_turns": 27,
-  "estimated_prompt_trials": 27,
-  "estimated_judge_calls": 27,
-  "token_usage_captured": false,
+  "budget_policy": "This artifact records call counts only because provider token accounting was not captured.",
   "dollar_cost_captured": false,
-  "budget_policy": "This artifact records call counts only because provider token accounting was not captured."
+  "estimated_judge_calls": 27,
+  "estimated_prompt_trials": 27,
+  "estimated_target_turns": 25,
+  "observed_runtime_s": 378,
+  "run_id": "hb-20260530T220225Z",
+  "schema_version": 4,
+  "token_usage_captured": false
 }

@@ -2,12 +2,11 @@ version: 1
 hermes_home: <hermes_home>
 hermes_home_hash: 63ca39d4af7ac405
 config_path: <hermes_home>/config.yaml
-config_hash: e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355
+config_hash: 27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2
 bench_env:
   HERMES_BENCH_CONCURRENCY: '3'
+  HERMES_BENCH_PYTHON: <redacted:path>
   HERMES_BENCH_SUITE_CONCURRENCY: '3'
-  HERMES_BENCH_TARGET_PROFILE: default
-  HERMES_BENCH_TARGET_UI: cli
   HERMES_BENCH_TRIALS: '1'
   HERMES_RUN_LLM_EVALS: '1'
 config:

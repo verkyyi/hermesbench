@@ -1,6 +1,6 @@
 {
   "distribution_contract": "docs/profile-distribution-baselines.md",
-  "generated_at": "2026-05-30T03:13:58.087252+00:00",
+  "generated_at": "2026-05-30T22:26:31.021567+00:00",
   "profile_count": 1,
   "profile_unit_count": 8,
   "profiles": [
@@ -56,7 +56,10 @@
             "case": "calendar_daily_brief",
             "skills": [],
             "tools": [
-              "agentfeeds_stream_read"
+              "agentfeeds_search",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "terminal"
             ]
           },
           {
@@ -72,10 +75,15 @@
           },
           {
             "case": "calendar_reschedule_decision",
-            "skills": [],
+            "skills": [
+              "view"
+            ],
             "tools": [
               "agentfeeds_search",
-              "agentfeeds_stream_read"
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "skill_view",
+              "terminal"
             ]
           },
           {
@@ -83,8 +91,13 @@
             "skills": [],
             "tools": [
               "agentfeeds_health",
+              "agentfeeds_search",
               "agentfeeds_stream_read",
-              "agentfeeds_streams_find"
+              "agentfeeds_streams_find",
+              "kanban_show",
+              "read_file",
+              "search_files",
+              "terminal"
             ]
           },
           {
@@ -93,6 +106,7 @@
               "view"
             ],
             "tools": [
+              "kanban_show",
               "search_files",
               "skill_view",
               "terminal"
@@ -104,19 +118,21 @@
             "tools": [
               "agentfeeds_search",
               "agentfeeds_stream_read",
-              "agentfeeds_streams_find"
+              "agentfeeds_streams_find",
+              "execute_code",
+              "read_file",
+              "search_files",
+              "web_search"
             ]
           },
           {
             "case": "finance_public_safe_summary",
             "skills": [],
             "tools": [
+              "agentfeeds_search",
               "agentfeeds_stream_read",
               "agentfeeds_streams_find",
-              "memory",
-              "session_search",
-              "terminal",
-              "write_file"
+              "session_search"
             ]
           },
           {
@@ -124,7 +140,13 @@
             "skills": [],
             "tools": [
               "agentfeeds_search",
-              "search_files"
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "execute_code",
+              "kanban_show",
+              "search_files",
+              "session_search",
+              "terminal"
             ]
           },
           {
@@ -133,10 +155,10 @@
               "view"
             ],
             "tools": [
-              "agentfeeds_search",
               "agentfeeds_stream_read",
-              "agentfeeds_streams_find",
               "execute_code",
+              "read_file",
+              "search_files",
               "skill_view",
               "terminal"
             ]
@@ -150,9 +172,8 @@
               "agentfeeds_search",
               "agentfeeds_stream_read",
               "execute_code",
-              "read_file",
+              "search_files",
               "skill_view",
-              "skills_list",
               "terminal"
             ]
           },
@@ -162,6 +183,7 @@
               "view"
             ],
             "tools": [
+              "kanban_show",
               "read_file",
               "skill_view",
               "terminal",
@@ -172,23 +194,29 @@
             "case": "message_late_update_package",
             "skills": [],
             "tools": [
-              "agentfeeds_stream_read"
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find"
             ]
           },
           {
             "case": "message_sensitive_cleanup_plan",
-            "skills": [],
+            "skills": [
+              "view"
+            ],
             "tools": [
-              "search_files",
-              "session_search",
-              "terminal"
+              "skill_view"
             ]
           },
           {
             "case": "personal_continue_prior_plan",
-            "skills": [],
+            "skills": [
+              "view"
+            ],
             "tools": [
-              "session_search"
+              "kanban_show",
+              "search_files",
+              "session_search",
+              "skill_view"
             ]
           },
           {
@@ -204,44 +232,54 @@
             "case": "personal_start_today",
             "skills": [],
             "tools": [
+              "agentfeeds_search",
               "agentfeeds_stream_read",
-              "agentfeeds_streams_find",
               "terminal"
             ]
           },
           {
-            "case": "report_morning_context",
+            "case": "report_evening",
             "skills": [],
             "tools": [
+              "agentfeeds_health",
+              "agentfeeds_search",
               "agentfeeds_stream_read",
               "agentfeeds_streams_find",
-              "memory",
-              "todo"
+              "kanban_show",
+              "read_file",
+              "search_files",
+              "session_search",
+              "terminal",
+              "write_file"
+            ]
+          },
+          {
+            "case": "report_morning_context",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "agentfeeds_health",
+              "agentfeeds_search",
+              "agentfeeds_stream_read",
+              "agentfeeds_streams_find",
+              "execute_code",
+              "read_file",
+              "search_files",
+              "session_search",
+              "skill_view",
+              "terminal"
             ]
           },
           {
             "case": "report_open_loops_review",
             "skills": [],
             "tools": [
-              "memory",
-              "session_search"
-            ]
-          },
-          {
-            "case": "travel_dinner_decision",
-            "skills": [],
-            "tools": [
+              "agentfeeds_search",
               "agentfeeds_stream_read",
-              "agentfeeds_streams_find"
-            ]
-          },
-          {
-            "case": "travel_family_place",
-            "skills": [],
-            "tools": [
-              "agentfeeds_health",
-              "agentfeeds_stream_read",
-              "agentfeeds_streams_find"
+              "kanban_show",
+              "session_search",
+              "terminal"
             ]
           },
           {
@@ -250,20 +288,38 @@
               "view"
             ],
             "tools": [
-              "agentfeeds_search",
               "agentfeeds_stream_read",
-              "agentfeeds_streams_find",
               "skill_view",
               "terminal",
-              "write_file"
+              "web_search"
+            ]
+          },
+          {
+            "case": "web_local_context_brief",
+            "skills": [
+              "view"
+            ],
+            "tools": [
+              "execute_code",
+              "skill_view",
+              "terminal",
+              "web_search"
+            ]
+          },
+          {
+            "case": "web_official_process_brief",
+            "skills": [],
+            "tools": [
+              "terminal",
+              "web_extract",
+              "web_search"
             ]
           },
           {
             "case": "web_purchase_decision",
             "skills": [],
             "tools": [
-              "web_extract",
-              "web_search"
+              "session_search"
             ]
           }
         ],
@@ -279,20 +335,18 @@
           "agentfeeds_stream_read",
           "agentfeeds_streams_find",
           "execute_code",
-          "memory",
+          "kanban_show",
           "read_file",
           "search_files",
           "session_search",
           "skill_view",
-          "skills_list",
           "terminal",
-          "todo",
           "web_extract",
           "web_search",
           "write_file"
         ]
       },
-      "overall_score": 50.26,
+      "overall_score": 78.2,
       "plugins_enabled": [
         "agentfeeds",
         "break-glass-cli",
@@ -300,10 +354,10 @@
         "observability/langfuse"
       ],
       "profile_fingerprint": {
-        "hermesbench_git_sha": "52fa6e382578fd034597acf0b3f74295230c55ce+dirty",
-        "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
+        "hermesbench_git_sha": "e5e9cc40ba81b80b9ef38ba43d6ad59a81f3e9cf+dirty",
+        "profile_hash": "27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2"
       },
-      "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355",
+      "profile_hash": "27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2",
       "profile_units": [
         {
           "cta_label": "Copy local implementation prompt",
@@ -761,72 +815,72 @@
             "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-ci-failure-triage"
           },
           {
-            "case": "mail_attention_triage",
+            "case": "travel_dinner_decision",
             "score": 0.0,
-            "suite_id": "mail_assistant",
-            "title": "Mailbox Attention Triage",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-attention-triage"
+            "suite_id": "travel_places",
+            "title": "Dinner Decision",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision"
           },
           {
-            "case": "mail_receipt_context",
+            "case": "travel_family_place",
             "score": 0.0,
-            "suite_id": "mail_assistant",
-            "title": "Receipt Context Lookup",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-receipt-context"
-          },
-          {
-            "case": "mail_sensitive_reply_package",
-            "score": 0.0,
-            "suite_id": "mail_assistant",
-            "title": "Sensitive Reply Package",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-mail-sensitive-reply-package"
+            "suite_id": "travel_places",
+            "title": "Family Place Recommendation",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-family-place"
           },
           {
             "case": "report_evening",
-            "score": 0.0,
+            "score": 30.0,
             "suite_id": "daily_planning_reporting",
             "title": "Evening Report Artifact",
             "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-report-evening"
+          },
+          {
+            "case": "web_purchase_decision",
+            "score": 70.22,
+            "suite_id": "web_research",
+            "title": "Purchase Decision Brief",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-web-purchase-decision"
           }
         ],
         "improvement_suites": [
           {
-            "score": 0.0,
-            "suite_id": "mail_assistant"
-          },
-          {
-            "score": 20.08,
-            "suite_id": "web_research"
-          },
-          {
-            "score": 41.68,
-            "suite_id": "daily_planning_reporting"
-          },
-          {
-            "score": 46.59,
+            "score": 31.57,
             "suite_id": "travel_places"
           },
           {
-            "score": 55.01,
+            "score": 60.68,
             "suite_id": "developer_ops"
+          },
+          {
+            "score": 67.99,
+            "suite_id": "daily_planning_reporting"
+          },
+          {
+            "score": 83.2,
+            "suite_id": "mail_assistant"
+          },
+          {
+            "score": 85.77,
+            "suite_id": "web_research"
           }
         ],
         "leaderboard_url": "traces.html#trace-verkyyi-default-2026-05-30",
-        "overall": 50.26,
+        "overall": 78.2,
         "score_breakdown": {
           "axes": {
-            "appropriateness": 59.7,
-            "artifact_correctness": 59.7,
-            "closure": 70.4,
-            "coherence": 69.6,
-            "communication_quality": 69.6,
-            "evidence_truthfulness": 59.7,
-            "outcome_reached": 70.4,
-            "responsiveness": 30.9,
-            "runtime_scope_safety": 70.4,
+            "appropriateness": 75.8,
+            "artifact_correctness": 75.8,
+            "closure": 85.2,
+            "coherence": 83.4,
+            "communication_quality": 83.4,
+            "evidence_truthfulness": 75.8,
+            "outcome_reached": 85.2,
+            "responsiveness": 20.1,
+            "runtime_scope_safety": 85.2,
             "scope_discipline": 100.0,
-            "stability": 70.4,
-            "task_fulfillment": 59.7
+            "stability": 85.2,
+            "task_fulfillment": 75.8
           },
           "categories": {
             "capability_truthfulness": [
@@ -849,106 +903,106 @@
             "scored_suites": 9
           },
           "top_axes": {
-            "capability_truthfulness": 59.7,
-            "efficiency_ux": 50.2,
-            "reliability_safety": 70.4
+            "capability_truthfulness": 80.7,
+            "efficiency_ux": 83.4,
+            "reliability_safety": 78.4
           }
         },
         "suite_scores": [
           {
-            "score": 74.1,
+            "score": 96.79,
             "suite_id": "messaging_assistant"
           },
           {
-            "score": 73.81,
-            "suite_id": "personal_finance"
-          },
-          {
-            "score": 71.78,
-            "suite_id": "calendar_schedule"
-          },
-          {
-            "score": 69.33,
+            "score": 94.78,
             "suite_id": "general_assistant"
           },
           {
-            "score": 55.01,
-            "suite_id": "developer_ops"
+            "score": 91.85,
+            "suite_id": "calendar_schedule"
           },
           {
-            "score": 46.59,
-            "suite_id": "travel_places"
+            "score": 91.13,
+            "suite_id": "personal_finance"
           },
           {
-            "score": 41.68,
-            "suite_id": "daily_planning_reporting"
-          },
-          {
-            "score": 20.08,
+            "score": 85.77,
             "suite_id": "web_research"
           },
           {
-            "score": 0.0,
+            "score": 83.2,
             "suite_id": "mail_assistant"
+          },
+          {
+            "score": 67.99,
+            "suite_id": "daily_planning_reporting"
+          },
+          {
+            "score": 60.68,
+            "suite_id": "developer_ops"
+          },
+          {
+            "score": 31.57,
+            "suite_id": "travel_places"
           }
         ],
         "top_scenarios": [
           {
-            "case": "dev_production_health_check",
-            "score": 96.51,
-            "suite_id": "developer_ops",
-            "title": "Production Health Check",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-production-health-check"
-          },
-          {
-            "case": "finance_spending_review",
-            "score": 88.95,
-            "suite_id": "personal_finance",
-            "title": "Spending Review",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-spending-review"
-          },
-          {
             "case": "message_thread_reply_package",
-            "score": 77.7,
+            "score": 98.68,
             "suite_id": "messaging_assistant",
             "title": "Thread Reply Package",
             "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-thread-reply-package"
           },
           {
-            "case": "travel_dinner_decision",
-            "score": 75.44,
-            "suite_id": "travel_places",
-            "title": "Dinner Decision",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-travel-dinner-decision"
+            "case": "message_sensitive_cleanup_plan",
+            "score": 98.05,
+            "suite_id": "messaging_assistant",
+            "title": "Sensitive Message Cleanup Plan",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-message-sensitive-cleanup-plan"
           },
           {
-            "case": "calendar_event_draft_boundary",
-            "score": 74.42,
-            "suite_id": "calendar_schedule",
-            "title": "Calendar Event Draft Boundary",
-            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-calendar-event-draft-boundary"
+            "case": "personal_continue_prior_plan",
+            "score": 97.61,
+            "suite_id": "general_assistant",
+            "title": "Continue Prior Plan",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-personal-continue-prior-plan"
+          },
+          {
+            "case": "dev_release_readiness_review",
+            "score": 97.2,
+            "suite_id": "developer_ops",
+            "title": "Release Readiness Review",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-dev-release-readiness-review"
+          },
+          {
+            "case": "finance_public_safe_summary",
+            "score": 97.12,
+            "suite_id": "personal_finance",
+            "title": "Public-Safe Finance Summary",
+            "trace_url": "traces.html#trace-verkyyi-default-2026-05-30-finance-public-safe-summary"
           }
         ],
         "top_suites": [
           {
-            "score": 74.1,
+            "score": 96.79,
             "suite_id": "messaging_assistant"
           },
           {
-            "score": 73.81,
-            "suite_id": "personal_finance"
-          },
-          {
-            "score": 71.78,
-            "suite_id": "calendar_schedule"
-          },
-          {
-            "score": 69.33,
+            "score": 94.78,
             "suite_id": "general_assistant"
           },
           {
-            "score": 55.01,
-            "suite_id": "developer_ops"
+            "score": 91.85,
+            "suite_id": "calendar_schedule"
+          },
+          {
+            "score": 91.13,
+            "suite_id": "personal_finance"
+          },
+          {
+            "score": 85.77,
+            "suite_id": "web_research"
           }
         ],
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json",
@@ -980,7 +1034,7 @@
           "status": "present_not_exercised"
         }
       ],
-      "run_id": "hb-20260530T023418Z",
+      "run_id": "hb-20260530T220225Z",
       "snapshot_summary": {
         "agent_skills": {
           "count": 107,
@@ -1020,9 +1074,8 @@
         },
         "bench_env": {
           "HERMES_BENCH_CONCURRENCY": "3",
+          "HERMES_BENCH_PYTHON": "<redacted:path>",
           "HERMES_BENCH_SUITE_CONCURRENCY": "3",
-          "HERMES_BENCH_TARGET_PROFILE": "default",
-          "HERMES_BENCH_TARGET_UI": "cli",
           "HERMES_BENCH_TRIALS": "1",
           "HERMES_RUN_LLM_EVALS": "1"
         },
@@ -1081,7 +1134,7 @@
         "score_json": "data/baselines/verkyyi-default-2026-05-30/score.json",
         "trace_json": "data/traces/verkyyi-default-2026-05-30/trace.json"
       },
-      "timestamp_utc": "2026-05-30T02:34:18.025596+00:00",
+      "timestamp_utc": "2026-05-30T22:02:25.143826+00:00",
       "toolsets": [
         "hermes-cli",
         "kanban"

@@ -1,7 +1,7 @@
 # verkyyi default baseline, 2026-05-30
 
 This is the current-taxonomy public baseline for the local Hermes default profile.
-It replaces the 2026-05-29 legacy taxonomy baselines.
+It replaces the earlier 2026-05-30 baseline run `hb-20260530T023418Z`.
 
 It is published as a **redacted distribution-style baseline**. It describes the
 benchmark-relevant runtime configuration but is not an installable profile
@@ -12,12 +12,12 @@ sessions, state, and personal skill allowlists.
 
 | field | value |
 |---|---:|
-| Run ID | `hb-20260530T023418Z` |
-| Overall score | `50.26` |
-| Observed runtime | `~10m 35s` |
+| Run ID | `hb-20260530T220225Z` |
+| Overall score | `78.20` |
+| Stored runtime estimate | `~6m 18s` |
 | Evaluator driver | `codex` |
-| Profile hash | `e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355` |
-| HermesBench git SHA | `52fa6e382578fd034597acf0b3f74295230c55ce+dirty` |
+| Profile hash | `27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2` |
+| HermesBench git SHA | `e5e9cc40ba81b80b9ef38ba43d6ad59a81f3e9cf+dirty` |
 | Prompt cases | `27` |
 | Suites scored | `9/11` |
 | Trials per case | `1` |
@@ -30,25 +30,27 @@ Command:
 HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency 3 --case-concurrency 3 --trials 1 --json
 ```
 
+Runtime note: Lower-bound runtime from the longest stored suite duration; global wall-clock was not captured in the trend store.
+
 ## Score Breakdown
 
 | metric | score |
 |---|---:|
-| capability truthfulness | 59.7 |
-| efficiency ux | 50.2 |
-| reliability safety | 70.4 |
-| appropriateness | 59.7 |
-| artifact correctness | 59.7 |
-| closure | 70.4 |
-| coherence | 69.6 |
-| communication quality | 69.6 |
-| evidence truthfulness | 59.7 |
-| outcome reached | 70.4 |
-| responsiveness | 30.9 |
-| runtime scope safety | 70.4 |
+| capability truthfulness | 80.7 |
+| efficiency ux | 83.4 |
+| reliability safety | 78.4 |
+| appropriateness | 75.8 |
+| artifact correctness | 75.8 |
+| closure | 85.2 |
+| coherence | 83.4 |
+| communication quality | 83.4 |
+| evidence truthfulness | 75.8 |
+| outcome reached | 85.2 |
+| responsiveness | 20.1 |
+| runtime scope safety | 85.2 |
 | scope discipline | 100.0 |
-| stability | 70.4 |
-| task fulfillment | 59.7 |
+| stability | 85.2 |
+| task fulfillment | 75.8 |
 
 ## Runtime Shape
 
@@ -66,15 +68,15 @@ HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurren
 
 | suite | score |
 |---|---:|
-| `general_assistant` | 69.33 |
-| `calendar_schedule` | 71.78 |
-| `web_research` | 20.08 |
-| `daily_planning_reporting` | 41.68 |
-| `mail_assistant` | 0.00 |
-| `messaging_assistant` | 74.10 |
-| `travel_places` | 46.59 |
-| `personal_finance` | 73.81 |
-| `developer_ops` | 55.01 |
+| `general_assistant` | 94.78 |
+| `calendar_schedule` | 91.85 |
+| `web_research` | 85.77 |
+| `daily_planning_reporting` | 67.99 |
+| `mail_assistant` | 83.20 |
+| `messaging_assistant` | 96.79 |
+| `travel_places` | 31.57 |
+| `personal_finance` | 91.13 |
+| `developer_ops` | 60.68 |
 
 ## Skipped Suites
 
@@ -89,6 +91,7 @@ optional `evals.responsiveness` module.
 ## Redaction
 
 The baseline omits auth material, `.env`, raw memories, sessions, state
-databases, logs, private local paths, workspace contents, and personal skill
-allowlists. Public transcripts and observability summaries are included only in
-public-safe redacted form; raw target replies and controller outputs remain omitted.
+databases, logs, private local paths, workspace contents, personal skill
+allowlists, and raw tool arguments/results. Public transcripts and observability
+summaries are included only in public-safe redacted form; raw target replies and
+controller outputs remain omitted.

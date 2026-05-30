@@ -1,49 +1,20 @@
 {
-  "run_id": "hb-20260530T023418Z",
-  "timestamp_utc": "2026-05-30T02:34:18.025596+00:00",
-  "overall_score": 50.26,
-  "observed_runtime_s": 635,
-  "runtime_note": "Wall-clock measured by the coding-agent wrapper around the full-bundle API run.",
-  "suites_ran": 9,
   "command": "HERMES_RUN_LLM_EVALS=1 python -m hermesbench.run --full-bundle --suite-concurrency 3 --case-concurrency 3 --trials 1 --json",
   "environment": {
-    "trials_per_case": 1,
-    "case_concurrency": 3,
-    "suite_concurrency": 3,
-    "high_rate": false,
-    "evaluator_driver": "codex",
     "agentic_max_turns_default": 2,
+    "case_concurrency": 3,
     "controller_timeout_s": 240,
-    "driver_scenario_closed_rate": 0.852,
-    "turns_sent": 27,
-    "turn_budget": 54
+    "driver_scenario_closed_rate": 0.889,
+    "evaluator_driver": "codex",
+    "high_rate": false,
+    "suite_concurrency": 3,
+    "trials_per_case": 1,
+    "turn_budget": 54,
+    "turns_sent": 25
   },
-  "profile_fingerprint": {
-    "hermesbench_git_sha": "52fa6e382578fd034597acf0b3f74295230c55ce+dirty",
-    "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355"
-  },
+  "observed_runtime_s": 378,
+  "overall_score": 78.2,
   "profile": {
-    "model_provider": "openai-codex",
-    "model": "gpt-5.5",
-    "profile_hash": "e460b2161d64330938300535348c5819ca9b88c5848bdfb2b5f740acb66c1355",
-    "execution_surface": {
-      "id": "kanban_delegation",
-      "label": "Kanban delegation",
-      "kanban_enabled": true,
-      "prompt_case_contract": "framework_agnostic"
-    },
-    "memory_provider": "honcho",
-    "memory_enabled": true,
-    "toolsets": [
-      "hermes-cli",
-      "kanban"
-    ],
-    "plugins_enabled": [
-      "agentfeeds",
-      "break-glass-cli",
-      "kanban-orchestrator-routing",
-      "observability/langfuse"
-    ],
     "agent_skills": {
       "count": 107,
       "hash": "3760ef5a8871fc35",
@@ -70,68 +41,97 @@
         "creative/creative-ideation"
       ],
       "truncated": true
-    }
-  },
-  "suite_scores": {
-    "general_assistant": 69.33,
-    "calendar_schedule": 71.78,
-    "web_research": 20.08,
-    "daily_planning_reporting": 41.68,
-    "mail_assistant": 0.0,
-    "messaging_assistant": 74.1,
-    "travel_places": 46.59,
-    "personal_finance": 73.81,
-    "developer_ops": 55.01
-  },
-  "skipped_suites": [
-    {
-      "suite_id": "gateway_ack_policy",
-      "skip_reason": "Hermes Agent evals.responsiveness not importable: ModuleNotFoundError"
     },
-    {
-      "suite_id": "delegated_closure",
-      "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set"
-    }
-  ],
+    "execution_surface": {
+      "id": "kanban_delegation",
+      "kanban_enabled": true,
+      "label": "Kanban delegation",
+      "prompt_case_contract": "framework_agnostic"
+    },
+    "memory_enabled": true,
+    "memory_provider": "honcho",
+    "model": "gpt-5.5",
+    "model_provider": "openai-codex",
+    "plugins_enabled": [
+      "agentfeeds",
+      "break-glass-cli",
+      "kanban-orchestrator-routing",
+      "observability/langfuse"
+    ],
+    "profile_hash": "27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2",
+    "toolsets": [
+      "hermes-cli",
+      "kanban"
+    ]
+  },
+  "profile_fingerprint": {
+    "hermesbench_git_sha": "e5e9cc40ba81b80b9ef38ba43d6ad59a81f3e9cf+dirty",
+    "profile_hash": "27861f3a86d4aa0fcbaac0f2da0ba397842a2b05476e5a3383e5a5b3fb6926f2"
+  },
+  "run_id": "hb-20260530T220225Z",
+  "runtime_note": "Lower-bound runtime from the longest stored suite duration; global wall-clock was not captured in the trend store.",
   "score_breakdown": {
-    "top_axes": {
-      "capability_truthfulness": 59.7,
-      "efficiency_ux": 50.2,
-      "reliability_safety": 70.4
-    },
     "axes": {
-      "appropriateness": 59.7,
-      "artifact_correctness": 59.7,
-      "closure": 70.4,
-      "coherence": 69.6,
-      "communication_quality": 69.6,
-      "evidence_truthfulness": 59.7,
-      "outcome_reached": 70.4,
-      "responsiveness": 30.9,
-      "runtime_scope_safety": 70.4,
+      "appropriateness": 75.8,
+      "artifact_correctness": 75.8,
+      "closure": 85.2,
+      "coherence": 83.4,
+      "communication_quality": 83.4,
+      "evidence_truthfulness": 75.8,
+      "outcome_reached": 85.2,
+      "responsiveness": 20.1,
+      "runtime_scope_safety": 85.2,
       "scope_discipline": 100.0,
-      "stability": 70.4,
-      "task_fulfillment": 59.7
-    },
-    "coverage": {
-      "scored_suites": 9,
-      "registered_suites": 11,
-      "prompt_cases": 27,
-      "label": "9/11"
+      "stability": 85.2,
+      "task_fulfillment": 75.8
     },
     "categories": {
       "capability_truthfulness": [
         "task_fulfillment",
         "evidence_truthfulness"
       ],
-      "reliability_safety": [
-        "outcome_reached",
-        "runtime_scope_safety"
-      ],
       "efficiency_ux": [
         "responsiveness",
         "communication_quality"
+      ],
+      "reliability_safety": [
+        "outcome_reached",
+        "runtime_scope_safety"
       ]
+    },
+    "coverage": {
+      "label": "9/11",
+      "prompt_cases": 27,
+      "registered_suites": 11,
+      "scored_suites": 9
+    },
+    "top_axes": {
+      "capability_truthfulness": 80.7,
+      "efficiency_ux": 83.4,
+      "reliability_safety": 78.4
     }
-  }
+  },
+  "skipped_suites": [
+    {
+      "skip_reason": "Hermes Agent evals.responsiveness not importable: ModuleNotFoundError",
+      "suite_id": "gateway_ack_policy"
+    },
+    {
+      "skip_reason": "HERMES_BENCH_DELEGATED_CLOSURE not set",
+      "suite_id": "delegated_closure"
+    }
+  ],
+  "suite_scores": {
+    "calendar_schedule": 91.85,
+    "daily_planning_reporting": 67.99,
+    "developer_ops": 60.68,
+    "general_assistant": 94.78,
+    "mail_assistant": 83.2,
+    "messaging_assistant": 96.79,
+    "personal_finance": 91.13,
+    "travel_places": 31.57,
+    "web_research": 85.77
+  },
+  "suites_ran": 9,
+  "timestamp_utc": "2026-05-30T22:02:25.143826+00:00"
 }
