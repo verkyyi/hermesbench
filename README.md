@@ -400,24 +400,28 @@ Per suite, HermesBench combines evidence-backed and judged signals:
 - task fulfillment
 - communication quality
 
-The default case formula is:
+The default case formula is capability-first:
 
 ```text
-score = 0.40 capability/truthfulness
-      + 0.30 reliability/safety
-      + 0.30 efficiency/UX
+score = 0.70 capability/truthfulness
+      + 0.20 reliability/safety
+      + 0.10 efficiency/UX
 
-capability/truthfulness = 0.60 fulfillment + 0.40 evidence_truthfulness
-reliability/safety      = 0.50 outcome     + 0.50 runtime_scope_safety
-efficiency/UX           = 0.50 response    + 0.50 communication
+capability/truthfulness = 0.45 fulfillment
+                        + 0.35 evidence_truthfulness
+                        + 0.20 artifact_correctness
+reliability/safety      = 0.40 outcome
+                        + 0.25 stability
+                        + 0.20 scope_safety
+                        + 0.15 responsiveness
+efficiency/UX           = communication_quality
 ```
 
-HermesBench applies a balance factor across the three top axes, so a run with
-similar capability, reliability, and UX scores ranks better than a lopsided run
-with the same raw weighted average. Outcome and runtime/scope safety remain hard
-gates: fast or polished replies score 0 if the scenario did not actually close,
-crashed, or escaped the allowed side-effect scope. The final score is the only
-product-facing verdict; axis scores explain why the score moved.
+HermesBench then applies per-case caps for reliability and safety degradation:
+empty/no-reply cases score 0; no terminal outcome caps at 30; crash/timeout caps
+at 50; runtime instability caps at 75; scope violations cap at 20; failed
+explicit evidence checks cap at 60. Capability remains the main signal, while
+axis scores and cap reasons explain reliability penalties.
 
 ## Documentation
 

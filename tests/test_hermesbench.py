@@ -6,6 +6,8 @@ import sqlite3
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from hermesbench import api, checks, drivers, harness, observability, public_artifacts, registry, run as run_mod, scenarios, scoring, targets, usecases
 from hermesbench import agentic_bridge
 from hermesbench.suites import gateway as gateway_mod
@@ -1282,15 +1284,19 @@ def test_target_config_supports_platform_ui(monkeypatch):
 def test_deterministic_checks_and_scoring_dominate():
     assert abs(sum(scoring.AXIS_WEIGHTS.values()) - 1.0) < 0.001
     assert scoring.TOP_AXIS_WEIGHTS == {
-        "capability_truthfulness": 0.40,
-        "reliability_safety": 0.30,
-        "efficiency_ux": 0.30,
+        "capability_truthfulness": 0.70,
+        "reliability_safety": 0.20,
+        "efficiency_ux": 0.10,
     }
     assert abs(
-        scoring.AXIS_WEIGHTS["responsiveness"] + scoring.AXIS_WEIGHTS["communication_quality"] - 0.30
+        scoring.AXIS_WEIGHTS["task_fulfillment"]
+        + scoring.AXIS_WEIGHTS["evidence_truthfulness"]
+        + scoring.AXIS_WEIGHTS["artifact_correctness"]
+        - 0.70
     ) < 0.001
 
     execution = {
+        "reply": "Done.",
         "concluded": True,
         "stable": True,
         "side_effects": {
@@ -1308,12 +1314,14 @@ def test_deterministic_checks_and_scoring_dominate():
         judge={"conclusion_type": "completed", "appropriate": 0.8, "coherent": 0.8},
         responsiveness=1.0,
     )
-    assert scored["efficiency_ux_weight_share"] == 0.30
+    assert scored["efficiency_ux_weight_share"] == 0.10
     assert scored["axes"]["task_fulfillment"] == 0.8
     assert scored["axes"]["evidence_truthfulness"] == 0.8
     assert scored["axes"]["outcome_reached"] == 1.0
     assert scored["axes"]["closure"] == 1.0
-    assert scored["score"] >= 60
+    assert scored["capability_score"] == pytest.approx(84.0)
+    assert scored["reliability_score"] == 100.0
+    assert scored["score"] >= 80
 
     failed = checks.run_checks({"checks": [{"type": "artifact_exists", "path": "missing.txt"}]}, execution)
     failed_score = scoring.score_case(
@@ -1324,6 +1332,7 @@ def test_deterministic_checks_and_scoring_dominate():
     )
     assert failed_score["axes"]["artifact_correctness"] == 0.0
     assert failed_score["score_cap"] == 60.0
+    assert "explicit_check_failed" in failed_score["score_cap_reasons"]
     assert failed_score["score"] < scored["score"]
 
     no_outcome = scoring.score_case(
@@ -1333,7 +1342,17 @@ def test_deterministic_checks_and_scoring_dominate():
         responsiveness=1.0,
     )
     assert no_outcome["axes"]["outcome_reached"] == 0.0
-    assert no_outcome["score"] == 0.0
+    assert no_outcome["score_cap"] == 30.0
+    assert no_outcome["score"] == 30.0
+
+    no_reply = scoring.score_case(
+        execution={"concluded": False, "stable": False},
+        check_result=check_result,
+        judge={"conclusion_type": "none", "appropriate": 0.0, "coherent": 0.0},
+        responsiveness=0.0,
+    )
+    assert no_reply["score"] == 0.0
+    assert "no_assistant_reply" in no_reply["score_cap_reasons"]
 
 
 def test_reply_and_hash_checks():
