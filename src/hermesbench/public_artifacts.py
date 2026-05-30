@@ -1793,6 +1793,7 @@ def _page_shell(title: str, body: str) -> str:
         <a href="recipes.html">Recipes</a>
         <a href="profiles.html">Profiles</a>
         <a href="leaderboard.html">Leaderboard</a>
+        <a href="index.html#feedback">Feedback</a>
         <a href="index.html#contribute">Contribute</a>
         <a href="https://github.com/verkyyi/hermesbench">GitHub</a>
       </nav>
