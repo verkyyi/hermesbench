@@ -1489,6 +1489,85 @@ def _render_text_block(text: Any) -> str:
     return f'<div class="text-block">{escape(str(text or ""))}</div>'
 
 
+def _render_inline_markdown(text: str) -> str:
+    html = escape(text)
+    html = re.sub(r"`([^`]+)`", r"<code>\1</code>", html)
+    html = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", html)
+    html = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", html)
+    return html
+
+
+def _render_markdown_block(text: Any) -> str:
+    source = str(text or "").replace("\r\n", "\n").replace("\r", "\n")
+    if not source.strip():
+        return '<div class="markdown-block"></div>'
+    parts = re.split(r"(^```[^\n]*\n.*?^```[ \t]*$)", source, flags=re.MULTILINE | re.DOTALL)
+    rendered: list[str] = []
+    for part in parts:
+        if not part:
+            continue
+        if part.startswith("```"):
+            lines = part.split("\n")
+            language = lines[0].strip().strip("`").strip()
+            code = "\n".join(lines[1:-1])
+            lang_class = f' class="language-{escape(_anchor(language))}"' if language else ""
+            rendered.append(f"<pre><code{lang_class}>{escape(code)}</code></pre>")
+            continue
+        blocks: list[str] = []
+        paragraph: list[str] = []
+        list_items: list[str] = []
+        list_type: str | None = None
+
+        def flush_paragraph() -> None:
+            nonlocal paragraph
+            if paragraph:
+                blocks.append(f"<p>{_render_inline_markdown(' '.join(item.strip() for item in paragraph))}</p>")
+                paragraph = []
+
+        def flush_list() -> None:
+            nonlocal list_items, list_type
+            if list_items and list_type:
+                blocks.append(f"<{list_type}>{''.join(list_items)}</{list_type}>")
+                list_items = []
+                list_type = None
+
+        for raw_line in part.split("\n"):
+            line = raw_line.rstrip()
+            stripped = line.strip()
+            if not stripped:
+                flush_paragraph()
+                flush_list()
+                continue
+            heading = re.match(r"^(#{1,4})\s+(.+)$", stripped)
+            unordered = re.match(r"^[-*]\s+(.+)$", stripped)
+            ordered = re.match(r"^\d+[.)]\s+(.+)$", stripped)
+            quote = re.match(r"^>\s?(.+)$", stripped)
+            if heading:
+                flush_paragraph()
+                flush_list()
+                level = min(len(heading.group(1)) + 2, 6)
+                blocks.append(f"<h{level}>{_render_inline_markdown(heading.group(2))}</h{level}>")
+            elif unordered or ordered:
+                flush_paragraph()
+                next_type = "ul" if unordered else "ol"
+                if list_type and list_type != next_type:
+                    flush_list()
+                list_type = next_type
+                item = (unordered or ordered).group(1)
+                list_items.append(f"<li>{_render_inline_markdown(item)}</li>")
+            elif quote:
+                flush_paragraph()
+                flush_list()
+                blocks.append(f"<blockquote>{_render_inline_markdown(quote.group(1))}</blockquote>")
+            else:
+                flush_list()
+                paragraph.append(line)
+        flush_paragraph()
+        flush_list()
+        rendered.extend(blocks)
+    return f'<div class="markdown-block">{"".join(rendered)}</div>'
+
+
 def _event_label(event_type: str) -> str:
     return {
         "user_message": "User",
@@ -1507,36 +1586,10 @@ def _render_public_event(event: dict) -> str:
     event_type = str(event.get("type") or "system_note")
     event_class = _anchor(event_type)
     timing = event.get("time") if isinstance(event.get("time"), dict) else {}
-    meta = []
-    if timing.get("timestamp_utc"):
-        meta.append(str(timing.get("timestamp_utc")))
-    if timing.get("source"):
-        timing_source = str(timing.get("source")).replace("_", " ").replace(".", " ")
-        meta.append(f"timing {timing_source}")
-    if event.get("turn") is not None:
-        meta.append(f"turn {event.get('turn')}")
-    if event.get("status"):
-        meta.append(str(event.get("status")))
-    if timing.get("duration_ms") is not None:
-        meta.append(f"duration {_duration_ms(timing.get('duration_ms'))}")
-    meta_html = f'<span class="event-meta">{escape(" · ".join(meta))}</span>' if meta else ""
     time_html = f'<time class="event-time">{escape(str(timing.get("label") or "time not captured"))}</time>'
     tool_name = event.get("tool_name")
-    tool_bits = []
-    if tool_name:
-        tool_bits.append(f"<div><dt>Tool</dt><dd><code>{escape(str(tool_name))}</code></dd></div>")
-    if event.get("source"):
-        tool_bits.append(f"<div><dt>Source</dt><dd>{escape(str(event.get('source')))}</dd></div>")
-    if event.get("tool_call_id"):
-        tool_bits.append(f"<div><dt>Call id</dt><dd><code>{escape(str(event.get('tool_call_id')))}</code></dd></div>")
-    retention = event.get("retention") or {}
-    if retention:
-        tool_bits.append(
-            "<div><dt>Retention</dt><dd>"
-            + escape(f"args {retention.get('args', '-')}, result {retention.get('result', '-')}")
-            + "</dd></div>"
-        )
-    tool_detail = f'<dl class="mini-defs event-tool-meta">{"".join(tool_bits)}</dl>' if tool_bits else ""
+    is_tool_event = event_type in {"tool_call", "tool_result", "tool_step"}
+    title = str(event.get("label") or tool_name or _event_label(event_type))
     input_html = (
         f'<div class="event-summary"><span>Input</span>{_render_text_block(event.get("input_summary"))}</div>'
         if event.get("input_summary") else ""
@@ -1545,9 +1598,31 @@ def _render_public_event(event: dict) -> str:
         f'<div class="event-summary"><span>Output</span>{_render_text_block(event.get("output_summary"))}</div>'
         if event.get("output_summary") else ""
     )
-    text_html = _render_text_block(event.get("text")) if event.get("text") else ""
+    if event.get("text"):
+        text_html = _render_markdown_block(event.get("text")) if event_type == "assistant_message" else _render_text_block(event.get("text"))
+    else:
+        text_html = ""
     error_html = f'<div class="message-error">Error: {escape(str(event.get("error")))}</div>' if event.get("error") else ""
     timeout_html = '<div class="message-error">Timed out</div>' if event.get("timed_out") else ""
+    if is_tool_event:
+        return f"""
+          <details class="event-card event-tool-collapsed event-{escape(event_class)}">
+            <summary>
+              <span class="event-index">{escape(str(event.get('index') or ''))}</span>
+              <span class="event-line">
+                {time_html}
+                <span class="event-type">Tool</span>
+                <strong>{escape(str(tool_name or title))}</strong>
+              </span>
+            </summary>
+            <div class="event-body">
+              {input_html}
+              {output_html}
+              {error_html}
+              {timeout_html}
+            </div>
+          </details>
+        """
     return f"""
       <article class="event-card event-{escape(event_class)}">
         <div class="event-index">{escape(str(event.get('index') or ''))}</div>
@@ -1555,10 +1630,8 @@ def _render_public_event(event: dict) -> str:
           <header>
             {time_html}
             <span class="event-type">{escape(_event_label(event_type))}</span>
-            <strong>{escape(str(event.get('label') or _event_label(event_type)))}</strong>
-            {meta_html}
+            <strong>{escape(title)}</strong>
           </header>
-          {tool_detail}
           {text_html}
           {input_html}
           {output_html}
@@ -1571,41 +1644,23 @@ def _render_public_event(event: dict) -> str:
 
 def _render_trace_timeline(case: dict) -> str:
     events = case.get("public_events") or []
-    retention = case.get("trace_retention") or {}
     if not events:
         return f"""
           <div class="transcript-empty">
             No public trace events are available for this case.
-            Retention: {escape(str(retention.get('public_transcript') or 'not available'))}.
           </div>
         """
-    tool_events = [
-        event for event in events
-        if str(event.get("type")) in {"tool_call", "tool_result", "tool_step"}
-    ]
-    message_events = [
-        event for event in events
-        if str(event.get("type")) in {"user_message", "assistant_message"}
-    ]
-    redactions = retention.get("redactions") or []
-    redaction_text = ", ".join(str(item).replace("_", " ") for item in redactions) if redactions else "standard public redaction"
     return f"""
-      <div class="transcript-retention">
-        {len(events)} public events · {len(message_events)} messages · {len(tool_events)} tool events.
-        Redactions: {escape(redaction_text)}.
-      </div>
       <div class="event-timeline">{''.join(_render_public_event(event) for event in events)}</div>
     """
 
 
 def _render_transcript(case: dict) -> str:
     transcript = case.get("public_transcript") or []
-    retention = case.get("trace_retention") or {}
     if not transcript:
         return f"""
           <div class="transcript-empty">
             No public transcript is available for this case.
-            Retention: {escape(str(retention.get('public_transcript') or 'not available'))}.
           </div>
         """
     turns = []
@@ -1622,17 +1677,12 @@ def _render_transcript(case: dict) -> str:
             </div>
             <div class="message assistant-message">
               <div class="message-role">Assistant</div>
-              {_render_text_block(assistant)}
+              {_render_markdown_block(assistant)}
               {f'<div class="message-error">Error: {escape(str(error))}</div>' if error else ''}
             </div>
           </article>
         """)
-    redactions = retention.get("redactions") or []
-    redaction_text = ", ".join(str(item).replace("_", " ") for item in redactions) if redactions else "standard public redaction"
     return f"""
-      <div class="transcript-retention">
-        Public transcript included. Redactions: {escape(redaction_text)}.
-      </div>
       <div class="conversation">{''.join(turns)}</div>
     """
 
@@ -2122,15 +2172,12 @@ def _render_score_cards(rows: list[dict], *, link_cases: bool = False) -> str:
         title = row.get("title") or label
         if link_cases:
             label_html = f'<a class="score-title" href="{escape(str(row.get("trace_url")))}">{escape(str(title))}</a>'
-            meta = f"<code>{escape(str(label))}</code>"
         else:
             label_html = f'<span class="score-title">{escape(_label_text(label))}</span>'
-            meta = f"<code>{escape(str(label))}</code>"
         rendered.append(f"""
           <article class="score-insight">
             <div>
               {label_html}
-              <span class="table-subtext">{meta}</span>
             </div>
             <strong>{escape(_score(row.get('score')))}</strong>
           </article>
@@ -2158,15 +2205,13 @@ def _score_row_meta(row: dict | None, *, link_case: bool = False) -> str:
 def _render_profile_readout(profile: dict, related: dict) -> str:
     top_suite = (related.get("top_suites") or [None])[0]
     low_suite = (related.get("improvement_suites") or [None])[0]
-    top_case = (related.get("top_scenarios") or [None])[0]
-    low_case = (related.get("improvement_scenarios") or [None])[0]
     return f"""
       <section class="profile-readout">
         <div class="readout-head">
           <div>
             <p class="eyebrow">Profile readout</p>
-            <h3>Setup and Recipe Performance</h3>
-            <p class="note">Start here: this is the benchmarked setup, what it scored, and where the profile shape currently works or fails.</p>
+            <h3>Score and Recipe Fit</h3>
+            <p class="note">Start here: what this profile bundle scored and where the profile shape currently works or fails.</p>
           </div>
           <a class="button primary" href="{escape(str(related.get('trace_url') or related.get('leaderboard_url')))}">Open traces</a>
         </div>
@@ -2179,22 +2224,12 @@ def _render_profile_readout(profile: dict, related: dict) -> str:
           <article class="score-kpi">
             <span>Best suite</span>
             <strong>{escape(_score((top_suite or {}).get('score')))}</strong>
-            <small>{_score_row_title(top_suite)} <code>{_score_row_meta(top_suite)}</code></small>
+            <small>{_score_row_title(top_suite)}</small>
           </article>
           <article class="score-kpi warn">
             <span>Needs work</span>
             <strong>{escape(_score((low_suite or {}).get('score')))}</strong>
-            <small>{_score_row_title(low_suite)} <code>{_score_row_meta(low_suite)}</code></small>
-          </article>
-          <article class="score-kpi">
-            <span>Best recipe</span>
-            <strong>{escape(_score((top_case or {}).get('score')))}</strong>
-            <small>{_score_row_title(top_case, link_case=True)} <code>{_score_row_meta(top_case, link_case=True)}</code></small>
-          </article>
-          <article class="score-kpi warn">
-            <span>Weakest recipe</span>
-            <strong>{escape(_score((low_case or {}).get('score')))}</strong>
-            <small>{_score_row_title(low_case, link_case=True)} <code>{_score_row_meta(low_case, link_case=True)}</code></small>
+            <small>{_score_row_title(low_suite)}</small>
           </article>
         </div>
       </section>
@@ -2280,7 +2315,7 @@ def _render_recipe_performance(related: dict) -> str:
     """
 
 
-def _render_snapshot_summary(summary: dict, distribution: dict) -> str:
+def _render_snapshot_summary(summary: dict, distribution: dict, *, open_inventory: bool = False) -> str:
     target = summary.get("target") or {}
     memory = summary.get("memory") or {}
     kanban = summary.get("kanban") or {}
@@ -2302,7 +2337,7 @@ def _render_snapshot_summary(summary: dict, distribution: dict) -> str:
           <div><dt>Orchestrator</dt><dd>{escape(str(kanban.get('orchestrator_profile') or '-'))}</dd></div>
           <div><dt>Max spawn</dt><dd>{escape(str(kanban.get('max_spawn') or '-'))}</dd></div>
         </dl>
-        <details class="configured-inventory">
+        <details class="configured-inventory"{" open" if open_inventory else ""}>
           <summary>Configured inventory</summary>
           <p class="note">This is configuration inventory, not proof of use. The default usage view only shows tools and skills observed in public traces.</p>
           <dl class="detail-grid profile-metrics">
@@ -2358,32 +2393,25 @@ def _render_observed_usage(usage: dict) -> str:
     """
 
 
-def _render_profile_units(profile: dict) -> str:
+def _render_profile_units(profile: dict, *, open_cards: bool = False) -> str:
     units = profile.get("profile_units") or []
     if not units:
         return '<p class="note">No reusable profile units were published for this configuration.</p>'
     cards = []
     for unit in units:
-        copy_text = unit.get("install_command") or unit.get("implementation_prompt") or ""
         state = str(unit.get("publication_state") or "")
         state_class = " missing" if state == "missing_required_profile" else ""
         model = unit.get("model") or {}
         memory = unit.get("memory") or {}
-        hashes = unit.get("hashes") or {}
-        primary_tags = (unit.get("toolsets") or []) + (unit.get("skills_allowed") or [])[:4]
         cards.append(f"""
-          <details class="profile-unit-card{state_class}">
+          <details class="profile-unit-card{state_class}"{" open" if open_cards else ""}>
             <summary class="profile-unit-head">
               <div class="profile-unit-summary">
                 <span class="mini-heading">{escape(_label_text(unit.get('role')))} profile</span>
                 <h4>{escape(str(unit.get('profile') or '-'))}</h4>
-                {f'<span class="profile-unit-subtitle">{escape(_short(unit.get("description"), 120))}</span>' if unit.get("description") else ''}
               </div>
               <span class="profile-unit-role">{escape(_label_text(unit.get('role')))}</span>
             </summary>
-            <div class="tag-list profile-unit-tags">
-              {_render_tag_spans(primary_tags, limit=7)}
-            </div>
             <div class="profile-unit-detail">
               <div class="profile-unit-state">
                 <span>Status: {escape(_label_text(unit.get('status')))}</span>
@@ -2394,33 +2422,7 @@ def _render_profile_units(profile: dict) -> str:
               <dl class="detail-grid profile-metrics">
                 <div><dt>Model</dt><dd>{escape(str(model.get('provider') or '-'))} / {escape(str(model.get('default') or '-'))}</dd></div>
                 <div><dt>Memory</dt><dd>{escape(str(memory.get('provider') or '-'))}, {escape('enabled' if memory.get('enabled') else 'disabled')}</dd></div>
-                <div><dt>Source</dt><dd>{escape(str(unit.get('source_file') or '-'))}</dd></div>
-                <div><dt>Config hash</dt><dd><code>{escape(str(hashes.get('config_summary_hash') or '-'))}</code></dd></div>
               </dl>
-              <div class="profile-columns">
-                <section>
-                  <h5>Toolsets</h5>
-                  <div class="tag-list">{_render_tag_spans(unit.get('toolsets') or [], limit=16)}</div>
-                </section>
-                <section>
-                  <h5>Plugins</h5>
-                  <div class="tag-list">{_render_tag_spans(unit.get('plugins_enabled') or [], limit=16)}</div>
-                </section>
-                <section>
-                  <h5>Allowed Skills</h5>
-                  <div class="tag-list">{_render_tag_spans(unit.get('skills_allowed') or [], limit=18)}</div>
-                </section>
-                <section>
-                  <h5>CLI Toolsets</h5>
-                  <div class="tag-list">{_render_tag_spans(unit.get('platform_toolsets_cli') or [], limit=18)}</div>
-                </section>
-              </div>
-            </div>
-            <p class="note">{escape(str(unit.get('note') or ''))}</p>
-            {f'<pre class="install-command"><code>{escape(str(unit.get("install_command")))}</code></pre>' if unit.get("install_command") else ''}
-            <div class="recipe-actions">
-              <button class="button primary copy-button" type="button" data-copy="{escape(copy_text, quote=True)}">{escape(str(unit.get('cta_label') or 'Copy implementation prompt'))}</button>
-              <span class="copy-reaction" data-copy-reaction aria-live="polite"></span>
             </div>
           </details>
         """)
@@ -2453,6 +2455,55 @@ def _render_bundle_roles(profile: dict) -> str:
     return "".join(rows)
 
 
+def _render_profile_unit_section(profile: dict, *, open_cards: bool = False) -> str:
+    return f"""
+      <section class="profile-layer unit-layer">
+        <div class="layer-head">
+          <p class="eyebrow">Profiles</p>
+          <h3>Profile Units in This Setup</h3>
+          <p class="note">These are the reusable profiles behind the scored configuration.</p>
+        </div>
+        <div class="profile-unit-list">{_render_profile_units(profile, open_cards=open_cards)}</div>
+      </section>
+    """
+
+
+def _render_local_implementation_guidance() -> str:
+    return """
+      <section class="profile-loop">
+        <h3>Learn and Implement Locally</h3>
+        <ol>
+          <li>Start from the reusable profile cards above; install the distribution when published, or copy the local implementation prompt for redacted profiles.</li>
+          <li>Use strong suites and recipes to understand why this profile shape performed well.</li>
+          <li>Bundle multiple profiles only through the published roles, keeping single profiles as the base unit.</li>
+        </ol>
+      </section>
+    """
+
+
+def _render_profile_content(
+    profile: dict,
+    related: dict,
+    *,
+    single_profile: bool = False,
+) -> str:
+    if single_profile:
+        return f"""
+          {_render_profile_readout(profile, related)}
+
+          {_render_profile_unit_section(profile)}
+
+          {_render_recipe_performance(related)}
+        """
+    return f"""
+      {_render_profile_readout(profile, related)}
+
+      {_render_profile_unit_section(profile)}
+
+      {_render_recipe_performance(related)}
+    """
+
+
 def render_profiles_html(profile_index: dict) -> str:
     profiles = profile_index.get("profiles") or []
     profile_count = len(profiles)
@@ -2465,16 +2516,13 @@ def render_profiles_html(profile_index: dict) -> str:
             for profile in profiles
         })
     )
+    single_profile = profile_count == 1
     profile_rows: list[str] = []
     for profile in profiles:
         baseline_id = str(profile.get("baseline_id") or "")
         surface = profile.get("execution_surface") or {}
         distribution = profile.get("distribution") or {}
-        memory = profile.get("memory") or {}
         related = profile.get("related_scores") or {}
-        snapshot_summary = profile.get("snapshot_summary") or {}
-        observed_usage = profile.get("observed_usage") or {}
-        role_statuses = ", ".join(sorted({str(role.get("status")) for role in profile.get("roles") or [] if role.get("status")})) or "unknown"
         search_text = " ".join([
             baseline_id,
             str(profile.get("model_provider") or ""),
@@ -2487,59 +2535,45 @@ def render_profiles_html(profile_index: dict) -> str:
             " ".join(str(unit.get("profile") or "") for unit in profile.get("profile_units") or []),
             " ".join(str(row.get("suite_id") or "") for row in related.get("suite_scores") or []),
         ]).lower()
-        profile_rows.append(f"""
-          <details class="profile-row" id="profile-{escape(_anchor(baseline_id))}" data-profile-row data-search="{escape(search_text)}" data-surface="{escape(str(surface.get('id') or 'direct'))}">
-            <summary>
-              <span class="profile-summary-main">
-                <span>
-                  <span class="profile-title">{escape(baseline_id)}</span>
-                  <span class="table-subtext">{escape(str(surface.get('label') or _label_text(surface.get('id'))))} · {escape(str(len(profile.get('profile_units') or [])))} profile units · {escape(str(distribution.get('form') or 'profile_fingerprint_only'))}</span>
-                </span>
-              </span>
-              <span class="profile-summary-score">{escape(_score(profile.get('overall_score')))}</span>
-            </summary>
-            <div class="profile-detail">
-              {_render_profile_readout(profile, related)}
-
-              {_render_profile_setup(profile, surface, distribution, memory, role_statuses, related)}
-
-              <section class="profile-layer unit-layer">
-                <div class="layer-head">
-                  <p class="eyebrow">Units</p>
-                  <h3>Profile Units in This Setup</h3>
-                  <p class="note">These cards explain the reusable profiles behind the scored configuration. Open a card only when you need implementation-level shape.</p>
+        content = _render_profile_content(
+            profile,
+            related,
+            single_profile=single_profile,
+        )
+        if single_profile:
+            profile_rows.append(f"""
+              <div class="profile-single" id="profile-{escape(_anchor(baseline_id))}" data-profile-row data-search="{escape(search_text)}" data-surface="{escape(str(surface.get('id') or 'direct'))}">
+                <div class="profile-detail profile-detail-unwrapped">
+                  {content}
                 </div>
-                <div class="profile-unit-list">{_render_profile_units(profile)}</div>
-              </section>
-
-              {_render_recipe_performance(related)}
-
-              {_render_observed_usage(observed_usage)}
-
-              <details class="profile-secondary-detail">
-                <summary>Configuration Inventory and Local Implementation Guidance</summary>
-                {_render_snapshot_summary(snapshot_summary, distribution)}
-                <section class="profile-loop">
-                  <h3>Learn and Implement Locally</h3>
-                  <ol>
-                    <li>Start from the reusable profile cards above; install the distribution when published, or copy the local implementation prompt for redacted profiles.</li>
-                    <li>Use strong suites and recipes to understand why this profile shape performed well.</li>
-                    <li>Bundle multiple profiles only through the published roles, keeping single profiles as the base unit.</li>
-                  </ol>
-                </section>
+              </div>
+            """)
+        else:
+            profile_rows.append(f"""
+              <details class="profile-row" id="profile-{escape(_anchor(baseline_id))}" data-profile-row data-search="{escape(search_text)}" data-surface="{escape(str(surface.get('id') or 'direct'))}">
+                <summary>
+                  <span class="profile-summary-main">
+                    <span>
+                      <span class="profile-title">{escape(baseline_id)}</span>
+                      <span class="table-subtext">{escape(str(surface.get('label') or _label_text(surface.get('id'))))} · {escape(str(len(profile.get('profile_units') or [])))} profile units · {escape(str(distribution.get('form') or 'profile_fingerprint_only'))}</span>
+                    </span>
+                  </span>
+                  <span class="profile-summary-score">{escape(_score(profile.get('overall_score')))}</span>
+                </summary>
+                <div class="profile-detail">
+                  {content}
+                </div>
               </details>
-            </div>
-          </details>
-        """)
+            """)
     body = f"""
       <section class="recipe-search-hero">
         <p class="recipe-badge">{profile_count} {profile_count_label} · {unit_count} profile units</p>
-        <h1>Profile Setup and Recipe Performance</h1>
-        <p class="lede">Understand the tested profile shape first: what setup ran, which profile units were involved, and how the bundle performed on HermesBench recipes.</p>
+        <h1>Profiles and Recipe Performance</h1>
+        <p class="lede">Focus on the profile units in this bundle, the benchmark readout, and the recipe evidence behind the current score.</p>
         <div class="showcase-strip">
           <span>{profile_index.get('profile_count', 0)} scored setup</span>
           <span>{unit_count} profile units</span>
-          <span>recipe evidence before config inventory</span>
+          <span>profile and recipe evidence</span>
         </div>
       </section>
       <section class="section compact">
@@ -2548,43 +2582,11 @@ def render_profiles_html(profile_index: dict) -> str:
         </div>
         <script>
           (() => {{
-            const rows = Array.from(document.querySelectorAll("[data-profile-row]"));
-            const copyText = async (text) => {{
-              if (navigator.clipboard?.writeText) {{
-                await navigator.clipboard.writeText(text);
-                return;
-              }}
-              const area = document.createElement("textarea");
-              area.value = text;
-              area.setAttribute("readonly", "");
-              area.style.position = "fixed";
-              area.style.left = "-9999px";
-              document.body.appendChild(area);
-              area.select();
-              document.execCommand("copy");
-              area.remove();
-            }};
-            document.querySelectorAll("[data-copy]").forEach((button) => {{
-              button.addEventListener("click", async (event) => {{
-                event.preventDefault();
-                event.stopPropagation();
-                const reaction = button.parentElement?.querySelector("[data-copy-reaction]");
-                try {{
-                  await copyText(button.dataset.copy || "");
-                  if (reaction) reaction.textContent = "Copied";
-                }} catch (error) {{
-                  if (reaction) reaction.textContent = "Copy failed";
-                }}
-                setTimeout(() => {{
-                  if (reaction) reaction.textContent = "";
-                }}, 1400);
-              }});
-            }});
             const hash = (location.hash || "").slice(1);
             if (hash) {{
               const row = document.getElementById(hash);
               if (row?.matches("[data-profile-row]")) {{
-                row.open = true;
+                if ("open" in row) row.open = true;
               }}
             }}
           }})();
@@ -2653,8 +2655,6 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                   <span class="trace-card-main">
                     <span class="trace-card-header">
                       <span class="trace-card-category">{escape(category_label)}</span>
-                      <span class="trace-card-model">{escape(str(trace.get('baseline_id') or 'baseline'))}</span>
-                      <span class="trace-card-chip">{escape(_duration_ms(mech.get('wall_ms')))}</span>
                     </span>
                     <span class="trace-card-title">{escape(title)}</span>
                     <span class="trace-card-prompt">{escape(_short(prompt, 180))}</span>
@@ -2662,17 +2662,8 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                   <span class="trace-card-result">
                     <span class="trace-card-score{score_class}">{escape(score)}</span>
                     <span class="trace-card-status">{escape(closure)}</span>
-                    <span class="trace-card-meta">{escape(str(len(case_tool_events)))} tools · {escape(str(len(case_events)))} events</span>
                   </span>
                 </summary>
-                <dl class="detail-grid trace-score-grid">
-                  {_render_case_score_tiles(case)}
-                  <div><dt>Closure</dt><dd>{escape(closure)}</dd></div>
-                  <div><dt>Trace events</dt><dd>{escape(str(len(case_events)))}</dd></div>
-                  <div><dt>Tool events</dt><dd>{escape(str(len(case_tool_events)))}</dd></div>
-                  <div><dt>Turns</dt><dd>{escape(str(mech.get('turns_sent')))} / {escape(str(mech.get('turn_budget')))}</dd></div>
-                  <div><dt>Wall time</dt><dd>{escape(_duration_ms(mech.get('wall_ms')))}</dd></div>
-                </dl>
                 <div class="case-narrative">
                   <section>
                     <h3>Task</h3>
@@ -2700,11 +2691,6 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                     {_render_transcript(case)}
                   </details>
                 </div>
-                <details class="advanced-evidence">
-                  <summary>Axes, checks, and side effects</summary>
-                  {_render_axis_table(case)}
-                  {_render_checks_and_effects(case)}
-                </details>
               </details>
             """)
         trace_blocks.append(f"""
@@ -2715,7 +2701,6 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
                 <p class="eyebrow">Recipe traces</p>
                 <h1>Recipe results with traces</h1>
               </div>
-              <a class="button" href="https://github.com/verkyyi/hermesbench/tree/main/data/traces/{escape(trace['baseline_id'])}">Trace files</a>
             </div>
             <label class="search-label" for="trace-search-{escape(_anchor(trace['baseline_id']))}">Search recipe results</label>
             <input id="trace-search-{escape(_anchor(trace['baseline_id']))}" class="task-search" type="search" data-trace-search placeholder="Search recipe, category, prompt, result..." />
@@ -2728,7 +2713,6 @@ def render_traces_html(index: dict, traces: list[dict]) -> str:
             </div>
             <div class="recipe-count-row">
               <span><strong data-trace-count>{trace.get('case_count')}</strong> matching recipe traces</span>
-              <span class="note">{escape(trace['baseline_id'])} · score {escape(_score(trace.get('overall_score')))} · {suite_count} suites</span>
             </div>
           </div>
           <div class="trace-recipe-list">{''.join(case_cards)}</div>

@@ -737,7 +737,7 @@ def test_public_trace_events_render_tool_timeline_without_raw_json(monkeypatch, 
         "public_transcript": [{
             "turn": 1,
             "user": "What should I do today?",
-            "assistant": "Review the plan.",
+            "assistant": "**Review** the plan.\n\n- Confirm scope\n- Run tests\n\n```bash\npytest\n```",
         }],
         "observability": {
             "tools": [
@@ -797,7 +797,15 @@ def test_public_trace_events_render_tool_timeline_without_raw_json(monkeypatch, 
     assert "T+5.0s" in html
     assert "T+19.0s" in html
     assert "time not captured" in html
-    assert "observed_name_only" in html
+    assert "event-tool-collapsed" in html
+    assert '<details class="event-card event-tool-collapsed' in html
+    assert "<strong>Review</strong>" in html
+    assert "<li>Confirm scope</li>" in html
+    assert '<pre><code class="language-bash">pytest</code></pre>' in html
+    assert "observed_name_only" not in html
+    assert "Trace events" not in html
+    assert "Tool events" not in html
+    assert "Axes, checks, and side effects" not in html
     assert "<pre><code>[" not in html
     assert "user@example.com" not in html
     assert "415-555-1212" not in html
@@ -869,22 +877,33 @@ capability_surface:
     assert profile["related_scores"]["top_suites"][0]["suite_id"] == "developer_ops"
     assert profile["related_scores"]["improvement_scenarios"][0]["case"] == "mail_attention_triage"
     html = public_artifacts.render_profiles_html(index)
-    assert "Profile Setup and Recipe Performance" in html
+    assert "Profiles and Recipe Performance" in html
+    assert "Score and Recipe Fit" in html
     assert "Profile readout" in html
-    assert "What Was Tested" in html
     assert "Profile Units in This Setup" in html
     assert "Where It Performs" in html
-    assert "Copy publication checklist" in html
-    assert "Used Tools and Skills" in html
-    assert "Configuration Inventory and Local Implementation Guidance" in html
-    assert "Snapshot Summary" in html
-    assert "Configured inventory" in html
     assert "Strong Suites" in html
     assert "score-insight" in html
+    assert "Scored setup" not in html
+    assert 'class="profile-unit-card" open' not in html
+    assert '<code>developer_ops</code>' not in html
+    assert '<code>dev_ci_failure_triage</code>' not in html
+    assert "Best recipe" not in html
+    assert "Weakest recipe" not in html
+    assert "Copy publication checklist" not in html
+    assert "What Was Tested" not in html
+    assert "Used Tools and Skills" not in html
+    assert "Configuration Inventory and Local Implementation Guidance" not in html
+    assert "Snapshot Summary" not in html
+    assert "Configured inventory" not in html
+    assert "Toolsets" not in html
+    assert "Plugins" not in html
+    assert "Allowed Skills" not in html
+    assert "CLI Toolsets" not in html
+    assert "Config hash" not in html
     assert "Profile snapshot</a>" not in html
-    assert "Copy local implementation prompt" in html
+    assert "Copy local implementation prompt" not in html
     assert "Copy benchmark loop prompt" not in html
-    assert "profile distribution baselines" in html
     assert "traces.html#trace-demo-baseline-dev-ci-failure-triage" in html
 
 

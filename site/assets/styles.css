@@ -586,6 +586,12 @@ pre {
   box-shadow: 0 16px 38px rgba(27, 39, 55, 0.06);
 }
 
+.profile-single {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
 .profile-row > summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -624,6 +630,10 @@ pre {
   padding: 22px;
 }
 
+.profile-detail-unwrapped {
+  padding: 0;
+}
+
 .profile-readout {
   display: grid;
   gap: 16px;
@@ -646,7 +656,7 @@ pre {
 
 .profile-scoreboard {
   display: grid;
-  grid-template-columns: 1.1fr repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1.2fr repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -858,10 +868,6 @@ pre {
 .profile-unit-card.missing {
   border-color: #f0d7b8;
   background: #fff8ef;
-}
-
-.profile-unit-tags {
-  margin: 10px 0;
 }
 
 .profile-unit-head {
@@ -1231,8 +1237,6 @@ details summary {
 }
 
 .trace-card-category,
-.trace-card-model,
-.trace-card-chip,
 .trace-card-status {
   display: inline-flex;
   align-items: center;
@@ -1250,12 +1254,6 @@ details summary {
   color: var(--accent);
   background: #edf4ff;
   border-color: #c7dcff;
-}
-
-.trace-card-model {
-  color: var(--accent-2);
-  background: #eefaf7;
-  border-color: #bfe5da;
 }
 
 .trace-card-title {
@@ -1292,26 +1290,14 @@ details summary {
   color: var(--warn);
 }
 
-.trace-card-meta {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .trace-recipe-card > .detail-grid,
-.trace-recipe-card > .case-narrative,
-.trace-recipe-card > .advanced-evidence {
+.trace-recipe-card > .case-narrative {
   margin-left: 20px;
   margin-right: 20px;
 }
 
 .trace-recipe-card > .detail-grid {
   margin-top: 18px;
-}
-
-.trace-recipe-card > .advanced-evidence {
-  margin-bottom: 20px;
 }
 
 .trace-detail h3 {
@@ -1324,10 +1310,6 @@ details summary {
   font-size: 14px;
 }
 
-.trace-score-grid {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
 .case-narrative {
   display: grid;
   gap: 18px;
@@ -1337,6 +1319,62 @@ details summary {
 .text-block {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.markdown-block {
+  display: grid;
+  gap: 10px;
+  overflow-wrap: anywhere;
+}
+
+.markdown-block > * {
+  margin: 0;
+}
+
+.markdown-block h3,
+.markdown-block h4,
+.markdown-block h5,
+.markdown-block h6 {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.markdown-block p,
+.markdown-block li,
+.markdown-block blockquote {
+  line-height: 1.5;
+}
+
+.markdown-block ul,
+.markdown-block ol {
+  padding-left: 22px;
+}
+
+.markdown-block blockquote {
+  padding-left: 12px;
+  border-left: 3px solid var(--line);
+  color: #3f4854;
+}
+
+.markdown-block pre {
+  overflow-x: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f6f8fb;
+}
+
+.markdown-block code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: #eef2f7;
+  font-size: 0.92em;
+}
+
+.markdown-block pre code {
+  padding: 0;
+  background: transparent;
 }
 
 .task-prompt {
@@ -1417,6 +1455,51 @@ details summary {
   font-variant-numeric: tabular-nums;
 }
 
+.event-tool-collapsed {
+  display: block;
+  padding-left: 46px;
+}
+
+.event-tool-collapsed > summary {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.event-tool-collapsed > summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-tool-collapsed .event-index {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.event-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  white-space: nowrap;
+}
+
+.event-line strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-tool-collapsed > .event-body {
+  margin-top: 8px;
+}
+
 .event-body {
   min-width: 0;
   padding: 14px;
@@ -1483,14 +1566,6 @@ details summary {
   color: #5b2bbd;
 }
 
-.event-tool-meta {
-  margin: 8px 0 10px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f9fafc;
-}
-
 .event-summary {
   display: grid;
   gap: 6px;
@@ -1511,13 +1586,6 @@ details summary {
 .conversation-only > summary {
   color: var(--muted);
   font-size: 13px;
-}
-
-.transcript-retention {
-  margin: 0 0 12px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 650;
 }
 
 .conversation-turn {
@@ -1558,10 +1626,6 @@ details summary {
   margin-top: 10px;
   color: #9a3412;
   font-weight: 700;
-}
-
-.advanced-evidence {
-  margin-top: 18px;
 }
 
 .score-summary {
@@ -1830,7 +1894,6 @@ footer span {
   }
 
   .leaderboard-scorecard,
-  .trace-score-grid,
   .readout-grid,
   .evidence-grid,
   .profile-scoreboard,
@@ -1879,7 +1942,6 @@ footer span {
   }
 
   .leaderboard-scorecard,
-  .trace-score-grid,
   .readout-grid,
   .evidence-grid,
   .profile-scoreboard,
@@ -1913,6 +1975,10 @@ footer span {
 
   .profile-detail {
     padding: 14px;
+  }
+
+  .profile-detail-unwrapped {
+    padding: 0;
   }
 
   .readout-head {
